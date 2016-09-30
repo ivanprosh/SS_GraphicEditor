@@ -1,0 +1,113 @@
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include <QMdiSubWindow>
+#include <QGraphicsRectItem>
+#include <QClipboard>
+#include <QMimeData>
+
+
+//MainWindow::
+
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+
+void MainWindow::on_ACreate_triggered()
+{
+   QMdiSubWindow *wnd = ui->mdiArea->addSubWindow(new EditMNM(this));
+   wnd->show();
+
+}
+
+// Добавление объекта на сцену
+void MainWindow::on_AAddAnPar_triggered(bool checked)
+{
+    EditMNM *wnd =
+        qobject_cast<EditMNM*>(ui->mdiArea->activeSubWindow()->widget());
+
+    if (wnd!=NULL){
+
+        QGraphicsItem *pItem = new QAnPar(40,40, 50,50);
+        wnd->scene->addItem(pItem);
+           pItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+
+       /* QGraphicsRectItem *pRectItem =
+                    wnd->scene->addRect(QRect(00,00,40,40), QPen(Qt::green), QBrush(Qt::yellow));
+
+            pRectItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+        */
+    }
+}
+
+
+// Копирование объета в буфер обмена
+void MainWindow::on_ACopy_triggered()
+{
+    EditMNM *wnd =  // указатель на активное окно
+        qobject_cast<EditMNM*>(ui->mdiArea->activeSubWindow()->widget());
+    if (wnd){
+
+    //QMimeData * data = new QMimeData();
+    //data->setData("ListItems",wnd->scene->selectedItems() );
+    clipboard = wnd->scene->selectedItems() ;
+    ui->label->setText(QString::number(clipboard.size()));
+    //QClipboard *clipboard = QApplication::clipboard();
+    //wnd->scene->selectedItems();
+    //clipboard->setMimeData( data );
+    }
+
+
+
+
+}
+
+void MainWindow::on_APaste_triggered()
+{
+    EditMNM *wnd =  // указатель на активное окно
+        qobject_cast<EditMNM*>(ui->mdiArea->activeSubWindow()->widget());
+    if (wnd){
+        //clipboard.size();
+        ui->label->setText(QString::number(clipboard.size()));
+        wnd->scene->clearSelection();
+        foreach(QGraphicsItem *item, clipboard)
+        {
+
+            QGraphicsItem *pItem = new QAnPar(item->pos().x(),item->pos().y(), 50,50);
+            wnd->scene->addItem(pItem);
+               pItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+           /*
+            QGraphicsRectItem *pRectItem = wnd->scene->addRect(QRect(item->pos().x(),item->pos().y(),20,20));
+            pRectItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+            */
+            pItem->setSelected(true);
+            //pRectItem->setSelected(true);
+            //item->setSelected(false);
+         }
+
+    }
+
+
+
+}
+
+void MainWindow::on_ADelete_triggered()
+{
+    EditMNM *wnd =  // указатель на активное окно
+        qobject_cast<EditMNM*>(ui->mdiArea->activeSubWindow()->widget());
+    if (wnd){
+        foreach(QGraphicsItem *item, wnd->scene->selectedItems()){
+        wnd->scene->removeItem(item);
+               // wnd->scene->selectedItems()
+
+    }
+}

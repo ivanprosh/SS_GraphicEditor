@@ -1,0 +1,84 @@
+#ifndef POBJECTPROPERTY
+#define POBJECTPROPERTY
+#include <QVariant>
+#include <QString>
+#include <QStringList>
+#include <QMetaType>
+
+
+/*
+QString PObjectNamesProperty[] = {
+    "no name",
+    "BackColor    	",
+    "ForeColor    	",
+    "FontName     	",
+    "FontSize     	",
+    "FontBold     	",
+    "FontItalic   	",
+    "FontUnderline	",
+    "Type         	",
+    "AnParTag     	",
+    "AnParUnit    	",
+    "DigParTag    	",
+    "DigParUnit   	"
+};
+*/
+
+
+namespace PObjProp {
+
+
+enum Property{
+BackColor    	 = 1	,
+ForeColor    	 = 2	,
+FontName     	 = 3	,
+FontSize     	 = 4	,
+FontBold     	 = 5	,
+FontItalic   	 = 6	,
+FontUnderline	 = 7	,
+Type         	 = 8	,
+AnParTag     	 = 9	,
+AnParUnit    	 = 10	,
+DigParTag    	 = 11	,
+DigParUnit   	 = 12	,
+};
+
+//enum PtypeVar
+
+
+
+}
+
+class PObjectProrety {
+
+static QStringList namePropertys;
+
+private:
+    PObjProp::PtypeProperty _typeProperty;
+
+    static QStringList initNamePropertys();
+
+public:
+    QVariant value;
+
+    QString nameProperty() {return namePropertys[_typeProperty];};   // НАименование свойства
+
+    PObjProp::PtypeProperty typeProperty(){return _typeProperty;}
+
+    PObjectProrety(QVariant value, PObjProp::PtypeProperty typeProperty)
+                        :value(value),_typeProperty(typeProperty){};
+
+  /*  PObjectProrety(QVariant value, PtypeProperty typeProperty, int type)
+                        :value(value),_typeProperty(typeProperty){ value.canConvert(type); };
+*/
+
+   // void setTypeProperty(PtypeProperty type) {typeProperty = type;};
+
+};
+
+
+
+
+
+#endif // POBJECTPROPERTY
+

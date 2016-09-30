@@ -1,0 +1,101 @@
+#ifndef POBJECT
+#define POBJECT
+#include <QGraphicsItem>
+#include <QObject>
+#include <QString>
+#include <QPainter>
+#include <QVariant>
+
+namespace PObj {
+
+
+enum TYPE_OBJECT{
+     TYPE_OBJECT_BTN_JMP,
+     TYPE_OBJECT_BTN,
+     TYPE_OBJECT_ANPAR,
+     TYPE_OBJECT_IND,
+     TYPE_OBJECT_IM,
+     TYPE_OBJECT_TEXT,
+};
+}
+
+
+class PObject : public QObject, public QGraphicsItem
+{
+Q_OBJECT
+protected:
+
+    QString TagName;
+
+    int _width;      // ширина
+    int _height;     // высота
+
+    int tst;
+    int count_change;
+
+    PObj::TYPE_OBJECT typeobject;
+
+   QList<QVariant> ObjectPropertys;
+   static double startX;
+   static double startY;
+
+
+
+   static bool resizeItem;
+   static int invX;
+   static int invY;
+
+   static int ind;
+
+  // int widthS;      // ширина
+  // int heightS;     // высота
+
+
+public:
+
+
+
+   PObject(float x, float y,float width, float height, PObj::TYPE_OBJECT type,QGraphicsItem * parent = 0):
+       _width(width),_height(height),QGraphicsItem(parent), typeobject(type) , count_change(0) { setX(x); setY(y); };
+
+   void paint(QPainter *painter,
+              const QStyleOptionGraphicsItem *option,
+              QWidget *widget);
+
+   QRectF boundingRect() const ;
+
+
+   // QGraphicsItem interface
+protected:
+   QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+
+   void mousePressEvent(QGraphicsSceneMouseEvent *event);
+   void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+   void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+};
+
+
+class PObjectAnPar : public PObject
+{
+Q_OBJECT
+public:
+
+   PObjectAnPar(float x, float y,float width, float height, PObj::TYPE_OBJECT type,QGraphicsItem * parent = 0);
+
+ /*  void paint(QPainter *painter,
+              const QStyleOptionGraphicsItem *option,
+              QWidget *widget);
+    */
+  // QRectF boundingRect() const ;
+
+};
+
+
+
+
+
+
+
+
+#endif // POBJECT
+

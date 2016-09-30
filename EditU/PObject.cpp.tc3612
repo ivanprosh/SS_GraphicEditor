@@ -1,0 +1,276 @@
+#include "PObject.h"
+#include <QGraphicsSceneMouseEvent>
+#include "itemdelegate.h"
+#include <QMetaType>
+#include <QColor>
+#include "qlistmodel.h"
+#include "treemodel.h"
+
+
+double PObject::startX;
+double PObject::startY;
+
+
+bool PObject::resizeItem = false;
+int PObject::invX;
+int PObject::invY;
+
+
+int PObject::ind;
+//int PObject::widthS;      // ширина
+//int PObject::heightS;     // высота
+
+struct vector{
+    int x;
+    int y;
+};
+
+vector point_F[]={{-1,-1},{0,-1},{1,-1},{1,0},{1,1},{0,1}, {-1,1}, {-1, 0} };
+
+#define SIZE_REG 4
+
+// рисование объекта
+PObject::PObject(float x, float y, float width, float height, PObj::TYPE_OBJECT type, QGraphicsItem *parent)
+    :_width(width),_height(height),QGraphicsItem(parent), typeobject(type)
+{
+    setX(x);
+    setY(y);
+
+    QList<QVariant> prop, prop2;
+    prop<< "prop1" << "mmm";
+    prop2<< "prop2" << "mmm2";
+
+    TreePropertys = new TreeProp(prop);
+
+    TreeProp* p = new TreeProp(prop2,TreePropertys );
+        TreePropertys->appendChild( new TreeProp(prop2, TreePropertys ) );
+
+    p->appendChild( new TreeProp(prop2,p ) );
+    p->appendChild( new TreeProp(prop2,p ) );
+
+
+}
+
+void PObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    /*
+    painter->setPen(QPen(Qt::green,4,Qt::SolidLine));
+    painter->setBrush(QBrush(Qt::gray, Qt::SolidPattern));
+    //painter->setBrush(Qt::gray);
+    //painter->setw
+
+    painter->drawEllipse( QRectF(0, 0, _width, _height) );
+    painter->setPen(Qt::black);
+    painter->drawText(QRectF(0, 0, _width, _height),QString::number(x(),'g',6));
+    painter->drawText(QRectF(0, 20, _width, _height),QString::number(y(),'g',6));
+    //painter->drawText(QRectF(40, 0, _width, _height),"U");
+    //painter->drawText();
+
+    if (isSelected()){
+        painter->setBrush(QBrush(Qt::gray, Qt::NoBrush));
+        painter->setPen(QPen(Qt::red,1,Qt::DashLine));
+                painter->drawRect( QRectF( -2, -2, _width + 2 , _height + 2) );
+    }
+    */
+    if (isSelected()){
+        painter->setBrush(QBrush(Qt::gray, Qt::NoBrush));
+        painter->setPen(QPen(Qt::red,1,Qt::DashLine));
+                painter->drawRect( QRectF( -1, -1, _width + 2 , _height + 2) );
+    }
+
+
+}
+
+int PObject::countRow()
+{
+    int cnt = ObjectPropertys.count();
+
+    foreach(PObject *item, m_childObjects){
+        cnt += item->ObjectPropertys.count();
+     }
+     return cnt;
+}
+
+QRectF PObject::boundingRect() const
+{
+    return QRectF(-3,-3, _width + 3, _height + 3);
+}
+
+QVariant PObject::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    return QGraphicsItem::itemChange(change, value);
+}
+
+
+
+void PObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    update();
+   if ( event->button()==Qt::LeftButton ){
+        PObject::resizeItem = false;
+
+        for (int i=0; i< 8; i++){
+            int xp = x() + (point_F[i].x+1) * _width/2;
+            int yp = y() + (point_F[i].y+1) * _height/2;
+
+            if ( abs(xp - event->scenePos().x())< SIZE_REG &&
+                 abs(yp - event->scenePos().y())< SIZE_REG )
+            {
+                int n = i + 4; if(n>7) n -= 8;
+                PObject::resizeItem = true;
+                PObject::startX = x() + (point_F[n].x+1) * _width/2;
+                PObject::startY = y() + (point_F[n].y+1) * _height/2;
+
+                PObject::ind = i;
+
+            }
+
+        }
+   }
+       TreeModel::treeModel->setRootItem(TreePropertys);
+       QListModel::listModel->setObject(this);
+
+   if(!PObject::resizeItem)
+   QGraphicsItem::mousePressEvent(event);
+}
+
+
+void PObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+
+    if(PObject::resizeItem)
+    {
+        prepareGeometryChange();
+
+        if (point_F[PObject::ind].x!=0)
+                _width = event->scenePos().x() - PObject::startX  ;
+
+        if (_width<0) {
+            _width =-_width;
+            setX( PObject::startX - _width);
+        }
+
+        if (point_F[PObject::ind].y!=0)
+                _height = event->scenePos().y() - PObject::startY  ;
+
+
+        if (_height<0) {
+            _height =-_height;
+            setY( PObject::startY - _height);
+        }
+    }
+    update();
+
+    if(!PObject::resizeItem)
+        QGraphicsItem::mouseMoveEvent(event);
+
+}
+
+
+void PObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    update();
+    PObject::resizeItem = false;
+    QGraphicsItem::mouseReleaseEvent(event);
+}
+
+// конструктор анпара
+PObjectAnPar::PObjectAnPar(float x, float y,float width, float height,QGraphicsItem * parent):
+    PObject(x,y,width,height,PObj::TYPE_OBJECT_ANPAR, parent)
+{
+
+    QVariant prop;
+
+    ObjectPropertys.push_back(PObjectProperty(QVariant ("Tag_AnPar"),"APTag"             ));	//тег
+    ObjectPropertys.push_back(PObjectProperty(QVariant (""),         "APUnit"           ));	//<Алг. имя абонента>
+    ObjectPropertys.push_back(PObjectProperty(QVariant ("Tag_prm"),  "DPTag"            ));	//Дискретный параметр, разрешающий изменение значения
+    ObjectPropertys.push_back(PObjectProperty(QVariant (""),         "DPUnit"           ));	//<Алг. имя абонента>
+    ObjectPropertys.push_back(PObjectProperty(QVariant (false),      "Name_IsIntegrated"));	//Наименование встроенное или нет (по умолчанию 0)
+    ObjectPropertys.push_back(PObjectProperty(QVariant (0),          "Name_Size"		));	//Размер области встроенного наименования (по умолчанию 0)
+
+    prop.setValue<QColor>(QColor(192,192,192));
+    ObjectPropertys.push_back(PObjectProperty(prop,                  "Name_BackColor"  	));	//Цвет фона встроенного наименования в графическом объекте аналогового параметра
+    prop.setValue<QColor>(QColor(0,0,0));
+    ObjectPropertys.push_back(PObjectProperty(prop,                  "Name_ForeColor"  	));	//Цвет текста наименования в графическом объекте аналогового параметра
+    prop.setValue<QFont>(QFont("Arial"));
+    ObjectPropertys.push_back(PObjectProperty(prop,                  "Name_Font"	 	));	// параметры шрифта
+    ObjectPropertys.push_back(PObjectProperty(QVariant (4),          "Name_Pos" 		));	//Положение наименования относительно поля значения: (по умолчанию 4)
+
+    ObjectPropertys.push_back(PObjectProperty(QVariant ("Ан. Пар "), "Name"				));	//Наименование аналогового объекта (строка подписи к объекту) (по умолчанию 4)
+    prop.setValue<QColor>(QColor(0,0,0));
+    ObjectPropertys.push_back(PObjectProperty(prop,                  "Val_BackColor"	));	//Цвет фона значения в графическом объекте аналогового параметра или –1, если прозрачный
+    prop.setValue<QColor>(QColor(0,255,0));
+    ObjectPropertys.push_back(PObjectProperty(prop,                  "Val_ForeColor"	));	//Цвет текста значения в графическом объекте аналогового параметра
+    prop.setValue<QFont>(QFont("Arial"));
+    ObjectPropertys.push_back(PObjectProperty(prop,                  "Val_Font"	 		));	//параметры шрифта
+    ObjectPropertys.push_back(PObjectProperty(QVariant (0),          "Val_Type"	 		));	//Тип выводимой информации (по умолчанию 0)
+
+
+}
+
+void PObjectAnPar::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    ListObjectPropertys &op =  ObjectPropertys;
+
+    painter->setPen(QPen(Qt::gray,1,Qt::SolidLine));
+    QColor BackColor = op.at(11).value.value<QColor>();
+    painter->setBrush( QBrush(BackColor, Qt::SolidPattern ));
+
+
+    painter->drawRect( QRectF(1, 1, _width - 2, _height - 2) );
+    QColor ForeColor =  op.at(12).value.value<QColor>();
+    painter->setPen(QPen(ForeColor));
+
+    QFont font = op.at(13).value.value<QFont>();
+    painter->setFont( font );
+
+    painter->drawText(QRectF(0, 0, _width, _height), Qt::AlignCenter , tr("99.99") ); //); op.at(13).value.toString() );
+
+
+    PObject::paint(painter, option, widget);
+};
+
+
+
+
+PObjectTaxt::PObjectTaxt(float x, float y, float width, float height, QGraphicsItem *parent)
+ :PObject(x,y,width,height,PObj::TYPE_OBJECT_TEXT,parent)
+{
+   QVariant prop;
+   ObjectPropertys.push_back(PObjectProperty(QVariant ("Text"),"Help"             ));
+
+}
+
+void PObjectTaxt::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    ListObjectPropertys &op =  ObjectPropertys;
+
+    painter->setPen(QPen(Qt::green,1,Qt::SolidLine));
+    painter->setBrush( QBrush(QColor(10,100,100), Qt::SolidPattern ));
+    painter->drawRect(QRectF(0, 0, _width, _height));
+    painter->setPen(QPen(Qt::red,1,Qt::SolidLine));
+    painter->drawText(QRectF(0, 0, _width, _height), Qt::AlignCenter , op.at(0).value.toString() ); //); op.at(13).value.toString() );
+
+    PObject::paint(painter, option, widget);
+}
+
+PObjectTaxtState::PObjectTaxtState(float x, float y, float width, float height, QGraphicsItem *parent)
+ :PObject(x,y,width,height,PObj::TYPE_OBJECT_TEXT_STATE,parent)
+{
+    QVariant prop;
+
+    ObjectPropertys.push_back(PObjectProperty(QVariant ("Tag_DPTag"),"DPTag"           ));	//тег
+    ObjectPropertys.push_back(PObjectProperty(QVariant (""),         "DPUnit"          ));	//<Алг. имя абонента>
+    ObjectPropertys.push_back(PObjectProperty(QVariant ("Text"),     "Text"            ));	// текст
+    prop.setValue<QFont>(QFont("Arial"));
+    ObjectPropertys.push_back(PObjectProperty(prop,                  "Font"	   ));          // параметры шрифта
+    prop.setValue<QColor>(QColor(192,192,192));
+    ObjectPropertys.push_back(PObjectProperty(prop,                  "BackColor"  	));	//Цвет фона
+    prop.setValue<QColor>(QColor(0,0,0));
+    ObjectPropertys.push_back(PObjectProperty(prop,                  "ForeColor"  	 )); //Цвет текста
+    ObjectPropertys.push_back(PObjectProperty(QVariant (false),      "IsTransparent" )); //флаг прозрачности                                                                                   ;//Флаг прозрачности фона
+    ObjectPropertys.push_back(PObjectProperty(QVariant (false),      "Is3D"          )); //Флаг объемности                                                                                   ;//Флаг прозрачности фона
+    ObjectPropertys.push_back(PObjectProperty(QVariant (0),          "Align_V"       ));  //Выравнивание по вертикали: 0 – по центру, 1 – сверху, 2 – снизу
+    ObjectPropertys.push_back(PObjectProperty(QVariant (0),          "Align_H"       ));  //Выравнивание по вертикали: 0 – по центру, 1 – сверху, 2 – снизу
+
+}
