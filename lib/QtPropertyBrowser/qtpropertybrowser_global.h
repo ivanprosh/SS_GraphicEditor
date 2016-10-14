@@ -1,0 +1,13 @@
+#ifndef QTPROPERTYBROWSER_GLOBAL
+#define QTPROPERTYBROWSER_GLOBAL
+
+#include <QtCore/qglobal.h>
+
+#ifdef QT_QTPROPERTYBROWSER_EXPORT
+#  define QT_EXPORT Q_DECL_EXPORT
+#else
+#  define QT_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // QTPROPERTYBROWSER_GLOBAL
+
