@@ -1235,12 +1235,13 @@ void MainWindow::valueChanged(QtProperty *property, const QVariant &value)
         }
     //свойства, зависящие от типа
     } else if(QObject *item = dynamic_cast<QObject*>(currentItem)) {
-            const QMetaObject *metaObject = currentItem->metaObject();
+            //const QMetaObject *metaObject = currentItem->metaObject();
 
             if (id == QLatin1String("brush")) {
                 QBrush brush(value.value<QColor>());
-                metaObject->invokeMethod(item, "setBrush", Qt::DirectConnection, Q_ARG(QBrush,brush));
-                /*
+				//metaObject->invokeMethod(item, "setBrush", Qt::DirectConnection, Q_ARG(QBrush,brush));
+                item->setProperty("brush",brush);
+				/*
                 if (currentItem->rtti() == QtCanvasItem::Rtti_Rectangle ||
                         currentItem->rtti() == QtCanvasItem::Rtti_Ellipse) {
                     QtCanvasPolygonalItem *i = (QtCanvasPolygonalItem *)currentItem;
