@@ -20,10 +20,5 @@ QT += widgets printsupport svg
 # All sources
 include($${PWD}/src/deployment.pri)
 
-# Input
-SOURCES +=
-
-HEADERS +=
-
 RESOURCES += \
     images.qrc

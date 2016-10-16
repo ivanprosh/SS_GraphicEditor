@@ -13,7 +13,8 @@ class QFile;
 class QGraphicsItem;
 class QGraphicsItemGroup;
 class QGraphicsScene;
-
+class QtVariantProperty;
+class QtProperty;
 
 class MainWindow : public QMainWindow
 {
@@ -49,6 +50,10 @@ private slots:
     void viewShowGrid(bool on);
     void selectionChanged();
     void loadFile();
+    //
+    void itemClicked(QGraphicsItem *item);
+    void itemMoved(QGraphicsItem *item);
+    void valueChanged(QtProperty *property, const QVariant &value);
 #ifdef SCREENSHOTS
     void takeScreenshot();
 #endif
@@ -83,8 +88,10 @@ private:
                           const QList<QPointF> &positions);
 #endif
     bool sceneHasItems() const;
-    void getSelectionProperties(bool *hasBrushProperty,
-                                bool *hasPenProperty) const;
+    void updateExpandState();
+    //void getSelectionProperties(bool *hasBrushProperty,
+    //                            bool *hasPenProperty) const;
+    void addProperty(QtVariantProperty *property, const QString &id);
 
     QAction *fileNewAction;
     QAction *fileOpenAction;
@@ -119,6 +126,15 @@ private:
     GraphicsView *view;
     QGraphicsItemGroup *gridGroup;
     QPoint previousPoint;
+    QGraphicsItem *currentItem;
+
+    // objects-properties framework
+    class QtVariantPropertyManager *variantManager;
+    class QtTreePropertyBrowser *propertyEditor;
+    QMap<QtProperty *, QString> propertyToId;
+    QMap<QString, QtVariantProperty *> idToProperty;
+    QMap<QString, bool> idToExpanded;
+
     int addOffset;
     int pasteOffset;
 #ifdef SCREENSHOTS
