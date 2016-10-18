@@ -11,14 +11,16 @@
     the GNU General Public License for more details.
 */
 
-#include "alt_key.hpp"
-#include "aqp.hpp"
+#include "aqp/alt_key.hpp"
+#include "aqp/aqp.hpp"
 #include "boxitem.hpp"
 #include "global.hpp"
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QKeyEvent>
-
+#ifdef QT_DEBUG
+#include <QDebug>
+#endif
 
 BoxItem::BoxItem(const QRect &rect_, QGraphicsScene *scene)
     : QObject(), QGraphicsRectItem(), m_resizing(false),
@@ -33,6 +35,8 @@ BoxItem::BoxItem(const QRect &rect_, QGraphicsScene *scene)
     setPos(rect_.center());
     setRect(QRectF(QPointF(-rect_.width() / 2.0,
                            -rect_.height() / 2.0), rect_.size()));
+    QGraphicsRectItem::setBrush(QBrush(Qt::SolidPattern));
+
     scene->clearSelection();
     scene->addItem(this);
     setSelected(true);

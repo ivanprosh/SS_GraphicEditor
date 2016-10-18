@@ -11,7 +11,7 @@
     the GNU General Public License for more details.
 */
 
-#include "aqp.hpp"
+#include "aqp/aqp.hpp"
 #include "global.hpp"
 #include "textitem.hpp"
 #include "textitemdialog.hpp"

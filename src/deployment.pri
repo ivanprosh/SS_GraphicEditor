@@ -45,7 +45,9 @@ HEADERS += \
     $$PWD/textitem.hpp \
     $$PWD/textitemdialog.hpp \
     $$PWD/mainwindow.hpp \
-    $$PWD/boxitem.hpp
+    $$PWD/boxitem.hpp \
+    $$PWD/graphicsview.hpp \
+    $$PWD/textedit.hpp
 
 SOURCES += \
     $$PWD/mainwindow.cpp \
@@ -59,4 +61,6 @@ SOURCES += \
     $$PWD/swatch.cpp \
     $$PWD/textitem.cpp \
     $$PWD/textitemdialog.cpp \
-    $$PWD/boxitem.cpp
+    $$PWD/boxitem.cpp \
+    $$PWD/textedit.cpp
+

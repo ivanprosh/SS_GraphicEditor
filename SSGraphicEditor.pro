@@ -21,4 +21,6 @@ QT += widgets printsupport svg
 include($${PWD}/src/deployment.pri)
 
 RESOURCES += \
-    images.qrc
+    images.qrc \
+    src/aqp/aqp.qrc
+

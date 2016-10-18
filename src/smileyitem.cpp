@@ -11,8 +11,8 @@
     the GNU General Public License for more details.
 */
 
-#include "alt_key.hpp"
-#include "aqp.hpp"
+#include "aqp/alt_key.hpp"
+#include "aqp/aqp.hpp"
 #include "global.hpp"
 #include "smileyitem.hpp"
 #include <QAction>

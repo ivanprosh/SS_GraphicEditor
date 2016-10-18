@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QPrinter>
+#include <QMap>
 
 //class BrushWidget;
 class GraphicsView;
@@ -24,7 +25,7 @@ public:
     explicit MainWindow(QWidget *parent=0);
     ~MainWindow() { delete printer; }
 
-    QSize sizeHint() const;
+    //QSize sizeHint() const;
 
 public slots:
     void setDirty(bool on=true);
@@ -51,7 +52,7 @@ private slots:
     void selectionChanged();
     void loadFile();
     //
-    void itemClicked(QGraphicsItem *item);
+    //void itemClicked(QGraphicsItem *item);
     void itemMoved(QGraphicsItem *item);
     void valueChanged(QtProperty *property, const QVariant &value);
 #ifdef SCREENSHOTS

@@ -11,7 +11,7 @@
     the GNU General Public License for more details.
 */
 
-#include "alt_key.hpp"
+#include "aqp/alt_key.hpp"
 #include "swatch.hpp"
 #include "textedit.hpp"
 #include "textitem.hpp"

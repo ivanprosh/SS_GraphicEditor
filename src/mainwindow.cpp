@@ -3,16 +3,16 @@
 #include "mainwindow.hpp"
 #include "qtvariantproperty.h"
 #include "qttreepropertybrowser.h"
-/*
-#include "boxitem.hpp"
-#include "brushwidget.hpp"
-#include "graphicsview.hpp"
-#include "penwidget.hpp"
-#include "smileyitem.hpp"
 #include "textitemdialog.hpp"
 #include "textitem.hpp"
-#include "transformwidget.hpp"
-*/
+#include "graphicsview.hpp"
+
+#include "boxitem.hpp"
+//#include "brushwidget.hpp"
+//#include "penwidget.hpp"
+#include "smileyitem.hpp"
+//#include "transformwidget.hpp"
+
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -99,7 +99,7 @@ QObject *qObjectFrom(QGraphicsItem *item)
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), gridGroup(0), addOffset(OffsetIncrement),
-      pasteOffset(OffsetIncrement), currentitem(0)
+      pasteOffset(OffsetIncrement), currentItem(0)
 {
     printer = new QPrinter(QPrinter::HighResolution);
 
@@ -121,7 +121,7 @@ MainWindow::MainWindow(QWidget *parent)
     }
 }
 
-
+/*
 QSize MainWindow::sizeHint() const
 {
     QSize size = printer->paperSize(QPrinter::Point).toSize() * 1.2;
@@ -129,7 +129,7 @@ QSize MainWindow::sizeHint() const
     return size.boundedTo(
             QApplication::desktop()->availableGeometry().size());
 }
-
+*/
 //
 void MainWindow::createSceneAndView()
 {
@@ -144,78 +144,78 @@ void MainWindow::createSceneAndView()
 //
 void MainWindow::createActions()
 {
-    fileNewAction = new QAction(QIcon(":/filenew.png"),
+    fileNewAction = new QAction(QIcon(":images/filenew.png"),
             tr("New..."), this);
     fileNewAction->setShortcuts(QKeySequence::New);
-    fileOpenAction = new QAction(QIcon(":/fileopen.png"),
+    fileOpenAction = new QAction(QIcon(":images/fileopen.png"),
             tr("Open..."), this);
     fileOpenAction->setShortcuts(QKeySequence::Open);
-    fileSaveAction = new QAction(QIcon(":/filesave.png"),
+    fileSaveAction = new QAction(QIcon(":images/filesave.png"),
             tr("Save"), this);
     fileSaveAction->setShortcuts(QKeySequence::Save);
-    fileSaveAsAction = new QAction(QIcon(":/filesave.png"),
+    fileSaveAsAction = new QAction(QIcon(":images/filesave.png"),
             tr("Save As..."), this);
 
     fileSaveAsAction->setShortcuts(QKeySequence::SaveAs);
 
-    fileExportAction = new QAction(QIcon(":/fileexport.png"),
+    fileExportAction = new QAction(QIcon(":images/fileexport.png"),
             tr("Export..."), this);
-    filePrintAction = new QAction(QIcon(":/fileprint.png"),
+    filePrintAction = new QAction(QIcon(":images/fileprint.png"),
             tr("Print..."), this);
-    fileQuitAction = new QAction(QIcon(":/filequit.png"),
+    fileQuitAction = new QAction(QIcon(":images/filequit.png"),
             tr("Quit"), this);
 
     fileQuitAction->setShortcuts(QKeySequence::Quit);
 
     editSelectedItemAction = new QAction(
-            QIcon(":/editselecteditem.png"),
+            QIcon(":images/editselecteditem.png"),
             tr("Edit Selected Item..."), this);
-    editAddTextAction = new QAction(QIcon(":/editaddtext.png"),
+    editAddTextAction = new QAction(QIcon(":images/editaddtext.png"),
             tr("Add Text..."), this);
     editAddTextAction->setData(TextItemType);
-    editAddBoxAction = new QAction(QIcon(":/editaddbox.png"),
+    editAddBoxAction = new QAction(QIcon(":images/editaddbox.png"),
             tr("Add Box"), this);
     editAddBoxAction->setData(BoxItemType);
-    editAddSmileyAction = new QAction(QIcon(":/editaddsmiley.png"),
+    editAddSmileyAction = new QAction(QIcon(":images/editaddsmiley.png"),
             tr("Add Smiley"), this);
     editAddSmileyAction->setData(SmileyItemType);
-    editCopyAction = new QAction(QIcon(":/editcopy.png"), tr("&Copy"),
+    editCopyAction = new QAction(QIcon(":images/editcopy.png"), tr("&Copy"),
                                  this);
     editCopyAction->setShortcuts(QKeySequence::Copy);
-    editCutAction = new QAction(QIcon(":/editcut.png"), tr("Cu&t"),
+    editCutAction = new QAction(QIcon(":images/editcut.png"), tr("Cu&t"),
                                 this);
     editCutAction->setShortcuts(QList<QKeySequence>()
             << QKeySequence::Cut << Qt::Key_Delete);
-    editPasteAction = new QAction(QIcon(":/editpaste.png"),
+    editPasteAction = new QAction(QIcon(":images/editpaste.png"),
                                   tr("&Paste"), this);
     editPasteAction->setShortcuts(QKeySequence::Paste);
 
-    editAlignmentAction = new QAction(QIcon(":/align-left.png"),
+    editAlignmentAction = new QAction(QIcon(":images/align-left.png"),
                                       tr("Alignment"), this);
     editAlignmentAction->setData(Qt::AlignLeft);
-    editAlignLeftAction = new QAction(QIcon(":/align-left.png"),
+    editAlignLeftAction = new QAction(QIcon(":images/align-left.png"),
                                       tr("Left"), this);
     editAlignLeftAction->setData(Qt::AlignLeft);
-    editAlignRightAction = new QAction(QIcon(":/align-right.png"),
+    editAlignRightAction = new QAction(QIcon(":images/align-right.png"),
                                        tr("Right"), this);
     editAlignRightAction->setData(Qt::AlignRight);
-    editAlignTopAction = new QAction(QIcon(":/align-top.png"),
+    editAlignTopAction = new QAction(QIcon(":images/align-top.png"),
                                      tr("Top"), this);
     editAlignTopAction->setData(Qt::AlignTop);
-    editAlignBottomAction = new QAction(QIcon(":/align-bottom.png"),
+    editAlignBottomAction = new QAction(QIcon(":images/align-bottom.png"),
                                         tr("Bottom"), this);
     editAlignBottomAction->setData(Qt::AlignBottom);
     editClearTransformsAction = new
-            QAction(QIcon(":/editcleartransforms.png"),
+            QAction(QIcon(":images/editcleartransforms.png"),
                     tr("Clear Transformations"), this);
 
-    viewZoomInAction = new QAction(QIcon(":/zoom-in.png"),
+    viewZoomInAction = new QAction(QIcon(":images/zoom-in.png"),
                                    tr("Zoom In"), this);
     viewZoomInAction->setShortcut(tr("+"));
-    viewZoomOutAction = new QAction(QIcon(":/zoom-out.png"),
+    viewZoomOutAction = new QAction(QIcon(":images/zoom-out.png"),
                                     tr("Zoom Out"), this);
     viewZoomOutAction->setShortcut(tr("-"));
-    viewShowGridAction = new QAction(QIcon(":/showgrid.png"),
+    viewShowGridAction = new QAction(QIcon(":images/showgrid.png"),
             tr("Show Grid"), this);
     viewShowGridAction->setCheckable(true);
     viewShowGridAction->setChecked(true);
@@ -508,7 +508,7 @@ void MainWindow::loadFile()
     QDataStream in;
     if (!openPageDesignerFile(&file, in))
         return;
-    in.setVersion(QDataStream::Qt_5_6);
+    in.setVersion(QDataStream::Qt_5_3);
     clear();
     readItems(in);
     statusBar()->showMessage(tr("Loaded %1").arg(windowFilePath()),
@@ -618,7 +618,7 @@ bool MainWindow::fileSave()
         return false;
     QDataStream out(&file);
     out << MagicNumber << VersionNumber;
-    out.setVersion(QDataStream::Qt_5_6);
+    out.setVersion(QDataStream::Qt_5_3);
     writeItems(out, scene->items());
     file.close();
     setDirty(false);
@@ -1082,6 +1082,7 @@ void MainWindow::populateCoordinates(const Qt::Alignment &alignment,
 
 void MainWindow::editClearTransforms()
 {
+    /*
     QList<QGraphicsItem*> items = scene->selectedItems();
     Q_ASSERT(!items.isEmpty());
     QListIterator<QGraphicsItem*> i(items);
@@ -1101,6 +1102,7 @@ void MainWindow::editClearTransforms()
     transformWidget->setAngle(0.0);
     transformWidget->setShear(0.0, 0.0);
     setDirty(true);
+    */
 }
 
 void MainWindow::addProperty(QtVariantProperty *property, const QString &id)
@@ -1166,7 +1168,7 @@ void MainWindow::selectionChanged()
         property = variantManager->addProperty(QVariant::Double, tr("Position Z"));
         property->setAttribute(QLatin1String("minimum"), 0);
         property->setAttribute(QLatin1String("maximum"), 256);
-        property->setValue(currentItem->z());
+        property->setValue(currentItem->zValue());
         addProperty(property, QLatin1String("zpos"));
 
         //специализированные свойства
@@ -1183,7 +1185,7 @@ void MainWindow::selectionChanged()
                 //        item->property("brush").value<QBrush>());
             if (item->property("pen").isValid())
                 property = variantManager->addProperty(QVariant::Color, tr("Pen Color"));
-                property->setValue(i->pen().color());
+                property->setValue(item->property("pen").value<QPen>().color());
                 addProperty(property, QLatin1String("pen"));
                 //penWidget->setPen(
                 //        item->property("pen").value<QPen>());
@@ -1222,25 +1224,30 @@ void MainWindow::valueChanged(QtProperty *property, const QVariant &value)
     } else if (id == QLatin1String("ypos")) {
         currentItem->setY(value.toDouble());
     } else if (id == QLatin1String("zpos")) {
-        currentItem->setZ(value.toDouble());
+        currentItem->setZValue(value.toDouble());
     } else if (id == QLatin1String("text")) {
+        /*
         if (currentItem->rtti() == QtCanvasItem::Rtti_Text) {
             QtCanvasText *i = (QtCanvasText *)currentItem;
             i->setText(value.value<QString>());
         }
+        */
     } else if (id == QLatin1String("color")) {
+        /*
         if (currentItem->rtti() == QtCanvasItem::Rtti_Text) {
             QtCanvasText *i = (QtCanvasText *)currentItem;
             i->setColor(value.value<QColor>());
         }
+        */
     //свойства, зависящие от типа
     } else if(QObject *item = dynamic_cast<QObject*>(currentItem)) {
             //const QMetaObject *metaObject = currentItem->metaObject();
 
             if (id == QLatin1String("brush")) {
-                QBrush brush(value.value<QColor>());
-				//metaObject->invokeMethod(item, "setBrush", Qt::DirectConnection, Q_ARG(QBrush,brush));
+                QBrush brush = item->property("brush").value<QBrush>();
+                brush.setColor(value.value<QColor>());
                 item->setProperty("brush",brush);
+                //metaObject->invokeMethod(item, "setBrush", Qt::DirectConnection, Q_ARG(QBrush,brush));
 				/*
                 if (currentItem->rtti() == QtCanvasItem::Rtti_Rectangle ||
                         currentItem->rtti() == QtCanvasItem::Rtti_Ellipse) {
@@ -1251,6 +1258,10 @@ void MainWindow::valueChanged(QtProperty *property, const QVariant &value)
                 }
                 */
             } else if (id == QLatin1String("pen")) {
+                QPen pen = item->property("pen").value<QPen>();
+                pen.setColor(value.value<QColor>());
+                item->setProperty("pen",pen);
+                /*
                 if (currentItem->rtti() == QtCanvasItem::Rtti_Rectangle ||
                         currentItem->rtti() == QtCanvasItem::Rtti_Line) {
                     QtCanvasPolygonalItem *i = (QtCanvasPolygonalItem *)currentItem;
@@ -1258,30 +1269,10 @@ void MainWindow::valueChanged(QtProperty *property, const QVariant &value)
                     p.setColor(value.value<QColor>());
                     i->setPen(p);
                 }
-            } else if (id == QLatin1String("font")) {
-                if (currentItem->rtti() == QtCanvasItem::Rtti_Text) {
-                    QtCanvasText *i = (QtCanvasText *)currentItem;
-                    i->setFont(value.value<QFont>());
-                }
-            } else if (id == QLatin1String("endpoint")) {
-                if (currentItem->rtti() == QtCanvasItem::Rtti_Line) {
-                    QtCanvasLine *i = (QtCanvasLine *)currentItem;
-                    QPoint p = value.value<QPoint>();
-                    i->setPoints(i->startPoint().x(), i->startPoint().y(), p.x(), p.y());
-                }
-            } else if (id == QLatin1String("size")) {
-                if (currentItem->rtti() == QtCanvasItem::Rtti_Rectangle) {
-                    QtCanvasRectangle *i = (QtCanvasRectangle *)currentItem;
-                    QSize s = value.value<QSize>();
-                    i->setSize(s.width(), s.height());
-                } else if (currentItem->rtti() == QtCanvasItem::Rtti_Ellipse) {
-                    QtCanvasEllipse *i = (QtCanvasEllipse *)currentItem;
-                    QSize s = value.value<QSize>();
-                    i->setSize(s.width(), s.height());
-                }
+                */
             }
     }
-    canvas->update();
+    updateUi();
 }
 /*
 void MainWindow::itemClicked(QGraphicsItem *item)
@@ -1382,6 +1373,6 @@ void MainWindow::itemMoved(QGraphicsItem *item)
 
     variantManager->setValue(idToProperty[QLatin1String("xpos")], item->x());
     variantManager->setValue(idToProperty[QLatin1String("ypos")], item->y());
-    variantManager->setValue(idToProperty[QLatin1String("zpos")], item->z());
+    variantManager->setValue(idToProperty[QLatin1String("zpos")], item->zValue());
 }
 
