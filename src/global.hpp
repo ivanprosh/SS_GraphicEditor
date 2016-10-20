@@ -15,7 +15,10 @@
 
 #include <QGraphicsItem>
 
-
 bool isDirtyChange(QGraphicsItem::GraphicsItemChange change);
+bool isPowerOf2(int value);
+int flagToInt(const QMetaEnum &metaEnum, int flagValue);
+int enumToInt(const QMetaEnum &metaEnum, int enumValue);
+bool isSubValue(int value, int subValue);
 
 #endif // GLOBAL_HPP

@@ -12,7 +12,7 @@
 */
 
 #include "global.hpp"
-
+#include <QMetaEnum>
 
 bool isDirtyChange(QGraphicsItem::GraphicsItemChange change)
 {
@@ -20,6 +20,63 @@ bool isDirtyChange(QGraphicsItem::GraphicsItemChange change)
             change == QGraphicsItem::ItemPositionHasChanged ||
             change == QGraphicsItem::ItemTransformChange ||
             change == QGraphicsItem::ItemTransformHasChanged);
+
+}
+int enumToInt(const QMetaEnum &metaEnum, int enumValue)
+{
+    QMap<int, int> valueMap; // dont show multiple enum values which have the same values
+    int pos = 0;
+    for (int i = 0; i < metaEnum.keyCount(); i++) {
+        int value = metaEnum.value(i);
+        if (!valueMap.contains(value)) {
+            if (value == enumValue)
+                return pos;
+            valueMap[value] = pos++;
+        }
+    }
+    return -1;
+}
+int flagToInt(const QMetaEnum &metaEnum, int flagValue)
+{
+    if (!flagValue)
+        return 0;
+    int intValue = 0;
+    QMap<int, int> valueMap; // dont show multiple enum values which have the same values
+    int pos = 0;
+    for (int i = 0; i < metaEnum.keyCount(); i++) {
+        int value = metaEnum.value(i);
+        if (!valueMap.contains(value) && isPowerOf2(value)) {
+            if (isSubValue(flagValue, value))
+                intValue |= (1 << pos);
+            valueMap[value] = pos++;
+        }
+    }
+    return intValue;
+}
+bool isPowerOf2(int value)
+{
+    while (value) {
+        if (value & 1) {
+            return value == 1;
+        }
+        value = value >> 1;
+    }
+    return false;
+}
+bool isSubValue(int value, int subValue)
+{
+    if (value == subValue)
+        return true;
+    int i = 0;
+    while (subValue) {
+        if (!(value & (1 << i))) {
+            if (subValue & 1)
+                return false;
+        }
+        i++;
+        subValue = subValue >> 1;
+    }
+    return true;
 }
 // Add QGraphicsItem::ItemZValueChange and
 // QGraphicsItem::ItemZValueHasChanged if support for changing z values

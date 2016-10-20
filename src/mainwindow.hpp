@@ -16,6 +16,7 @@ class QGraphicsItemGroup;
 class QGraphicsScene;
 class QtVariantProperty;
 class QtProperty;
+class TPropManager;
 
 class MainWindow : public QMainWindow
 {
@@ -31,8 +32,8 @@ public slots:
     void setDirty(bool on=true);
 
 protected:
-    void closeEvent(QCloseEvent *event);
-
+    void closeEvent(QCloseEvent *event);    
+    //void addClassProperties(const QObject *object);
 private slots:
     void fileNew();
     void fileOpen();
@@ -92,7 +93,7 @@ private:
     void updateExpandState();
     //void getSelectionProperties(bool *hasBrushProperty,
     //                            bool *hasPenProperty) const;
-    void addProperty(QtVariantProperty *property, const QString &id);
+    //void addProperty(QtVariantProperty *property, const QString &id);
 
     QAction *fileNewAction;
     QAction *fileOpenAction;
@@ -118,10 +119,6 @@ private:
     QAction *viewZoomOutAction;
     QAction *viewShowGridAction;
 
-    //TransformWidget *transformWidget;
-    //BrushWidget *brushWidget;
-    //PenWidget *penWidget;
-
     QPrinter *printer;
     QGraphicsScene *scene;
     GraphicsView *view;
@@ -130,17 +127,26 @@ private:
     QGraphicsItem *currentItem;
 
     // objects-properties framework
-    class QtVariantPropertyManager *variantManager;
+    //class QtVariantPropertyManager *variantManager;
+    //class QtVariantPropertyManager *m_readOnlyManager;
+    class TPropManager *variantManager;
+    class TPropManager *m_readOnlyManager;
+
     class QtTreePropertyBrowser *propertyEditor;
+
     QMap<QtProperty *, QString> propertyToId;
     QMap<QString, QtVariantProperty *> idToProperty;
     QMap<QString, bool> idToExpanded;
+    //QMap<const QMetaObject *, QtProperty *> m_classToProperty;
+    //QMap<QtProperty *, const QMetaObject *> m_propertyToClass;
+    //QMap<const QMetaObject *, QMap<int, QtVariantProperty *> > m_classToIndexToProperty;
 
     int addOffset;
     int pasteOffset;
 #ifdef SCREENSHOTS
     QList<QPixmap> screenshots;
 #endif
+
 };
 
 #endif // MAINWINDOW_H

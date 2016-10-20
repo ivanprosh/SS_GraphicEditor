@@ -38,7 +38,6 @@ HEADERS += \
     $$PWD/aqp/alt_key.hpp \
     $$PWD/aqp/aqp.hpp \
     $$PWD/aqp/kuhn_munkres.hpp \
-    $$PWD/global.hpp \
     $$PWD/itemtypes.hpp \
     $$PWD/smileyitem.hpp \
     $$PWD/swatch.hpp \
@@ -47,20 +46,22 @@ HEADERS += \
     $$PWD/mainwindow.hpp \
     $$PWD/boxitem.hpp \
     $$PWD/graphicsview.hpp \
-    $$PWD/textedit.hpp
+    $$PWD/textedit.hpp \
+    $$PWD/global.hpp \
+    $$PWD/propmanager.h
 
 SOURCES += \
-    $$PWD/mainwindow.cpp \
+    $$PWD/main.cpp \
     $$PWD/aqp/alt_key.cpp \
     $$PWD/aqp/aqp.cpp \
     $$PWD/aqp/kuhn_munkres.cpp \
-    $$PWD/aqp/main.cpp \
-    $$PWD/global.cpp \
-    $$PWD/main.cpp \
-    $$PWD/smileyitem.cpp \
     $$PWD/swatch.cpp \
+    $$PWD/textedit.cpp \
     $$PWD/textitem.cpp \
     $$PWD/textitemdialog.cpp \
     $$PWD/boxitem.cpp \
-    $$PWD/textedit.cpp
+    $$PWD/mainwindow.cpp \
+    $$PWD/smileyitem.cpp \
+    $$PWD/global.cpp \
+    $$PWD/propmanager.cpp
 

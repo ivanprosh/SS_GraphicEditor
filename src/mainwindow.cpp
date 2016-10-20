@@ -6,7 +6,7 @@
 #include "textitemdialog.hpp"
 #include "textitem.hpp"
 #include "graphicsview.hpp"
-
+#include "propmanager.h"
 #include "boxitem.hpp"
 //#include "brushwidget.hpp"
 //#include "penwidget.hpp"
@@ -44,7 +44,7 @@
 #endif
 #include <cmath>
 #include <limits>
-
+#include <QMetaProperty>
 
 namespace {
 
@@ -310,18 +310,21 @@ void MainWindow::createDockWidgets()
     penDockWidget->setWidget(penWidget);
     addDockWidget(Qt::RightDockWidgetArea, penDockWidget);
     */
-    variantManager = new QtVariantPropertyManager(this);
+
+    QDockWidget *dock = new QDockWidget(this);
+    addDockWidget(Qt::RightDockWidgetArea, dock);
+
+    propertyEditor = new QtTreePropertyBrowser(dock);
+    variantManager = new TPropManager(this,propertyEditor);
+    //m_readOnlyManager = new TPropManager(this,);
 
     connect(variantManager, SIGNAL(valueChanged(QtProperty *, const QVariant &)),
                 this, SLOT(valueChanged(QtProperty *, const QVariant &)));
 
     QtVariantEditorFactory *variantFactory = new QtVariantEditorFactory(this);
 
-    QDockWidget *dock = new QDockWidget(this);
-    addDockWidget(Qt::RightDockWidgetArea, dock);
-
-    propertyEditor = new QtTreePropertyBrowser(dock);
-    propertyEditor->setFactoryForManager(variantManager, variantFactory);
+    //propertyEditor = new QtAbstractPropertyBrowser(dock);
+    propertyEditor->setFactoryForManager((QtVariantPropertyManager *)variantManager, variantFactory);
     dock->setWidget(propertyEditor);
 }
 
@@ -1105,40 +1108,11 @@ void MainWindow::editClearTransforms()
     */
 }
 
-void MainWindow::addProperty(QtVariantProperty *property, const QString &id)
-{
-    propertyToId[property] = id;
-    idToProperty[id] = property;
-    QtBrowserItem *item = propertyEditor->addProperty(property);
-    if (idToExpanded.contains(id))
-        propertyEditor->setExpanded(item, idToExpanded[id]);
-}
-
 void MainWindow::selectionChanged()
 {
     QList<QGraphicsItem*> items = scene->selectedItems();
     if (items.count() == 1) {
-/*
-#ifdef NO_DYNAMIC_CAST
-        if (QObject *item = qObjectFrom(items.at(0))) {
-#else
-        if (QObject *item = dynamic_cast<QObject*>(items.at(0))) {
-#endif
-            if (item->property("brush").isValid())
-                brushWidget->setBrush(
-                        item->property("brush").value<QBrush>());
-            if (item->property("pen").isValid())
-                penWidget->setPen(
-                        item->property("pen").value<QPen>());
-            if (item->property("angle").isValid()) {
-                transformWidget->setAngle(
-                        item->property("angle").toDouble());
-                transformWidget->setShear(
-                        item->property("shearHorizontal").toDouble(),
-                        item->property("shearVertical").toDouble());
-            }
-        }
-*/
+
         updateExpandState();
 
         QMap<QtProperty *, QString>::ConstIterator itProp = propertyToId.constBegin();
@@ -1153,6 +1127,7 @@ void MainWindow::selectionChanged()
         QtVariantProperty *property;
 
         //общие свойства
+        /*
         property = variantManager->addProperty(QVariant::Double, tr("Position X"));
         property->setAttribute(QLatin1String("minimum"), 0);
         property->setAttribute(QLatin1String("maximum"), scene->width());
@@ -1170,8 +1145,11 @@ void MainWindow::selectionChanged()
         property->setAttribute(QLatin1String("maximum"), 256);
         property->setValue(currentItem->zValue());
         addProperty(property, QLatin1String("zpos"));
-
+        */
         //специализированные свойства
+        if (QObject *item = dynamic_cast<QObject*>(items.at(0)))
+            variantManager->addClassProperties(item,item->metaObject());
+        /*
 #ifdef NO_DYNAMIC_CAST
         if (QObject *item = qObjectFrom(items.at(0))) {
 #else
@@ -1181,25 +1159,22 @@ void MainWindow::selectionChanged()
                 property = variantManager->addProperty(QVariant::Color, tr("Brush Color"));
                 property->setValue(item->property("brush").value<QBrush>().color());
                 addProperty(property, QLatin1String("brush"));
-                //brushWidget->setBrush(
-                //        item->property("brush").value<QBrush>());
+
             if (item->property("pen").isValid())
                 property = variantManager->addProperty(QVariant::Color, tr("Pen Color"));
                 property->setValue(item->property("pen").value<QPen>().color());
                 addProperty(property, QLatin1String("pen"));
-                //penWidget->setPen(
-                //        item->property("pen").value<QPen>());
+
             if (item->property("angle").isValid()) {
-                //transformWidget->setAngle(
-                //        item->property("angle").toDouble());
-                //transformWidget->setShear(
-                //        item->property("shearHorizontal").toDouble(),
-                //        item->property("shearVertical").toDouble());
+
             }
+
         }
+        */
     }
     updateUi();
 }
+
 void MainWindow::updateExpandState()
 {
     QList<QtBrowserItem *> list = propertyEditor->topLevelItems();
