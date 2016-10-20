@@ -17,6 +17,7 @@ class TPropManager : public QtVariantPropertyManager
     Q_OBJECT
 
 private:
+    QObject *object;
     QStringList ignoreClassNames;
     QtAbstractPropertyBrowser *browser;
 
@@ -31,6 +32,12 @@ private:
     QMap<const QtProperty *, QtProperty *> StyleToProperty;
     QMap<const QMetaObject *, QtProperty *> m_classToProperty;
     QMap<QtProperty *, const QMetaObject *> m_propertyToClass;
+    QMap<QtProperty *, QString> propertyToId;
+    QMap<QString, QtVariantProperty *> idToProperty;
+    QMap<QString, bool> idToExpanded;
+    QMap<QtProperty *, int> m_propertyToIndex;
+    QMap<const QMetaObject *, QMap<int, QtVariantProperty *> > m_classToIndexToProperty;
+    void updateExpandState();
 private slots:
     void slotValueChanged(QtProperty *property, const QVariant &value);
     void slotPropertyDestroyed(QtProperty *property);
@@ -46,10 +53,12 @@ public:
     virtual bool isPropertyTypeSupported(int propertyType) const;
 
     QString valueText(const QtProperty *property) const;
-    void addClassProperties(const QObject* object,const QMetaObject* metaObject);
+    void addClassProperties(const QMetaObject* metaObject);
     //friend class QtTreePropertyBrowser;
+    void updateClassProperties(const QMetaObject *metaObject, bool recursive);
 public slots:
     virtual void setValue(QtProperty *property, const QVariant &val);
+    void itemChanged(QObject* curobject);
 };
 
 

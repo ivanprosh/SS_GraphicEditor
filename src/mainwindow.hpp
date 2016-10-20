@@ -90,7 +90,7 @@ private:
                           const QList<QPointF> &positions);
 #endif
     bool sceneHasItems() const;
-    void updateExpandState();
+    //void updateExpandState();
     //void getSelectionProperties(bool *hasBrushProperty,
     //                            bool *hasPenProperty) const;
     //void addProperty(QtVariantProperty *property, const QString &id);
@@ -130,19 +130,18 @@ private:
     //class QtVariantPropertyManager *variantManager;
     //class QtVariantPropertyManager *m_readOnlyManager;
     class TPropManager *variantManager;
-    class TPropManager *m_readOnlyManager;
+    //class TPropManager *m_readOnlyManager;
 
     class QtTreePropertyBrowser *propertyEditor;
 
-    QMap<QtProperty *, QString> propertyToId;
-    QMap<QString, QtVariantProperty *> idToProperty;
-    QMap<QString, bool> idToExpanded;
     //QMap<const QMetaObject *, QtProperty *> m_classToProperty;
     //QMap<QtProperty *, const QMetaObject *> m_propertyToClass;
     //QMap<const QMetaObject *, QMap<int, QtVariantProperty *> > m_classToIndexToProperty;
 
     int addOffset;
     int pasteOffset;
+signals:
+    void itemChanged(QObject* object);
 #ifdef SCREENSHOTS
     QList<QPixmap> screenshots;
 #endif

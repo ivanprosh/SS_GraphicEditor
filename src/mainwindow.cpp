@@ -1,8 +1,9 @@
+#include "qtvariantproperty.h"
+#include "qttreepropertybrowser.h"
+
 #include "aqp/alt_key.hpp"
 #include "aqp/aqp.hpp"
 #include "mainwindow.hpp"
-#include "qtvariantproperty.h"
-#include "qttreepropertybrowser.h"
 #include "textitemdialog.hpp"
 #include "textitem.hpp"
 #include "graphicsview.hpp"
@@ -381,7 +382,8 @@ void MainWindow::createConnections()
             this, SLOT(itemClicked(QGraphicsItem *)));
     connect(view, SIGNAL(itemMoved(QGraphicsItem *)),
             this, SLOT(itemMoved(QGraphicsItem *)));
-
+    connect(this, SIGNAL(itemChanged(QObject*)),
+            variantManager, SLOT(itemChanged(QObject*)));
 }
 
 
@@ -410,14 +412,6 @@ void MainWindow::updateUi()
              mimeData->hasText()));
     editAlignmentAction->setEnabled(selected >= 2);
     editClearTransformsAction->setEnabled(selected >= 1);
-    /*
-    transformWidget->setEnabled(selected >= 1);
-    bool hasBrushProperty;
-    bool hasPenProperty;
-    getSelectionProperties(&hasBrushProperty, &hasPenProperty);
-    brushWidget->setEnabled(hasBrushProperty);
-    penWidget->setEnabled(hasPenProperty);
-    */
 }
 
 
@@ -1113,18 +1107,12 @@ void MainWindow::selectionChanged()
     QList<QGraphicsItem*> items = scene->selectedItems();
     if (items.count() == 1) {
 
-        updateExpandState();
-
-        QMap<QtProperty *, QString>::ConstIterator itProp = propertyToId.constBegin();
-        while (itProp != propertyToId.constEnd()) {
-            delete itProp.key();
-            itProp++;
+        if (QObject *item = dynamic_cast<QObject*>(items.at(0))){
+            currentItem = items.at(0);
+            //variantManager->addClassProperties(item,item->metaObject());
+            emit itemChanged(item);
         }
-        propertyToId.clear();
-        idToProperty.clear();
 
-        currentItem = items.at(0);
-        QtVariantProperty *property;
 
         //общие свойства
         /*
@@ -1147,8 +1135,7 @@ void MainWindow::selectionChanged()
         addProperty(property, QLatin1String("zpos"));
         */
         //специализированные свойства
-        if (QObject *item = dynamic_cast<QObject*>(items.at(0)))
-            variantManager->addClassProperties(item,item->metaObject());
+
         /*
 #ifdef NO_DYNAMIC_CAST
         if (QObject *item = qObjectFrom(items.at(0))) {
@@ -1175,24 +1162,35 @@ void MainWindow::selectionChanged()
     updateUi();
 }
 
-void MainWindow::updateExpandState()
-{
-    QList<QtBrowserItem *> list = propertyEditor->topLevelItems();
-    QListIterator<QtBrowserItem *> it(list);
-    while (it.hasNext()) {
-        QtBrowserItem *item = it.next();
-        QtProperty *prop = item->property();
-        idToExpanded[propertyToId[prop]] = propertyEditor->isExpanded(item);
-    }
-}
 void MainWindow::valueChanged(QtProperty *property, const QVariant &value)
 {
-    if (!propertyToId.contains(property))
-        return;
+    //if (!propertyToId.contains(property))
+    //    return;
 
     if (!currentItem)
         return;
+    /*
+    if (!propertyEditor->m_propertyToIndex.contains(property))
+        return;
 
+    if(QObject *item = dynamic_cast<QObject*>(currentItem)){
+        int idx = propertyEditor->m_propertyToIndex.value(property);
+
+        const QMetaObject *metaObject = item->metaObject();
+        QMetaProperty metaProperty = item->property(idx);
+        if (metaProperty.isEnumType()) {
+            if (metaProperty.isFlagType())
+                metaProperty.write(item, intToFlag(metaProperty.enumerator(), value.toInt()));
+            else
+                metaProperty.write(item, intToEnum(metaProperty.enumerator(), value.toInt()));
+        } else {
+            metaProperty.write(item, value);
+        }
+
+        propertyEditor->updateClassProperties(item,metaObject, true);
+    }
+    */
+    /*
     QString id = propertyToId[property];
     if (id == QLatin1String("xpos")) {
         currentItem->setX(value.toDouble());
@@ -1201,52 +1199,23 @@ void MainWindow::valueChanged(QtProperty *property, const QVariant &value)
     } else if (id == QLatin1String("zpos")) {
         currentItem->setZValue(value.toDouble());
     } else if (id == QLatin1String("text")) {
-        /*
-        if (currentItem->rtti() == QtCanvasItem::Rtti_Text) {
-            QtCanvasText *i = (QtCanvasText *)currentItem;
-            i->setText(value.value<QString>());
-        }
-        */
-    } else if (id == QLatin1String("color")) {
-        /*
-        if (currentItem->rtti() == QtCanvasItem::Rtti_Text) {
-            QtCanvasText *i = (QtCanvasText *)currentItem;
-            i->setColor(value.value<QColor>());
-        }
-        */
+    } else if (id == QLatin1String("color")) {        
     //свойства, зависящие от типа
     } else if(QObject *item = dynamic_cast<QObject*>(currentItem)) {
-            //const QMetaObject *metaObject = currentItem->metaObject();
 
             if (id == QLatin1String("brush")) {
                 QBrush brush = item->property("brush").value<QBrush>();
                 brush.setColor(value.value<QColor>());
                 item->setProperty("brush",brush);
                 //metaObject->invokeMethod(item, "setBrush", Qt::DirectConnection, Q_ARG(QBrush,brush));
-				/*
-                if (currentItem->rtti() == QtCanvasItem::Rtti_Rectangle ||
-                        currentItem->rtti() == QtCanvasItem::Rtti_Ellipse) {
-                    QtCanvasPolygonalItem *i = (QtCanvasPolygonalItem *)currentItem;
-                    QBrush b = i->brush();
-                    b.setColor(value.value<QColor>());
-                    i->setBrush(b);
-                }
-                */
+
             } else if (id == QLatin1String("pen")) {
                 QPen pen = item->property("pen").value<QPen>();
                 pen.setColor(value.value<QColor>());
                 item->setProperty("pen",pen);
-                /*
-                if (currentItem->rtti() == QtCanvasItem::Rtti_Rectangle ||
-                        currentItem->rtti() == QtCanvasItem::Rtti_Line) {
-                    QtCanvasPolygonalItem *i = (QtCanvasPolygonalItem *)currentItem;
-                    QPen p = i->pen();
-                    p.setColor(value.value<QColor>());
-                    i->setPen(p);
-                }
-                */
             }
     }
+    */
     updateUi();
 }
 /*
@@ -1345,9 +1314,10 @@ void MainWindow::itemMoved(QGraphicsItem *item)
 {
     if (item != currentItem)
         return;
-
+    /*
     variantManager->setValue(idToProperty[QLatin1String("xpos")], item->x());
     variantManager->setValue(idToProperty[QLatin1String("ypos")], item->y());
     variantManager->setValue(idToProperty[QLatin1String("zpos")], item->zValue());
+    */
 }
 

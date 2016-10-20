@@ -78,6 +78,45 @@ bool isSubValue(int value, int subValue)
     }
     return true;
 }
+int intToEnum(const QMetaEnum &metaEnum, int intValue)
+{
+    QMap<int, bool> valueMap; // dont show multiple enum values which have the same values
+    QList<int> values;
+    for (int i = 0; i < metaEnum.keyCount(); i++) {
+        int value = metaEnum.value(i);
+        if (!valueMap.contains(value)) {
+            valueMap[value] = true;
+            values.append(value);
+        }
+    }
+    if (intValue >= values.count())
+        return -1;
+    return values.at(intValue);
+}
+int intToFlag(const QMetaEnum &metaEnum, int intValue)
+{
+    QMap<int, bool> valueMap; // dont show multiple enum values which have the same values
+    QList<int> values;
+    for (int i = 0; i < metaEnum.keyCount(); i++) {
+        int value = metaEnum.value(i);
+        if (!valueMap.contains(value) && isPowerOf2(value)) {
+            valueMap[value] = true;
+            values.append(value);
+        }
+    }
+    int flagValue = 0;
+    int temp = intValue;
+    int i = 0;
+    while (temp) {
+        if (i >= values.count())
+            return -1;
+        if (temp & 1)
+            flagValue |= values.at(i);
+        i++;
+        temp = temp >> 1;
+    }
+    return flagValue;
+}
 // Add QGraphicsItem::ItemZValueChange and
 // QGraphicsItem::ItemZValueHasChanged if support for changing z values
 // is added.

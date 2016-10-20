@@ -1,5 +1,7 @@
 #include "propmanager.h"
 #include "global.hpp"
+#include "qtvariantproperty.h"
+#include "qttreepropertybrowser.h"
 #include <QMetaProperty>
 #include <QStringList>
 #include <QMap>
@@ -26,8 +28,26 @@ void TPropManager::slotValueChanged(QtProperty *property, const QVariant &value)
         QtProperty *brushProperty = StyleToProperty[property];
         QVariant v = this->value(brushProperty);
         QBrush b = v.value<QBrush>();
-        //b.setStyle(value.value<QVariant::StringList>().);
+        b.setStyle((Qt::BrushStyle)value.toInt());
         setValue(brushProperty, b);
+    } else {
+        if (!m_propertyToIndex.contains(property))
+                return;
+
+            int idx = m_propertyToIndex.value(property);
+
+            const QMetaObject *metaObject = object->metaObject();
+            QMetaProperty metaProperty = metaObject->property(idx);
+            if (metaProperty.isEnumType()) {
+                if (metaProperty.isFlagType())
+                    metaProperty.write(object, intToFlag(metaProperty.enumerator(), value.toInt()));
+                else
+                    metaProperty.write(object, intToEnum(metaProperty.enumerator(), value.toInt()));
+            } else {
+                metaProperty.write(object, value);
+            }
+
+            updateClassProperties(metaObject, true);
     }
 }
 void TPropManager::slotPropertyDestroyed(QtProperty *property)
@@ -42,14 +62,43 @@ void TPropManager::slotPropertyDestroyed(QtProperty *property)
         StyleToProperty.remove(property);
     }
 }
-void TPropManager::addClassProperties(const QObject* object,const QMetaObject* metaObject){
+void TPropManager::updateClassProperties(const QMetaObject *metaObject, bool recursive)
+{
+    if (!metaObject)
+        return;
+
+    if (recursive)
+        updateClassProperties(metaObject->superClass(), recursive);
+
+    QtProperty *classProperty = m_classToProperty.value(metaObject);
+    if (!classProperty)
+        return;
+
+    for (int idx = metaObject->propertyOffset(); idx < metaObject->propertyCount(); idx++) {
+        QMetaProperty metaProperty = metaObject->property(idx);
+        if (metaProperty.isReadable()) {
+            if (m_classToIndexToProperty.contains(metaObject) && m_classToIndexToProperty[metaObject].contains(idx)) {
+                QtVariantProperty *subProperty = m_classToIndexToProperty[metaObject][idx];
+                if (metaProperty.isEnumType()) {
+                    if (metaProperty.isFlagType())
+                        subProperty->setValue(flagToInt(metaProperty.enumerator(), metaProperty.read(object).toInt()));
+                    else
+                        subProperty->setValue(enumToInt(metaProperty.enumerator(), metaProperty.read(object).toInt()));
+                } else {
+                    subProperty->setValue(metaProperty.read(object));
+                }
+            }
+        }
+    }
+}
+void TPropManager::addClassProperties(const QMetaObject* metaObject){
 
     //const QMetaObject* metaObject = object->metaObject();
 
     if (!metaObject)
         return;
 
-    addClassProperties(object,metaObject->superClass());
+    addClassProperties(metaObject->superClass());
 
     QtProperty *classProperty = m_classToProperty.value(metaObject);
     if (!classProperty) {
@@ -114,8 +163,8 @@ void TPropManager::addClassProperties(const QObject* object,const QMetaObject* m
             }
             //addProperty(subProperty, QLatin1String(metaProperty.name()));
             classProperty->addSubProperty(subProperty);
-            //m_propertyToIndex[subProperty] = idx;
-            //m_classToIndexToProperty[metaObject][idx] = subProperty;
+            m_propertyToIndex[subProperty] = idx;
+            m_classToIndexToProperty[metaObject][idx] = subProperty;
         }
     }
     //m_topLevelProperties.append(classProperty);
@@ -132,7 +181,7 @@ void TPropManager::setValue(QtProperty *property, const QVariant &val)
             brush b = propertyToData[property];
 
             b.color->setValue(curbrush.color());
-            //b.style->setValue(curbrush.style());
+            b.style->setValue((int)curbrush.style());
 
             propertyToData[property] = b;
 
@@ -141,6 +190,20 @@ void TPropManager::setValue(QtProperty *property, const QVariant &val)
             return;
         }
     QtVariantPropertyManager::setValue(property, val);
+}
+
+void TPropManager::itemChanged(QObject *curobject)
+{
+    object=curobject;
+    updateExpandState();
+
+    QMap<QtProperty *, QString>::ConstIterator itProp = propertyToId.constBegin();
+    while (itProp != propertyToId.constEnd()) {
+        delete itProp.key();
+        itProp++;
+    }
+    propertyToId.clear();
+    idToProperty.clear();
 }
 
 void TPropManager::initializeProperty(QtProperty *property)
@@ -210,6 +273,16 @@ QString TPropManager::valueText(const QtProperty *property) const
     }
     return QtVariantPropertyManager::valueText(property);
 }
+void TPropManager::updateExpandState()
+{
+    QList<QtBrowserItem *> list = browser->topLevelItems();
+    QListIterator<QtBrowserItem *> it(list);
+    while (it.hasNext()) {
+        QtBrowserItem *item = it.next();
+        QtProperty *prop = item->property();
+        idToExpanded[propertyToId[prop]] = (dynamic_cast<QtTreePropertyBrowser*>(browser))->isExpanded(item);
+    }
+}
 /*
 void TPropManager::addProperty(QtVariantProperty *property, const QString &id)
 {
@@ -218,5 +291,6 @@ void TPropManager::addProperty(QtVariantProperty *property, const QString &id)
     QtBrowserItem *item = propertyEditor->addProperty(property);
     if (idToExpanded.contains(id))
         propertyEditor->setExpanded(item, idToExpanded[id]);
+    QtVariantPropertyManager::addProperty()
 }
 */
