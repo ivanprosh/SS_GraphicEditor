@@ -37,6 +37,8 @@ private:
     QMap<QString, bool> idToExpanded;
     QMap<QtProperty *, int> m_propertyToIndex;
     QMap<const QMetaObject *, QMap<int, QtVariantProperty *> > m_classToIndexToProperty;
+    QList<QtProperty *>         m_topLevelProperties;
+
     void updateExpandState();
 private slots:
     void slotValueChanged(QtProperty *property, const QVariant &value);
