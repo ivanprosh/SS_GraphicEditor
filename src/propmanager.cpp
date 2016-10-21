@@ -180,6 +180,8 @@ void TPropManager::setValue(QtProperty *property, const QVariant &val)
             QBrush curbrush = val.value<QBrush>();
             brush b = propertyToData[property];
 
+            if(b.color->value().value<QColor>() == curbrush.color()) return;
+
             b.color->setValue(curbrush.color());
             b.style->setValue((int)curbrush.style());
 
@@ -195,7 +197,6 @@ void TPropManager::setValue(QtProperty *property, const QVariant &val)
 void TPropManager::itemChanged(QObject *curobject)
 {
     object=curobject;
-    updateExpandState();
 
     QMap<QtProperty *, QString>::ConstIterator itProp = propertyToId.constBegin();
     while (itProp != propertyToId.constEnd()) {
@@ -204,6 +205,9 @@ void TPropManager::itemChanged(QObject *curobject)
     }
     propertyToId.clear();
     idToProperty.clear();
+
+    addClassProperties(object->metaObject());
+    //updateExpandState();
 }
 
 void TPropManager::initializeProperty(QtProperty *property)
