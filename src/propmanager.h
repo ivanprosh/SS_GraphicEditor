@@ -18,7 +18,7 @@ class TPropManager : public QtVariantPropertyManager
 
 private:
     QObject *object;
-    QStringList ignoreClassNames;
+    QStringList ignoreClassNames,brushesStyles;
     QtAbstractPropertyBrowser *browser;
 
     struct brush {
@@ -32,20 +32,24 @@ private:
     QMap<const QtProperty *, QtProperty *> StyleToProperty;
     QMap<const QMetaObject *, QtProperty *> m_classToProperty;
     QMap<QtProperty *, const QMetaObject *> m_propertyToClass;
-    QMap<QtProperty *, QString> propertyToId;
-    QMap<QString, QtVariantProperty *> idToProperty;
-    QMap<QString, bool> idToExpanded;
+    //QMap<QtProperty *, QString> propertyToId;
+    //QMap<QString, QtVariantProperty *> idToProperty;
+    QMap<const QMetaObject *, QMap<int, bool> > idToExpanded;
     QMap<QtProperty *, int> m_propertyToIndex;
     QMap<const QMetaObject *, QMap<int, QtVariantProperty *> > m_classToIndexToProperty;
     QList<QtProperty *>         m_topLevelProperties;
 
-    void updateExpandState();
+    QtBrowserItem* findchildrens(QtBrowserItem *item, QList<QtBrowserItem *> &list);
+
 private slots:
     void slotValueChanged(QtProperty *property, const QVariant &value);
     void slotPropertyDestroyed(QtProperty *property);
 protected:
     virtual void initializeProperty(QtProperty *property);
     virtual void uninitializeProperty(QtProperty *property);
+    void updateExpandState(const QMetaObject* metaObject,int key,QtBrowserItem *subitem);
+    void SetExpandState(const QMetaObject* metaObject,int key,QtBrowserItem *subitem);
+    void ExpandState(void (TPropManager::*func)(const QMetaObject *, int, QtBrowserItem *));
 public:
     TPropManager(QObject *parent, QtAbstractPropertyBrowser *curBrowser);
     ~TPropManager(){}

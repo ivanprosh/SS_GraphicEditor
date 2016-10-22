@@ -10,6 +10,8 @@ TPropManager::TPropManager(QObject *parent, QtAbstractPropertyBrowser *curBrowse
     browser(curBrowser)
 {
     ignoreClassNames << "QObject" << "QWidget" << "QGraphicItem";
+    brushesStyles << "No Brush" << "Solid" << "Dense #1" << "Dense #2" << "Dense #3" << "Dense #4" << "Dense #5" << "Dense #6" << "Dense #7"
+                  << "Horizontal" << "Vertical" << "Cross";
 
     connect(this, SIGNAL(valueChanged(QtProperty *, const QVariant &)),
             this, SLOT(slotValueChanged(QtProperty *, const QVariant &)));
@@ -171,8 +173,6 @@ void TPropManager::addClassProperties(const QMetaObject* metaObject){
             }
             //addProperty(subProperty, QLatin1String(metaProperty.name()));
             classProperty->addSubProperty(subProperty);
-            //propertyToId[subProperty]=subProperty->propertyName();
-            //idToProperty[subProperty->propertyName()] = subProperty;
             m_propertyToIndex[subProperty] = idx;
             m_classToIndexToProperty[metaObject][idx] = subProperty;
         }
@@ -181,6 +181,10 @@ void TPropManager::addClassProperties(const QMetaObject* metaObject){
     }
     m_topLevelProperties.append(classProperty);
     browser->addProperty(classProperty);
+    //QtBrowserItem *item = browser->addProperty(classProperty);
+    //проверка
+    //if (idToExpanded.contains(id))
+    //  dynamic_cast<QtTreePropertyBrowser*>(browser)->setExpanded(item, 0);
 }
 
 void TPropManager::setValue(QtProperty *property, const QVariant &val)
@@ -191,8 +195,9 @@ void TPropManager::setValue(QtProperty *property, const QVariant &val)
 
             QBrush curbrush = val.value<QBrush>();
             brush b = propertyToData[property];
-
-            if(b.color->value().value<QColor>() == curbrush.color()) return;
+            b.value = curbrush;
+            if(b.color->value().value<QColor>() == curbrush.color()
+               && b.style->value().toInt() == (int)curbrush.style()) return;
 
             if(b.color)
                 b.color->setValue(curbrush.color());
@@ -210,6 +215,11 @@ void TPropManager::setValue(QtProperty *property, const QVariant &val)
 
 void TPropManager::itemChanged(QObject *curobject)
 {
+    //void (*goal)(const QMetaObject* metaObject,int key,QtBrowserItem *subitem);
+    //goal = &updateExpandState;
+    //запоминаем развернутость узлов
+    ExpandState(&TPropManager::updateExpandState);
+    //меняем текущий item
     object=curobject;
     /*
     QMap<QtProperty *, QString>::ConstIterator itProp = propertyToId.constBegin();
@@ -227,7 +237,9 @@ void TPropManager::itemChanged(QObject *curobject)
     m_topLevelProperties.clear();
 
     addClassProperties(object->metaObject());
-    //updateExpandState();
+    //Выставляем развернустость узлов
+    //goal = SetExpandState;
+    ExpandState(&TPropManager::SetExpandState);
 }
 
 void TPropManager::initializeProperty(QtProperty *property)
@@ -243,7 +255,7 @@ void TPropManager::initializeProperty(QtProperty *property)
 
         b.style = that->addProperty(QtVariantPropertyManager::enumTypeId());
         b.style->setPropertyName(tr("Style"));
-        b.style->setAttribute("enumNames",QStringList() << "NoBrush" << "SolidPattern");
+        b.style->setAttribute("enumNames",brushesStyles);
         //b.style->setValue();
         property->addSubProperty(b.style);
         StyleToProperty[b.style] = property;
@@ -292,29 +304,56 @@ QString TPropManager::valueText(const QtProperty *property) const
     if (propertyToData.contains(property)) {
         QVariant v = propertyToData[property].value;
         QBrush b = v.value<QBrush>();
-        return QString(tr("color %1,type %2)").arg(b.color().name())
-                       .arg(QString::number(b.style())));
+        return QString(tr("color %1,%2)").arg(b.color().name())
+                       .arg(brushesStyles.at(b.style())));
     }
     return QtVariantPropertyManager::valueText(property);
 }
-void TPropManager::updateExpandState()
+void TPropManager::SetExpandState(const QMetaObject* metaObject, int key, QtBrowserItem *subitem)
+{
+    dynamic_cast<QtTreePropertyBrowser*>(browser)->setExpanded(subitem, idToExpanded[metaObject].value(key));
+}
+QtBrowserItem* TPropManager::findchildrens(QtBrowserItem *item,QList<QtBrowserItem *>& list)
+{
+    foreach (QtBrowserItem *child, item->children()) {
+       list.append(findchildrens(child,list));
+    }
+    return item;
+}
+void TPropManager::updateExpandState(const QMetaObject* metaObject, int key, QtBrowserItem *subitem)
+{
+    idToExpanded[metaObject][key] = (dynamic_cast<QtTreePropertyBrowser*>(browser))->isExpanded(subitem);
+}
+
+void TPropManager::ExpandState(void (TPropManager::*func)(const QMetaObject* ,int ,QtBrowserItem*))
 {
     QList<QtBrowserItem *> list = browser->topLevelItems();
     QListIterator<QtBrowserItem *> it(list);
     while (it.hasNext()) {
         QtBrowserItem *item = it.next();
-        QtProperty *prop = item->property();
-        idToExpanded[propertyToId[prop]] = (dynamic_cast<QtTreePropertyBrowser*>(browser))->isExpanded(item);
-    }
+        const QMetaObject* metaObject=m_propertyToClass[item->property()];
+        int count = 0;
+
+        QList<QtBrowserItem *> sublist;
+        findchildrens(item,sublist);
+
+        QListIterator<QtBrowserItem *> subit(sublist);
+        while (subit.hasNext()) {
+            QtBrowserItem *subitem = subit.next();
+            QtProperty *prop = subitem->property();
+
+            QMap<int, QtVariantProperty *>::const_iterator i = m_classToIndexToProperty[metaObject].constBegin();
+            while (i != m_classToIndexToProperty[metaObject].constEnd()) {
+                if(m_classToIndexToProperty[metaObject].value(i.key())==prop){
+                    //idToExpanded[metaObject][i.key()] = (dynamic_cast<QtTreePropertyBrowser*>(browser))->isExpanded(subitem);
+                    int key = i.key();
+                    (this->*func)(metaObject,key,subitem);
+                }
+                ++i;
+                ++count;
+            }
+
+        }
+        (this->*func)(metaObject,count,item);
+     }
 }
-/*
-void TPropManager::addProperty(QtVariantProperty *property, const QString &id)
-{
-    propertyToId[property] = id;
-    idToProperty[id] = property;
-    QtBrowserItem *item = propertyEditor->addProperty(property);
-    if (idToExpanded.contains(id))
-        propertyEditor->setExpanded(item, idToExpanded[id]);
-    QtVariantPropertyManager::addProperty()
-}
-*/
