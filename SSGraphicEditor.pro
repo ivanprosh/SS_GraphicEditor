@@ -20,6 +20,8 @@ QT += widgets printsupport svg
 # All sources
 include($${PWD}/src/deployment.pri)
 
+DEFINES += ANIMATE_ALIGNMENT
+
 RESOURCES += \
     images.qrc \
     src/aqp/aqp.qrc

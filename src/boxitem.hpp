@@ -25,7 +25,7 @@ class QGraphicsSceneMouseEvent;
 class QKeyEvent;
 
 
-class BoxItem : public QObject, public QGraphicsRectItem
+class BoxItem : public QObject,public QGraphicsRectItem
 {
     Q_OBJECT
 #ifdef ANIMATE_ALIGNMENT

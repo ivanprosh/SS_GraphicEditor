@@ -48,7 +48,8 @@ HEADERS += \
     $$PWD/graphicsview.hpp \
     $$PWD/textedit.hpp \
     $$PWD/global.hpp \
-    $$PWD/propmanager.h
+    $$PWD/propmanager.h \
+    $$PWD/SSobjects/ssabstractgraphobj.h
 
 SOURCES += \
     $$PWD/main.cpp \
@@ -63,5 +64,6 @@ SOURCES += \
     $$PWD/mainwindow.cpp \
     $$PWD/smileyitem.cpp \
     $$PWD/global.cpp \
-    $$PWD/propmanager.cpp
+    $$PWD/propmanager.cpp \
+    $$PWD/SSobjects/ssabstractgraphobj.cpp
 
