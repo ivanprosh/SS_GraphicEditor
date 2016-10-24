@@ -46,6 +46,7 @@
 #include <cmath>
 #include <limits>
 #include <QMetaProperty>
+#include <QDebug>
 
 namespace {
 
@@ -177,9 +178,14 @@ void MainWindow::createActions()
     editAddBoxAction = new QAction(QIcon(":images/editaddbox.png"),
             tr("Add Box"), this);
     editAddBoxAction->setData(BoxItemType);
-    editAddSmileyAction = new QAction(QIcon(":images/editaddsmiley.png"),
-            tr("Add Smiley"), this);
-    editAddSmileyAction->setData(SmileyItemType);
+    //ֳנאפ.מבתוךעû SS
+    editAddSSAction = new QAction(QIcon(":images/ind_default.png"),
+            tr("SS objects"), this);
+    editAddSSAction->setData(SSIndItemType);
+    editAddSSIndAction = new QAction(QIcon(":images/ind_default.png"),
+            tr("Add Indicator"), this);
+    editAddSSIndAction->setData(SSIndItemType);
+    //
     editCopyAction = new QAction(QIcon(":images/editcopy.png"), tr("&Copy"),
                                  this);
     editCopyAction->setShortcuts(QKeySequence::Copy);
@@ -244,12 +250,18 @@ void MainWindow::createMenusAndToolBars()
         alignmentMenu->addAction(action);
     editAlignmentAction->setMenu(alignmentMenu);
 
+    QMenu *SSMenu = new QMenu(tr("SS object"), this);
+    foreach (QAction *action, QList<QAction*>()
+            << editAddSSIndAction)
+        SSMenu->addAction(action);
+    editAddSSAction->setMenu(SSMenu);
+
     QMenu *editMenu = menuBar()->addMenu(tr("Edit"));
     QToolBar *editToolBar = addToolBar(tr("Edit"));
     populateMenuAndToolBar(editMenu, editToolBar, QList<QAction*>()
             << editSelectedItemAction << separator
             << editAddTextAction << editAddBoxAction
-            << editAddSmileyAction << separator << editCopyAction
+            << editAddSSAction << separator << editCopyAction
             << editCutAction << editPasteAction << separator
             << editAlignmentAction << editClearTransformsAction);
 
@@ -352,8 +364,12 @@ void MainWindow::createConnections()
             this, SLOT(editAddItem()));
     connect(editAddBoxAction, SIGNAL(triggered()),
             this, SLOT(editAddItem()));
-    connect(editAddSmileyAction, SIGNAL(triggered()),
-            this, SLOT(editAddItem()));
+    //SS
+    foreach (QAction *action, QList<QAction*>()
+            << editAddSSAction << editAddSSIndAction)
+        connect(action, SIGNAL(triggered()), this, SLOT(editSSobj()));
+//    connect(editAddSSAction, SIGNAL(triggered()),
+//            this, SLOT(editAddItem()));
     connect(editCopyAction, SIGNAL(triggered()),
             this, SLOT(editCopy()));
     connect(editCutAction, SIGNAL(triggered()),
@@ -367,6 +383,7 @@ void MainWindow::createConnections()
             << editAlignRightAction << editAlignTopAction
             << editAlignBottomAction)
         connect(action, SIGNAL(triggered()), this, SLOT(editAlign()));
+
     connect(editClearTransformsAction, SIGNAL(triggered()),
             this, SLOT(editClearTransforms()));
     connect(scene, SIGNAL(selectionChanged()),
@@ -566,7 +583,7 @@ void MainWindow::readItems(QDataStream &in, int offset, bool select)
                 item = boxItem;
                 break;
             }
-            case SmileyItemType: {
+            case SSIndItemType: {
                 SmileyItem *smileyItem = new SmileyItem(QPoint(),
                                                         scene);
                 in >> *smileyItem;
@@ -634,7 +651,7 @@ void MainWindow::writeItems(QDataStream &out,
         switch (type) {
             case BoxItemType:
                     out << *static_cast<BoxItem*>(item); break;
-            case SmileyItemType:
+            case SSIndItemType:
                     out << *static_cast<SmileyItem*>(item); break;
             case TextItemType:
                     out << *static_cast<TextItem*>(item); break;
@@ -784,8 +801,8 @@ void MainWindow::editAddItem()
     int type = action->data().toInt();
     if (type == BoxItemType)
         item = new BoxItem(QRect(position(), QSize(90, 30)), scene);
-    else if (type == SmileyItemType)
-        item = new SmileyItem(position(), scene);
+//    else if (type == SSIndItemType)
+//        item = new SmileyItem(position(), scene);
     else if (type == TextItemType) {
         TextItemDialog dialog(0, position(), scene, this);
         if (dialog.exec())
@@ -913,6 +930,71 @@ void MainWindow::editPaste()
     setDirty(true);
 }
 
+void MainWindow::editSSobj()
+{
+    QAction *action = qobject_cast<QAction*>(sender());
+    if (!action)
+        return;
+    QObject *item = 0;
+    int type = action->data().toInt();
+    if (type == SSIndItemType){
+//        item = new BoxItem(QRect(position(), QSize(90, 30)), scene);
+//    else if (type == SSIndItemType)
+//        item = new SmileyItem(position(), scene);
+//    else if (type == TextItemType) {
+        TextItemDialog dialog(0, position(), scene, this);
+        if (dialog.exec())
+            item = dialog.textItem();
+    }
+    if (item) {
+        connectItem(item);
+        setDirty(true);
+    }
+/*
+    Qt::Alignment alignment = static_cast<Qt::Alignment>(
+            action->data().toInt());
+    if (action != editAlignmentAction) {
+        editAlignmentAction->setData(action->data());
+        editAlignmentAction->setIcon(action->icon());
+    }
+
+    QList<QGraphicsItem*> items = scene->selectedItems();
+    QVector<double> coordinates;
+    populateCoordinates(alignment, &coordinates, items);
+    double offset;
+    if (alignment == Qt::AlignLeft || alignment == Qt::AlignTop)
+#ifdef USE_STL
+        offset = *std::min_element(coordinates.constBegin(),
+                                   coordinates.constEnd());
+    else
+        offset = *std::max_element(coordinates.constBegin(),
+                                   coordinates.constEnd());
+#else
+        offset = min(coordinates);
+    else
+        offset = max(coordinates);
+#endif
+#ifdef SCREENSHOTS
+    takeScreenshot();
+#endif
+
+    QList<QPointF> positions;
+    if (alignment == Qt::AlignLeft || alignment == Qt::AlignRight) {
+        for (int i = 0; i < items.count(); ++i)
+            positions << items.at(i)->pos() +
+                         QPointF(offset - coordinates.at(i), 0);
+    }
+    else {
+        for (int i = 0; i < items.count(); ++i)
+            positions << items.at(i)->pos() +
+                         QPointF(0, offset - coordinates.at(i));
+    }
+
+    animateAlignment(items, positions);
+
+    setDirty(true);
+*/
+}
 
 #ifndef ANIMATE_ALIGNMENT
 void MainWindow::editAlign()

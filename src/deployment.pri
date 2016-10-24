@@ -49,7 +49,11 @@ HEADERS += \
     $$PWD/textedit.hpp \
     $$PWD/global.hpp \
     $$PWD/propmanager.h \
-    $$PWD/SSobjects/ssabstractgraphobj.h
+    $$PWD/SSobjects/ssindicator.h \
+    $$PWD/SSobjects/ssitemdialog.h \
+    $$PWD/SSobjects/ssgraphobjinfo.h \
+    $$PWD/SSobjects/standardtablemodel.hpp \
+    $$PWD/SSobjects/proxymodel.hpp
 
 SOURCES += \
     $$PWD/main.cpp \
@@ -65,5 +69,9 @@ SOURCES += \
     $$PWD/smileyitem.cpp \
     $$PWD/global.cpp \
     $$PWD/propmanager.cpp \
-    $$PWD/SSobjects/ssabstractgraphobj.cpp
+    $$PWD/SSobjects/ssindicator.cpp \
+    $$PWD/SSobjects/ssitemdialog.cpp \
+    $$PWD/SSobjects/ssgraphobjinfo.cpp \
+    $$PWD/SSobjects/standardtablemodel.cpp \
+    $$PWD/SSobjects/proxymodel.cpp
 

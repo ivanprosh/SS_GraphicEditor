@@ -5,10 +5,7 @@
 #include <QPrinter>
 #include <QMap>
 
-//class BrushWidget;
 class GraphicsView;
-//class PenWidget;
-//class TransformWidget;
 class QAction;
 class QFile;
 class QGraphicsItem;
@@ -17,6 +14,7 @@ class QGraphicsScene;
 class QtVariantProperty;
 class QtProperty;
 class TPropManager;
+class SSGraphicData;
 
 class MainWindow : public QMainWindow
 {
@@ -52,6 +50,7 @@ private slots:
     void viewShowGrid(bool on);
     void selectionChanged();
     void loadFile();
+    void editSSobj();
     //
     //void itemClicked(QGraphicsItem *item);
     void itemMoved(QGraphicsItem *item);
@@ -105,7 +104,12 @@ private:
     QAction *editSelectedItemAction;
     QAction *editAddTextAction;
     QAction *editAddBoxAction;
-    QAction *editAddSmileyAction;
+    //
+    QAction *editAddSSAction;
+    QAction *editAddSSIndAction;
+    QAction *editAddSSAnparAction;
+    QAction *editAddSSDynTextAction;
+
     QAction *editCopyAction;
     QAction *editCutAction;
     QAction *editPasteAction;
@@ -133,10 +137,7 @@ private:
     //class TPropManager *m_readOnlyManager;
 
     class QtTreePropertyBrowser *propertyEditor;
-
-    //QMap<const QMetaObject *, QtProperty *> m_classToProperty;
-    //QMap<QtProperty *, const QMetaObject *> m_propertyToClass;
-    //QMap<const QMetaObject *, QMap<int, QtVariantProperty *> > m_classToIndexToProperty;
+    QMap<QString,SSGraphicData> SSObjectsInfo;
 
     int addOffset;
     int pasteOffset;
