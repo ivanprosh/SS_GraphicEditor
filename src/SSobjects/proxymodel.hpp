@@ -15,7 +15,7 @@
 
 
 #include <QSortFilterProxyModel>
-
+//#include <QModelIndex>
 
 class ProxyModel : public QSortFilterProxyModel
 {
@@ -26,14 +26,14 @@ public:
     //смена ориентации
     QModelIndex mapToSource(const QModelIndex &proxyIndex) const;
     QModelIndex mapFromSource(const QModelIndex &sourceIndex) const;
-    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
-    QModelIndex parent(const QModelIndex &child) const;
+    QModelIndex index(int row, int column, const QModelIndex &) const;
+    //QModelIndex parent(const QModelIndex &child) const;
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     //int minimumZipcode() const { return m_minimumZipcode; }
     //int maximumZipcode() const { return m_maximumZipcode; }
-    QString name() const { return m_county; }
+    QString name() const { return m_name; }
     int state() const { return m_state; }
 
 public slots:

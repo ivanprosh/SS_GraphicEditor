@@ -20,7 +20,7 @@ class SSitemdialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SSitemdialog(QMap<QString,SSGraphicData>& GraphicData,
+    explicit SSitemdialog(//QMap<QString,SSGraphicData>& GraphicData,
                           //TextItem *item_=0,
             const QPoint &position_=QPoint(),
             QGraphicsScene *scene_=0, QWidget *parent=0);

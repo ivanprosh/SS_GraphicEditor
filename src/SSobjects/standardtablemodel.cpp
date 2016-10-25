@@ -65,7 +65,7 @@ void StandardTableModel::initialize()
         for(int i=1;i<=maxStateValue;i++){
             QList<QStandardItem*> items;
             QStandardItem *item = new QStandardItem;
-            item->setData(listNames(it), Qt::EditRole);
+            item->setData(listNames.at(it), Qt::EditRole);
             items << item;
             items << new QStandardItem(i);
             for(int j=2;i<ColumnNames.size();j++){

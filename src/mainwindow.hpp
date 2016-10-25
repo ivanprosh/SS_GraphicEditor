@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QPrinter>
 #include <QMap>
+#include "SSobjects/ssgraphobjinfo.h"
 
 class GraphicsView;
 class QAction;

@@ -9,6 +9,8 @@
 #include "graphicsview.hpp"
 #include "propmanager.h"
 #include "boxitem.hpp"
+#include "SSobjects/ssgraphobjinfo.h"
+#include "SSobjects/ssitemdialog.h"
 //#include "brushwidget.hpp"
 //#include "penwidget.hpp"
 #include "smileyitem.hpp"
@@ -942,9 +944,9 @@ void MainWindow::editSSobj()
 //    else if (type == SSIndItemType)
 //        item = new SmileyItem(position(), scene);
 //    else if (type == TextItemType) {
-        TextItemDialog dialog(0, position(), scene, this);
+        SSitemdialog dialog(position(), scene, this);
         if (dialog.exec())
-            item = dialog.textItem();
+            item = dialog.GraphicDataItem();
     }
     if (item) {
         connectItem(item);

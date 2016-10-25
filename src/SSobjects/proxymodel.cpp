@@ -32,10 +32,10 @@ QModelIndex ProxyModel::mapToSource(const QModelIndex &proxyIndex) const
 
 QModelIndex ProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
 {
-    return index(sourceIndex.column(), sourceIndex.row());
+    return index(sourceIndex.column(), sourceIndex.row(), sourceIndex);
 }
 
-QModelIndex ProxyModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex ProxyModel::index(int row, int column, const QModelIndex &) const
 {
     return createIndex(row, column, (void*) 0);
 }

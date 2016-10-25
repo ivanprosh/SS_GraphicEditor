@@ -21,7 +21,7 @@ class StandardTableModel : public QStandardItemModel
     Q_OBJECT
 
 public:
-    explicit StandardTableModel(QObject *parent=0,const QStringList& initlistNames);
+    explicit StandardTableModel(QObject *parent=0,const QStringList& initlistNames=QStringList());
 
     //QString filename() const { return m_filename; }
     void clear();

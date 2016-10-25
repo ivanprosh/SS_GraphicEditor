@@ -1,7 +1,7 @@
 #include "ssitemdialog.h"
 #include "ssgraphobjinfo.h"
+#include "../aqp/alt_key.hpp"
 /*
-#include "aqp/alt_key.hpp"
 #include "swatch.hpp"
 #include "textedit.hpp"
 #include "textitem.hpp"
@@ -22,18 +22,20 @@
 #include <QGroupBox>
 #include <QSpinBox>
 #include <QStringList>
+#include <QTableView>
+#include <QHeaderView>
 
 #include "itemdelegate.hpp"
 #include "standardtablemodel.hpp"
 #include "proxymodel.hpp"
 
-SSitemdialog::SSitemdialog(TextItem *item_,
-        const QPoint &position_, QGraphicsScene *scene_,
+SSitemdialog::SSitemdialog(const QPoint &position_, QGraphicsScene *scene_,
         QWidget *parent)
-    : QDialog(parent), item(item_), position(position_), scene(scene_)
+    : QDialog(parent), position(position_), scene(scene_)
 {
-    QStringList initlistNames << "Temp1" << "Temp2" << "Temp3";
-    model = new StandardTableModel(this,const QStringList& initlistNames);
+    QStringList initlistNames;
+    initlistNames << "Temp1" << "Temp2" << "Temp3";
+    model = new StandardTableModel(this,initlistNames);
     proxyModel = new ProxyModel(this);
     proxyModel->setSourceModel(model);
 
@@ -91,12 +93,12 @@ void SSitemdialog::createWidgets()
             style()->standardIcon(QStyle::SP_DialogCancelButton));
     //список существующих шаблонов
     listwdg = new QListWidget(this);
-    listwdg.setIconSize(QSize(24, 24));
+    listwdg->setIconSize(QSize(24, 24));
     //lwg.setSelectionMode(QAbstractItemView::MultiSelection);
-    listwdg.setViewMode(QListView::IconMode);
+    listwdg->setViewMode(QListView::IconMode);
 
     //таблица свойств
-    tableView = new QTableView;
+    tableView = new QTableView();
     tableView->setModel(proxyModel);
     tableView->setItemDelegate(new ItemDelegate(this));
     tableView->verticalHeader()->setDefaultAlignment(
@@ -172,6 +174,7 @@ void SSitemdialog::restoreFilters()
 
 void SSitemdialog::accept()
 {
+    /*
     if (item && !textEdit->document()->isModified()) {
         QDialog::reject();
         return;
@@ -181,5 +184,6 @@ void SSitemdialog::accept()
     item->setHtml(textEdit->toHtml());
     item->update();
     QDialog::accept();
+    */
 }
 
