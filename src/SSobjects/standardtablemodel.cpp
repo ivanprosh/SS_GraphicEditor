@@ -24,8 +24,8 @@ const qint16 FormatNumber = 100;
 }
 
 
-StandardTableModel::StandardTableModel(QObject *parent,int init_size)
-    : QStandardItemModel(parent),size(init_size)
+StandardTableModel::StandardTableModel(QObject *parent,const QStringList& initlistNames)
+    : QStandardItemModel(parent),listNames(initlistNames),maxStateValue(32)
 {
     initialize();
 }
@@ -33,33 +33,47 @@ StandardTableModel::StandardTableModel(QObject *parent,int init_size)
 
 void StandardTableModel::initialize()
 {
-    setHorizontalHeaderLabels(QStringList() << tr("Value"));
-    QStringList VerticalLabels;
-    for(i=1;i<=init_size;i++){
-        VerticalLabels << "StateFrameisCycled_" + QString::number(i)
-                       << "StateFrameDelay_" + QString::number(i)
-                       << "StateFrame1_" + QString::number(i)
-                       << "StateFrame2_" + QString::number(i)
-                       << "StateFrame3_" + QString::number(i)
-                       << "StateFrame4_" + QString::number(i)
-                       << "StateFrame5_" + QString::number(i)
-                       << "StateFrame6_" + QString::number(i)
-                       << "StateFrame7_" + QString::number(i)
-                       << "StateFrame8_" + QString::number(i)
-                       << "StateFrame9_" + QString::number(i)
-                       << "StateFrame10_" + QString::number(i)
-                       << "StateFrameTransparent1_" + QString::number(i)
-                       << "StateFrameTransparent2_" + QString::number(i)
-                       << "StateFrameTransparent3_" + QString::number(i)
-                       << "StateFrameTransparent4_" + QString::number(i)
-                       << "StateFrameTransparent5_" + QString::number(i)
-                       << "StateFrameTransparent6_" + QString::number(i)
-                       << "StateFrameTransparent7_" + QString::number(i)
-                       << "StateFrameTransparent8_" + QString::number(i)
-                       << "StateFrameTransparent9_" + QString::number(i)
-                       << "StateFrameTransparent10_" + QString::number(i);
+    QStringList ColumnNames;
+    ColumnNames             << "Name"
+                            << "StateIndex"
+                            << "StateFrameisCycled"
+                            << "StateFrameDelay"
+                            << "StateFrame1"
+                            << "StateFrame2"
+                            << "StateFrame3"
+                            << "StateFrame4"
+                            << "StateFrame5"
+                            << "StateFrame6"
+                            << "StateFrame7"
+                            << "StateFrame8"
+                            << "StateFrame9"
+                            << "StateFrame10"
+                            << "StateFrameTransparent1"
+                            << "StateFrameTransparent2"
+                            << "StateFrameTransparent3"
+                            << "StateFrameTransparent4"
+                            << "StateFrameTransparent5"
+                            << "StateFrameTransparent6"
+                            << "StateFrameTransparent7"
+                            << "StateFrameTransparent8"
+                            << "StateFrameTransparent9"
+                            << "StateFrameTransparent10";
+
+    setHorizontalHeaderLabels(ColumnNames);
+
+    for (int it = 0; it < listNames.size(); ++it) {
+        for(int i=1;i<=maxStateValue;i++){
+            QList<QStandardItem*> items;
+            QStandardItem *item = new QStandardItem;
+            item->setData(listNames(it), Qt::EditRole);
+            items << item;
+            items << new QStandardItem(i);
+            for(int j=2;i<ColumnNames.size();j++){
+                items << new QStandardItem();
+            }
+            appendRow(items);
+        }
     }
-    setVerticalHeaderHeaderLabels(VerticalLabels);
 }
 
 
@@ -139,4 +153,9 @@ void StandardTableModel::save(const QString &filename)
             << item(row, County)->text() << item(row, State)->text();
     }
     */
+}
+
+void StandardTableModel::stateCountChanged(int value)
+{
+
 }

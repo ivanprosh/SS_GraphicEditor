@@ -23,17 +23,24 @@ class ProxyModel : public QSortFilterProxyModel
 
 public:
     explicit ProxyModel(QObject *parent=0);
-
+    //смена ориентации
+    QModelIndex mapToSource(const QModelIndex &proxyIndex) const;
+    QModelIndex mapFromSource(const QModelIndex &sourceIndex) const;
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
+    QModelIndex parent(const QModelIndex &child) const;
+    int rowCount(const QModelIndex &parent) const;
+    int columnCount(const QModelIndex &parent) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     //int minimumZipcode() const { return m_minimumZipcode; }
     //int maximumZipcode() const { return m_maximumZipcode; }
-    //QString county() const { return m_county; }
+    QString name() const { return m_county; }
     int state() const { return m_state; }
 
 public slots:
     void clearFilters();
     //void setMinimumZipcode(int minimumZipcode);
     //void setMaximumZipcode(int maximumZipcode);
-    //void setCounty(const QString &county);
+    void setName(const QString &name);
     void setState(const int &state);
 
 protected:
@@ -43,7 +50,7 @@ protected:
 private:
     //int m_minimumZipcode;
     //int m_maximumZipcode;
-    //QString m_county;
+    QString m_name;
     int m_state;
 };
 

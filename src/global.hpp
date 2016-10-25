@@ -23,4 +23,6 @@ int enumToInt(const QMetaEnum &metaEnum, int enumValue);
 bool isSubValue(int value, int subValue);
 int intToEnum(const QMetaEnum &metaEnum, int intValue);
 
+//enum Column {Zipcode, PostOffice, County, State};
+
 #endif // GLOBAL_HPP

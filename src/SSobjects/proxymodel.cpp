@@ -21,6 +21,43 @@ ProxyModel::ProxyModel(QObject *parent)
     ;//m_minimumZipcode = m_maximumZipcode = InvalidZipcode;
 }
 
+QModelIndex ProxyModel::mapToSource(const QModelIndex &proxyIndex) const
+{
+    if (sourceModel()) {
+       return sourceModel()->index(proxyIndex.column(), proxyIndex.row());
+     } else {
+       return QModelIndex();
+     }
+}
+
+QModelIndex ProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
+{
+    return index(sourceIndex.column(), sourceIndex.row());
+}
+
+QModelIndex ProxyModel::index(int row, int column, const QModelIndex &parent) const
+{
+    return createIndex(row, column, (void*) 0);
+}
+
+int ProxyModel::rowCount(const QModelIndex &parent) const
+{
+    return sourceModel() ? sourceModel()->columnCount() : 0;
+}
+
+int ProxyModel::columnCount(const QModelIndex &parent) const
+{
+    return sourceModel() ? sourceModel()->rowCount() : 0;
+}
+
+QVariant ProxyModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (!sourceModel()) { return QVariant(); }
+    Qt::Orientation new_orientation = orientation == Qt::Horizontal ?
+                Qt::Vertical : Qt::Horizontal;
+    return sourceModel()->headerData(section, new_orientation, role);
+}
+
 
 void ProxyModel::clearFilters()
 {
@@ -46,24 +83,22 @@ bool ProxyModel::filterAcceptsRow(int sourceRow,
             sourceModel()->data(index).toInt() > m_maximumZipcode)
             return false;
     }
-    if (!m_county.isEmpty()) {
-        QModelIndex index = sourceModel()->index(sourceRow, County,
+    */
+    if (!m_name.isEmpty()) {
+        QModelIndex index = sourceModel()->index(sourceRow, 0,
                                                  sourceParent);
-        if (m_county != sourceModel()->data(index).toString())
+        if (m_name != sourceModel()->data(index).toString())
             return false;
     }
-    */
+
     if (m_state!=0) {
 
-//        QModelIndex index = sourceModel()->index(sourceRow, 0,
-//                                                 sourceParent);
-        QString rowLabel = sourceModel()->headerData(sourceRow,Qt::Vertical).toString();
-        if(rowLabel.endsWith("_"+m_state))
-            return true;
-        //if (m_state != sourceModel()->data(index).toString())
-        //    return false;
+        QModelIndex index = sourceModel()->index(sourceRow, 1,
+                                                 sourceParent);
+        if (m_state != sourceModel()->data(index).toInt())
+            return false;
     }
-    return false;
+    return true;
 }
 
 void ProxyModel::setState(const int &state)
@@ -90,15 +125,15 @@ void ProxyModel::setMaximumZipcode(int maximumZipcode)
         invalidateFilter();
     }
 }
+*/
 
-
-void ProxyModel::setCounty(const QString &county)
+void ProxyModel::setName(const QString &name)
 {
-    if (m_county != county) {
-        m_county = county;
+    if (m_name != name) {
+        m_name = name;
         invalidateFilter();
     }
 }
-*/
+
 
 

@@ -21,17 +21,22 @@ class StandardTableModel : public QStandardItemModel
     Q_OBJECT
 
 public:
-    explicit StandardTableModel(QObject *parent=0,int init_size=1);
+    explicit StandardTableModel(QObject *parent=0,const QStringList& initlistNames);
 
-    QString filename() const { return m_filename; }
+    //QString filename() const { return m_filename; }
     void clear();
     void load(const QString &filename=QString());
     void save(const QString &filename=QString());
 
+public slots:
+    void stateCountChanged(int value);
+
 private:
+    const int maxStateValue;
     void initialize();
-    int size;
-    QString m_filename;
+    //int size;
+    QStringList listNames;
+
 };
 
 #endif // STANDARDTABLEMODEL_HPP

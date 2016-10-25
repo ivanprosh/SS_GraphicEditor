@@ -53,7 +53,8 @@ HEADERS += \
     $$PWD/SSobjects/ssitemdialog.h \
     $$PWD/SSobjects/ssgraphobjinfo.h \
     $$PWD/SSobjects/standardtablemodel.hpp \
-    $$PWD/SSobjects/proxymodel.hpp
+    $$PWD/SSobjects/proxymodel.hpp \
+    $$PWD/SSobjects/itemdelegate.hpp
 
 SOURCES += \
     $$PWD/main.cpp \
@@ -73,5 +74,6 @@ SOURCES += \
     $$PWD/SSobjects/ssitemdialog.cpp \
     $$PWD/SSobjects/ssgraphobjinfo.cpp \
     $$PWD/SSobjects/standardtablemodel.cpp \
-    $$PWD/SSobjects/proxymodel.cpp
+    $$PWD/SSobjects/proxymodel.cpp \
+    $$PWD/SSobjects/itemdelegate.cpp
 

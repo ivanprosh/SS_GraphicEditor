@@ -10,6 +10,10 @@ class QComboBox;
 class QLabel;
 class QDialogButtonBox;
 class StandardTableModel;
+class QGroupBox;
+class QSpinBox;
+class QTableView;
+class ProxyModel;
 
 class SSitemdialog : public QDialog
 {
@@ -28,26 +32,35 @@ public slots:
 
 private slots:
     void updateUi();
+    void stateCountChanged(int value);
 
 private:
     void createWidgets();
     void createLayout();
     void createConnections();
-
+    void restoreFilters();
     //TextEdit *textEdit;
     QDialogButtonBox *buttonBox;
 
     SSGraphicData *item;
     QPoint position;
     QGraphicsScene *scene;
-    QListWidget* listwdg;
-    QTableWidget* tableStatewdg;
+
+    //QTableWidget* tableStatewdg;
     //QString originalHtml;
-    QComboBox* TemplateName;
-    QLabel* TemplateLabel;
-    //модель таблицы
+    //QComboBox* TemplateName;
+    //виджеты
+    QLabel* stateIndexLbl;
+    QSpinBox* stateIndex;
+    QLabel* stateCountLbl;
+    QSpinBox* stateCount;
+    QListWidget* listwdg;
+    QGroupBox* filterSelectGroupBox;
+    //модель/представл. таблицы
     StandardTableModel *model;
+    ProxyModel *proxyModel;
+    QTableView* tableView;
 };
-};
+
 
 #endif // SSITEMDIALOG_H
