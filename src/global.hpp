@@ -14,6 +14,7 @@
 */
 
 #include <QGraphicsItem>
+#include <QDebug>
 
 bool isDirtyChange(QGraphicsItem::GraphicsItemChange change);
 bool isPowerOf2(int value);

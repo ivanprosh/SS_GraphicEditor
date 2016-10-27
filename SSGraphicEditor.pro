@@ -1,3 +1,4 @@
+#CONFIG += console debug
 TEMPLATE = app
 
 # Подключаем заголовочные файлы библиотеки

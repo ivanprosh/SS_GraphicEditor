@@ -26,16 +26,17 @@ public:
             QGraphicsScene *scene_=0, QWidget *parent=0);
 
     SSGraphicData *GraphicDataItem() const { return item; }
-
+    QStringList initlistNames;
 public slots:
     void accept();
 
 private slots:
     void updateUi();
-    void stateCountChanged(int value);
+    //void stateCountChanged(int value);
 
 private:
     void createWidgets();
+    void initListTemplates();
     void createLayout();
     void createConnections();
     void restoreFilters();
@@ -50,8 +51,8 @@ private:
     //QString originalHtml;
     //QComboBox* TemplateName;
     //виджеты
-    QLabel* stateIndexLbl;
-    QSpinBox* stateIndex;
+    //QLabel* stateIndexLbl;
+    //QSpinBox* stateIndex;
     QLabel* stateCountLbl;
     QSpinBox* stateCount;
     QListWidget* listwdg;
@@ -59,7 +60,7 @@ private:
     //модель/представл. таблицы
     StandardTableModel *model;
     ProxyModel *proxyModel;
-    QTableView* tableView;
+    QTableView *tableView;
 };
 
 

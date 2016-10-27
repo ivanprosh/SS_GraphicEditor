@@ -14,17 +14,21 @@
 #include "../global.hpp"
 #include "proxymodel.hpp"
 
-
 ProxyModel::ProxyModel(QObject *parent)
     : QSortFilterProxyModel(parent)
 {
     ;//m_minimumZipcode = m_maximumZipcode = InvalidZipcode;
 }
+/*
+QModelIndex ProxyModel::parent(const QModelIndex &) const {
+  return QModelIndex();
+}
 
 QModelIndex ProxyModel::mapToSource(const QModelIndex &proxyIndex) const
 {
     if (sourceModel()) {
-       return sourceModel()->index(proxyIndex.column(), proxyIndex.row());
+        return sourceModel()->index(proxyIndex.row(),proxyIndex.column());
+       //return sourceModel()->index(proxyIndex.column(), proxyIndex.row());
      } else {
        return QModelIndex();
      }
@@ -32,80 +36,82 @@ QModelIndex ProxyModel::mapToSource(const QModelIndex &proxyIndex) const
 
 QModelIndex ProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
 {
-    return index(sourceIndex.column(), sourceIndex.row(), sourceIndex);
+    //return index(sourceIndex.column(), sourceIndex.row(), sourceIndex);
+    return index(sourceIndex.row(),sourceIndex.column(), sourceIndex);
 }
 
 QModelIndex ProxyModel::index(int row, int column, const QModelIndex &) const
 {
-    return createIndex(row, column, (void*) 0);
+    //return createIndex(row, column, (void*) 0);
+    return createIndex(row,column, (void*) 0);
 }
 
 int ProxyModel::rowCount(const QModelIndex &parent) const
 {
-    return sourceModel() ? sourceModel()->columnCount() : 0;
+    //return sourceModel() ? sourceModel()->columnCount() : 0;
+    return sourceModel() ? sourceModel()->rowCount() : 0;
 }
 
 int ProxyModel::columnCount(const QModelIndex &parent) const
 {
-    return sourceModel() ? sourceModel()->rowCount() : 0;
+    //return sourceModel() ? sourceModel()->rowCount() : 0;
+    return sourceModel() ? sourceModel()->columnCount() : 0;
 }
 
 QVariant ProxyModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (!sourceModel()) { return QVariant(); }
-    Qt::Orientation new_orientation = orientation == Qt::Horizontal ?
-                Qt::Vertical : Qt::Horizontal;
-    return sourceModel()->headerData(section, new_orientation, role);
-}
 
+    //if (!sourceModel()) { return QVariant(); }
+    //Qt::Orientation new_orientation = orientation == Qt::Horizontal ?
+    //            Qt::Vertical : Qt::Horizontal;
+    //return sourceModel()->headerData(section, new_orientation, role);
+
+    return sourceModel()->headerData(section, orientation, role);
+}
+*/
 
 void ProxyModel::clearFilters()
 {
     //m_minimumZipcode = m_maximumZipcode = InvalidZipcode;
     //m_county.clear();
-    m_state=1;
+    m_CountState=1;
     invalidateFilter();
 }
-
-
-bool ProxyModel::filterAcceptsRow(int sourceRow,
+/*
+bool ProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
+{
+    qDebug() << source_row << " filterAcceptsRow";
+    return true;
+}
+*/
+bool ProxyModel::filterAcceptsRow(int source_row,
         const QModelIndex &sourceParent) const
 {
-    /*
-    if (m_minimumZipcode != InvalidZipcode ||
-        m_maximumZipcode != InvalidZipcode) {
-        QModelIndex index = sourceModel()->index(sourceRow, Zipcode,
-                                                 sourceParent);
-        if (m_minimumZipcode != InvalidZipcode &&
-            sourceModel()->data(index).toInt() < m_minimumZipcode)
-            return false;
-        if (m_maximumZipcode != InvalidZipcode &&
-            sourceModel()->data(index).toInt() > m_maximumZipcode)
-            return false;
-    }
-    */
     if (!m_name.isEmpty()) {
-        QModelIndex index = sourceModel()->index(sourceRow, 0,
+        QModelIndex index = sourceModel()->index(source_row, 0,
                                                  sourceParent);
+        qDebug() << m_name << " Filter";
         if (m_name != sourceModel()->data(index).toString())
             return false;
     }
+    if (m_CountState!=0) {
 
-    if (m_state!=0) {
-
-        QModelIndex index = sourceModel()->index(sourceRow, 1,
+        qDebug() << m_CountState << " Filter";
+        QModelIndex index = sourceModel()->index(source_row, 1,
                                                  sourceParent);
-        if (m_state != sourceModel()->data(index).toInt())
+        if (m_CountState < sourceModel()->data(index).toInt())
             return false;
     }
+    qDebug() << " Filter";
     return true;
 }
 
-void ProxyModel::setState(const int &state)
+void ProxyModel::setCountState(const int &CountState)
 {
-    if (m_state != state) {
-        m_state = state;
+    if (m_CountState != CountState) {
+        m_CountState = CountState;
         invalidateFilter();
+        qDebug() << "Invalidate!";
     }
 }
 /*

@@ -35,41 +35,44 @@ void StandardTableModel::initialize()
 {
     QStringList ColumnNames;
     ColumnNames             << "Name"
-                            << "StateIndex"
-                            << "StateFrameisCycled"
-                            << "StateFrameDelay"
-                            << "StateFrame1"
-                            << "StateFrame2"
-                            << "StateFrame3"
-                            << "StateFrame4"
-                            << "StateFrame5"
-                            << "StateFrame6"
-                            << "StateFrame7"
-                            << "StateFrame8"
-                            << "StateFrame9"
-                            << "StateFrame10"
-                            << "StateFrameTransparent1"
-                            << "StateFrameTransparent2"
-                            << "StateFrameTransparent3"
-                            << "StateFrameTransparent4"
-                            << "StateFrameTransparent5"
-                            << "StateFrameTransparent6"
-                            << "StateFrameTransparent7"
-                            << "StateFrameTransparent8"
-                            << "StateFrameTransparent9"
-                            << "StateFrameTransparent10";
+                            << "StIndex"
+                            << "StFrisCycled"
+                            << "StFrDelay"
+                            << "StFr1"
+                            << "StFr2"
+                            << "StFr3"
+                            << "StFr4"
+                            << "StFr5"
+                            << "StFr6"
+                            << "StFr7"
+                            << "StFr8"
+                            << "StFr9"
+                            << "StFr10"
+                            << "StFrTr1"
+                            << "StFrTr2"
+                            << "StFrTr3"
+                            << "StFrTr4"
+                            << "StFrTr5"
+                            << "StFrTr6"
+                            << "StFrTr7"
+                            << "StFrTr8"
+                            << "StFrTr9"
+                            << "StFrTr10";
 
     setHorizontalHeaderLabels(ColumnNames);
 
     for (int it = 0; it < listNames.size(); ++it) {
-        for(int i=1;i<=maxStateValue;i++){
+        for(int curState=1;curState<=maxStateValue;curState++){
             QList<QStandardItem*> items;
-            QStandardItem *item = new QStandardItem;
-            item->setData(listNames.at(it), Qt::EditRole);
-            items << item;
-            items << new QStandardItem(i);
-            for(int j=2;i<ColumnNames.size();j++){
+            QStandardItem *iName = new QStandardItem;
+            iName->setData(listNames.at(it),Qt::DisplayRole);
+            items << iName;
+            QStandardItem *iStateInd = new QStandardItem;
+            iStateInd->setData(curState,Qt::DisplayRole);
+            items << iStateInd;
+            for(int j=2;j<ColumnNames.size();j++){
                 items << new QStandardItem();
+                items.last()->setData(curState,Qt::DisplayRole);
             }
             appendRow(items);
         }

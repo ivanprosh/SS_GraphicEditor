@@ -396,11 +396,12 @@ void MainWindow::createConnections()
             view, SLOT(zoomIn()));
     connect(viewZoomOutAction, SIGNAL(triggered()),
             view, SLOT(zoomOut()));
-
+/*
     connect(view, SIGNAL(itemClicked(QGraphicsItem *)),
             this, SLOT(itemClicked(QGraphicsItem *)));
     connect(view, SIGNAL(itemMoved(QGraphicsItem *)),
             this, SLOT(itemMoved(QGraphicsItem *)));
+*/
     connect(this, SIGNAL(itemChanged(QObject*)),
             variantManager, SLOT(itemChanged(QObject*)));
 }
