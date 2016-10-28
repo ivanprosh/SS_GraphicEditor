@@ -14,14 +14,14 @@ class QGroupBox;
 class QSpinBox;
 class QTableView;
 class ProxyModel;
+class TemplateImage;
 
 class SSitemdialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit SSitemdialog(//QMap<QString,SSGraphicData>& GraphicData,
-                          //TextItem *item_=0,
+    explicit SSitemdialog(StandardTableModel* newmodel,
             const QPoint &position_=QPoint(),
             QGraphicsScene *scene_=0, QWidget *parent=0);
 
@@ -32,6 +32,7 @@ public slots:
 
 private slots:
     void updateUi();
+    void imageChanged(QString);
     //void stateCountChanged(int value);
 
 private:
@@ -42,7 +43,7 @@ private:
     void restoreFilters();
     //TextEdit *textEdit;
     QDialogButtonBox *buttonBox;
-
+    TemplateImage *image;
     SSGraphicData *item;
     QPoint position;
     QGraphicsScene *scene;

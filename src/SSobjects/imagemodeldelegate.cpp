@@ -12,20 +12,32 @@
 */
 
 #include "../global.hpp"
-#include "itemdelegate.hpp"
+#include "imagemodeldelegate.hpp"
 #include "proxymodel.hpp"
+#include "fileedit.h"
 //#include "zipcodespinbox.hpp"
 #include <QComboBox>
 #include <QModelIndex>
 #include <QPainter>
 #include <QStyleOptionViewItemV4>
-
+#include <QFileDialog>
 
         // adjusted gives a 3 pixel right margin
-void ItemDelegate::paint(QPainter *painter,
+void ImageModelDelegate::paint(QPainter *painter,
         const QStyleOptionViewItem &option,
         const QModelIndex &index) const
 {
+    QString filename = index.data(Qt::EditRole).toString();
+    painter->save();
+    if(option.state & QStyle::State_Selected)
+        painter->fillRect(option.rect,option.palette.highlight());
+    QPixmap pix;
+    if(filename.isEmpty() || !pix.load("resource/"+filename)){
+        pix.load(":/images/obj_icons/default_obj.png");
+    }
+    int x = option.rect.center().x()-option.rect.height()/2;
+    painter->drawPixmap(x,option.rect.y(),option.rect.height(),option.rect.height(),pix);
+    painter->restore();
     /*
     if (index.column() == Zipcode) {
         QStyleOptionViewItemV4 opt(option);
@@ -45,16 +57,26 @@ void ItemDelegate::paint(QPainter *painter,
                 QTextOption(Qt::AlignVCenter|Qt::AlignRight));
         painter->restore();
     }
-    else
     */
+
+    /*
+    if(index.column() == Zipcode){
+    }
+    else
         QStyledItemDelegate::paint(painter, option, index);
+    */
 }
 
 
-QWidget *ItemDelegate::createEditor(QWidget *parent,
+QWidget *ImageModelDelegate::createEditor(QWidget *parent,
         const QStyleOptionViewItem &option,
         const QModelIndex &index) const
 {
+    FileEdit* editor = new FileEdit(parent);
+    editor->setFilter("*.bmp");
+
+    return editor;
+
     /*
     static QStringList usStates;
     if (usStates.isEmpty())
@@ -83,13 +105,17 @@ QWidget *ItemDelegate::createEditor(QWidget *parent,
         return editor;
     }
     */
-    return QStyledItemDelegate::createEditor(parent, option, index);
+
+    //return QStyledItemDelegate::createEditor(parent, option, index);
 }
 
 
-void ItemDelegate::setEditorData(QWidget *editor,
+void ImageModelDelegate::setEditorData(QWidget *editor,
         const QModelIndex &index) const
 {
+    FileEdit* fileEditor = qobject_cast<FileEdit*>(editor);
+    QString fileName = index.model()->data(index).toString();
+    fileEditor->setFilePath(fileName);
     /*
     if (index.column() == Zipcode) {
         int value = index.model()->data(index).toInt();
@@ -106,13 +132,15 @@ void ItemDelegate::setEditorData(QWidget *editor,
     }
     else
     */
-        QStyledItemDelegate::setEditorData(editor, index);
+     //   QStyledItemDelegate::setEditorData(editor, index);
 }
 
 
-void ItemDelegate::setModelData(QWidget *editor,
+void ImageModelDelegate::setModelData(QWidget *editor,
         QAbstractItemModel *model, const QModelIndex &index) const
 {
+    FileEdit* fileEditor = qobject_cast<FileEdit*>(editor);
+    model->setData(index,fileEditor->filePath());
     /*
     if (index.column() == Zipcode) {
         ZipcodeSpinBox *spinBox =
@@ -128,5 +156,5 @@ void ItemDelegate::setModelData(QWidget *editor,
     }
     else
     */
-        QStyledItemDelegate::setModelData(editor, model, index);
+    //QStyledItemDelegate::setModelData(editor, model, index);
 }

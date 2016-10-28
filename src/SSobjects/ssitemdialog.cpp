@@ -1,5 +1,6 @@
 #include "ssitemdialog.h"
 #include "ssgraphobjinfo.h"
+#include "templateimage.h"
 #include "../aqp/alt_key.hpp"
 /*
 #include "swatch.hpp"
@@ -25,18 +26,16 @@
 #include <QTableView>
 #include <QHeaderView>
 
-#include "itemdelegate.hpp"
+#include "imagemodeldelegate.hpp"
 #include "standardtablemodel.hpp"
 #include "proxymodel.hpp"
 #include <QDebug>
 
-SSitemdialog::SSitemdialog(const QPoint &position_, QGraphicsScene *scene_,
+SSitemdialog::SSitemdialog(StandardTableModel* newmodel,const QPoint &position_, QGraphicsScene *scene_,
         QWidget *parent)
-    : QDialog(parent), position(position_), scene(scene_)
+    : QDialog(parent), position(position_), scene(scene_), model(newmodel)
 {
-    //QStringList initlistNames;
-    initlistNames << "Temp1" << "Temp2" << "Temp3";
-    model = new StandardTableModel(this,initlistNames);
+    //Testmodel = new StandardTableModel(this,QStringList()<<"Temp1"<<"Temp2"<<"Temp3");
     proxyModel = new ProxyModel(this);
     proxyModel->setSourceModel(model);
     proxyModel->setDynamicSortFilter(true);
@@ -58,8 +57,15 @@ void SSitemdialog::createWidgets()
     //QFont Labels(QApplication::font().family(),11,1);
 
     //элементы дл€ фильтрации и общих настроек
-    filterSelectGroupBox = new QGroupBox(tr("Filter"));
+    filterSelectGroupBox = new QGroupBox(tr("Properties"));
     filterSelectGroupBox->setMaximumWidth(100);
+    //изображение
+    //QLabel* LabelImage = new QLabel(trUtf8("Ўаблон(изображение)"));
+    image = new TemplateImage(this);
+    image->setFixedSize(100,100);
+    //image.load(":/images/obj_icons/default_obj.png");
+    image->setPixmap(QPixmap(":/images/obj_icons/default_obj.png"));
+
 //    //индекс состо€ни€
 //    stateIndexLbl = new QLabel(tr("Index state:"));
 //    stateIndex = new QSpinBox;
@@ -92,7 +98,7 @@ void SSitemdialog::createWidgets()
                                      QDialogButtonBox::Cancel);
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     buttonBox->button(QDialogButtonBox::Ok)->setIcon(
-            style()->standardIcon(QStyle::SP_DialogOkButton));
+            style()->standardIcon(QStyle::SP_DialogApplyButton));
     buttonBox->button(QDialogButtonBox::Cancel)->setIcon(
             style()->standardIcon(QStyle::SP_DialogCancelButton));
     //список существующих шаблонов
@@ -108,14 +114,14 @@ void SSitemdialog::createWidgets()
 
     //таблица свойств
     tableView = new QTableView;
+    tableView->setItemDelegateForColumn(5,new ImageModelDelegate(this));
     tableView->setModel(proxyModel);
-    tableView->setItemDelegate(new ItemDelegate(this));
     tableView->verticalHeader()->setDefaultAlignment(
                 Qt::AlignVCenter|Qt::AlignRight);
     tableView->resizeColumnsToContents();
     //tableView->resizeRowsToContents();
     tableView->setSelectionMode(QAbstractItemView::NoSelection);
-    tableView->verticalHeader()->setVisible(false);
+    //tableView->verticalHeader()->setVisible(false);
     //tableView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     tableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -138,17 +144,17 @@ void SSitemdialog::initListTemplates()
 {
     QListWidgetItem *Test1 = new QListWidgetItem(listwdg);
     Test1->setIcon(QIcon(":/images/obj_icons/dd.bmp"));
-    Test1->setText(initlistNames.at(0));
+    Test1->setText("T1");
     Test1->setTextAlignment(Qt::AlignHCenter);
     Test1->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     QListWidgetItem *Test2 = new QListWidgetItem(listwdg);
     Test2->setIcon(QIcon(":/images/obj_icons/dp.bmp"));
-    Test2->setText(initlistNames.at(1));
+    Test2->setText("T2");
     Test2->setTextAlignment(Qt::AlignHCenter);
     Test2->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     QListWidgetItem *Test3 = new QListWidgetItem(listwdg);
     Test3->setIcon(QIcon(":/images/obj_icons/dt.bmp"));
-    Test3->setText(initlistNames.at(2));
+    Test3->setText("T3");
     Test3->setTextAlignment(Qt::AlignHCenter);
     Test3->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 }
@@ -157,10 +163,11 @@ void SSitemdialog::initListTemplates()
 void SSitemdialog::createLayout()
 {
     QGridLayout *keyCells = new QGridLayout;
-    keyCells->addWidget(stateCountLbl,0,0,Qt::AlignLeft);
+    keyCells->addWidget(image,0,0,Qt::AlignLeft);
+    keyCells->addWidget(stateCountLbl,1,0,Qt::AlignLeft);
     keyCells->setColumnMinimumWidth(1, 10);
     //keyCells->addWidget(stateIndexLbl,0,2,Qt::AlignLeft);
-    keyCells->addWidget(stateCount,1,0,Qt::AlignLeft);
+    keyCells->addWidget(stateCount,2,0,Qt::AlignLeft);
     //keyCells->addWidget(stateIndex,1,2,Qt::AlignLeft);
     filterSelectGroupBox->setLayout(keyCells);
 
@@ -195,7 +202,7 @@ void SSitemdialog::createConnections()
                 model, SLOT(stateCountChanged(int)));
     connect(listwdg, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
                 this, SLOT(updateUi()));
-
+    connect(image, SIGNAL(imageChanged(QString)),this, SLOT(imageChanged(QString)));
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
@@ -206,6 +213,11 @@ void SSitemdialog::updateUi()
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(
             listwdg->selectedItems().size()==1);
     restoreFilters();
+}
+
+void SSitemdialog::imageChanged(QString)
+{
+
 }
 
 //void SSitemdialog::stateCountChanged(int value)
@@ -235,5 +247,6 @@ void SSitemdialog::accept()
     item->update();
     QDialog::accept();
     */
+
 }
 

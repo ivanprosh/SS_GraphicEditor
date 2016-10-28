@@ -40,5 +40,6 @@
         <file>images/obj_icons/dt.bmp</file>
         <file>images/obj_icons/IM_small_cmn.bmp</file>
         <file>images/obj_icons/rpi.bmp</file>
+        <file>images/obj_icons/default_obj.png</file>
     </qresource>
 </RCC>

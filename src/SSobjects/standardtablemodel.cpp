@@ -61,20 +61,22 @@ void StandardTableModel::initialize()
 
     setHorizontalHeaderLabels(ColumnNames);
 
-    for (int it = 0; it < listNames.size(); ++it) {
-        for(int curState=1;curState<=maxStateValue;curState++){
-            QList<QStandardItem*> items;
-            QStandardItem *iName = new QStandardItem;
-            iName->setData(listNames.at(it),Qt::DisplayRole);
-            items << iName;
-            QStandardItem *iStateInd = new QStandardItem;
-            iStateInd->setData(curState,Qt::DisplayRole);
-            items << iStateInd;
-            for(int j=2;j<ColumnNames.size();j++){
-                items << new QStandardItem();
-                items.last()->setData(curState,Qt::DisplayRole);
+    if(!listNames.empty()){
+        for (int it = 0; it < listNames.size(); ++it) {
+            for(int curState=1;curState<=maxStateValue;curState++){
+                QList<QStandardItem*> items;
+                QStandardItem *iName = new QStandardItem;
+                iName->setData(listNames.at(it),Qt::DisplayRole);
+                items << iName;
+                QStandardItem *iStateInd = new QStandardItem;
+                iStateInd->setData(curState,Qt::DisplayRole);
+                items << iStateInd;
+                for(int j=2;j<ColumnNames.size();j++){
+                    items << new QStandardItem();
+                    items.last()->setData(curState,Qt::DisplayRole);
+                }
+                appendRow(items);
             }
-            appendRow(items);
         }
     }
 }

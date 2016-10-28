@@ -16,6 +16,8 @@ class QtVariantProperty;
 class QtProperty;
 class TPropManager;
 class SSGraphicData;
+class StandardTableModel;
+class SSitemdialog;
 
 class MainWindow : public QMainWindow
 {
@@ -130,15 +132,16 @@ private:
     QGraphicsItemGroup *gridGroup;
     QPoint previousPoint;
     QGraphicsItem *currentItem;
-
+    SSitemdialog *dialog;
     // objects-properties framework
     //class QtVariantPropertyManager *variantManager;
     //class QtVariantPropertyManager *m_readOnlyManager;
     class TPropManager *variantManager;
     //class TPropManager *m_readOnlyManager;
-
     class QtTreePropertyBrowser *propertyEditor;
+
     QMap<QString,SSGraphicData> SSObjectsInfo;
+    StandardTableModel *model;
 
     int addOffset;
     int pasteOffset;

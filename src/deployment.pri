@@ -54,7 +54,9 @@ HEADERS += \
     $$PWD/SSobjects/ssgraphobjinfo.h \
     $$PWD/SSobjects/standardtablemodel.hpp \
     $$PWD/SSobjects/proxymodel.hpp \
-    $$PWD/SSobjects/itemdelegate.hpp
+    $$PWD/SSobjects/templateimage.h \
+    $$PWD/SSobjects/imagemodeldelegate.hpp \
+    $$PWD/SSobjects/fileedit.h
 
 SOURCES += \
     $$PWD/main.cpp \
@@ -75,5 +77,7 @@ SOURCES += \
     $$PWD/SSobjects/ssgraphobjinfo.cpp \
     $$PWD/SSobjects/standardtablemodel.cpp \
     $$PWD/SSobjects/proxymodel.cpp \
-    $$PWD/SSobjects/itemdelegate.cpp
+    $$PWD/SSobjects/templateimage.cpp \
+    $$PWD/SSobjects/imagemodeldelegate.cpp \
+    $$PWD/SSobjects/fileedit.cpp
 

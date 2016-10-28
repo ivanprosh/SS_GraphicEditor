@@ -11,6 +11,7 @@
 #include "boxitem.hpp"
 #include "SSobjects/ssgraphobjinfo.h"
 #include "SSobjects/ssitemdialog.h"
+#include "SSobjects/standardtablemodel.hpp"
 //#include "brushwidget.hpp"
 //#include "penwidget.hpp"
 #include "smileyitem.hpp"
@@ -103,9 +104,10 @@ QObject *qObjectFrom(QGraphicsItem *item)
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), gridGroup(0), addOffset(OffsetIncrement),
-      pasteOffset(OffsetIncrement), currentItem(0)
+      pasteOffset(OffsetIncrement), currentItem(0),dialog(nullptr)
 {
     printer = new QPrinter(QPrinter::HighResolution);
+    model = new StandardTableModel(this,QStringList()<<"T1"<<"T2"<<"T3");
 
     createSceneAndView();
     createActions();
@@ -941,13 +943,13 @@ void MainWindow::editSSobj()
     QObject *item = 0;
     int type = action->data().toInt();
     if (type == SSIndItemType){
-//        item = new BoxItem(QRect(position(), QSize(90, 30)), scene);
-//    else if (type == SSIndItemType)
-//        item = new SmileyItem(position(), scene);
-//    else if (type == TextItemType) {
-        SSitemdialog dialog(position(), scene, this);
-        if (dialog.exec())
-            item = dialog.GraphicDataItem();
+        if(!dialog){
+            dialog = new SSitemdialog(model,position(), scene, this);
+        } else {
+            dialog->show();
+        }
+        if (dialog->exec())
+            item = dialog->GraphicDataItem();
     }
     if (item) {
         connectItem(item);

@@ -21,12 +21,12 @@ class QPainter;
 class QStyleOptionViewItem;
 
 
-class ItemDelegate : public QStyledItemDelegate
+class ImageModelDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
 public:
-    explicit ItemDelegate(QObject *parent=0)
+    explicit ImageModelDelegate(QObject *parent=0)
         : QStyledItemDelegate(parent) {}
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
