@@ -153,6 +153,7 @@ void SSitemdialog::createUniqListModel(QListView *curlistview, int column)
     delete curlistview->model();
     UniqueProxyModel *uniqueProxyModel = new UniqueProxyModel(column,
                                                               this);
+    uniqueProxyModel->setDynamicSortFilter(true);
     uniqueProxyModel->setSourceModel(model);
     uniqueProxyModel->sort(column, Qt::AscendingOrder);
     curlistview->setModel(uniqueProxyModel);
@@ -231,13 +232,8 @@ void SSitemdialog::templateChanged(const QModelIndex& index){
    updateUi();
 }
 void SSitemdialog::imageChanged(const QPixmap&pix){
-   qDebug() << "Change image";
-   QList<QStandardItem*> items= model->findItems(listview->currentIndex().data().toString(),Qt::MatchExactly,Name);
-   //items.first()->setData(listview->currentIndex().data().toString(),Qt::DisplayRole);
-   items.first()->setData(pix,Qt::DecorationRole);
-   listview->update(listview->currentIndex());
-   //listview->update
-   //model->setData(listview->currentIndex(),pix,Qt::DecorationRole);
+   listview->model()->setData(listview->currentIndex(),pix,Qt::DecorationRole);
+   qobject_cast<UniqueProxyModel *>(listview->model())->update();
 }
 
 void SSitemdialog::updateUi()
@@ -258,7 +254,8 @@ void SSitemdialog::restoreFilters()
     proxyModel->setName(listview->currentIndex().isValid() ?
                             listview->currentIndex().data(Qt::DisplayRole).toString() : QString());
     proxyModel->setCountState(stateCount->value());
-    qDebug() << "Name^ " << listview->currentIndex().data(Qt::DisplayRole).toString();
+
+    qDebug() << "Listview counts " << listview->model()->rowCount();
     //reportFilterEffect();
 }
 

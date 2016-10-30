@@ -90,19 +90,19 @@ bool ProxyModel::filterAcceptsRow(int source_row,
     if (!m_name.isEmpty()) {
         QModelIndex index = sourceModel()->index(source_row, 0,
                                                  sourceParent);
-        qDebug() << m_name << " Filter";
+        //qDebug() << m_name << " Filter";
         if (m_name != sourceModel()->data(index).toString())
             return false;
     }
     if (m_CountState!=0) {
 
-        qDebug() << m_CountState << " Filter";
+        //qDebug() << m_CountState << " Filter";
         QModelIndex index = sourceModel()->index(source_row, 1,
                                                  sourceParent);
         if (m_CountState < sourceModel()->data(index).toInt())
             return false;
     }
-    qDebug() << " Filter";
+    //qDebug() << " Filter";
     return true;
 }
 
@@ -111,7 +111,7 @@ void ProxyModel::setCountState(const int &CountState)
     if (m_CountState != CountState) {
         m_CountState = CountState;
         invalidateFilter();
-        qDebug() << "Invalidate!";
+        //qDebug() << "Invalidate!";
     }
 }
 /*
