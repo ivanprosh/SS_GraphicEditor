@@ -62,11 +62,13 @@ void StandardTableModel::initialize()
     setHorizontalHeaderLabels(ColumnNames);
 
     if(!listNames.empty()){
-        for (int it = 0; it < listNames.size(); ++it) {
+        for (int it = 0; it < listNames.size(); ++it) {         
             for(int curState=1;curState<=maxStateValue;curState++){
                 QList<QStandardItem*> items;
                 QStandardItem *iName = new QStandardItem;
                 iName->setData(listNames.at(it),Qt::DisplayRole);
+                if(curState==1)
+                    iName->setData(QPixmap(":/images/obj_icons/dp.bmp"),Qt::DecorationRole);
                 items << iName;
                 QStandardItem *iStateInd = new QStandardItem;
                 iStateInd->setData(curState,Qt::DisplayRole);
@@ -74,6 +76,9 @@ void StandardTableModel::initialize()
                 for(int j=2;j<ColumnNames.size();j++){
                     items << new QStandardItem();
                     items.last()->setData(curState,Qt::DisplayRole);
+                    items.last()->setCheckable(true);
+                    items.last()->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|
+                                           Qt::ItemIsEditable|Qt::ItemIsUserCheckable);
                 }
                 appendRow(items);
             }

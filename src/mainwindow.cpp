@@ -398,6 +398,8 @@ void MainWindow::createConnections()
             view, SLOT(zoomIn()));
     connect(viewZoomOutAction, SIGNAL(triggered()),
             view, SLOT(zoomOut()));
+    connect(model, SIGNAL(itemChanged(QStandardItem*)),
+                this, SLOT(setDirty()));
 /*
     connect(view, SIGNAL(itemClicked(QGraphicsItem *)),
             this, SLOT(itemClicked(QGraphicsItem *)));

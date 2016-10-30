@@ -15,7 +15,13 @@ void TemplateImage::mousePressEvent(QMouseEvent *me)
        this->setPixmap(img);
        QFileInfo fileInfo(path);
        qDebug() << "File " << fileInfo.fileName();
-       emit imageChanged(fileInfo.fileName());
+       emit imageChanged(img);
    }
 }
+/*
+void TemplateImage::setPixmap(const QPixmap &img)
+{
+    img = img.scaled(this->size(),Qt::KeepAspectRatio,Qt::SmoothTransformation);
 
+}
+*/

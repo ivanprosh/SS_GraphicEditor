@@ -3,6 +3,7 @@
 #include <QToolButton>
 #include <QFileDialog>
 #include <QFocusEvent>
+#include <QFileInfo>
 
 FileEdit::FileEdit(QWidget *parent)
     : QWidget(parent)
@@ -31,8 +32,10 @@ void FileEdit::buttonClicked()
     QString filePath = QFileDialog::getOpenFileName(this, tr("Choose a file"), theLineEdit->text(), theFilter);
     if (filePath.isNull())
         return;
-    theLineEdit->setText(filePath);
-    emit filePathChanged(filePath);
+    QFileInfo fileInfo(filePath);
+    //qDebug() << "File " << fileInfo.fileName();
+    theLineEdit->setText(fileInfo.fileName());
+    emit filePathChanged(fileInfo.fileName());
 }
 
 void FileEdit::focusInEvent(QFocusEvent *e)

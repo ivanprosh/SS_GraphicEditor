@@ -14,7 +14,7 @@ protected:
     virtual void mousePressEvent(QMouseEvent* me);
 
 signals:
-    void imageChanged(QString name);
+    void imageChanged(const QPixmap& img);
 public slots:
     //void setPixmap(const QPixmap&);
 };

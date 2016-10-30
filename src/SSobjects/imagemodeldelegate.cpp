@@ -29,6 +29,7 @@ void ImageModelDelegate::paint(QPainter *painter,
 {
     QString filename = index.data(Qt::EditRole).toString();
     painter->save();
+    painter->setRenderHints(QPainter::Antialiasing);
     if(option.state & QStyle::State_Selected)
         painter->fillRect(option.rect,option.palette.highlight());
     QPixmap pix;
@@ -38,26 +39,6 @@ void ImageModelDelegate::paint(QPainter *painter,
     int x = option.rect.center().x()-option.rect.height()/2;
     painter->drawPixmap(x,option.rect.y(),option.rect.height(),option.rect.height(),pix);
     painter->restore();
-    /*
-    if (index.column() == Zipcode) {
-        QStyleOptionViewItemV4 opt(option);
-        initStyleOption(&opt, index);
-        QString text = QString("%1").arg(opt.text.toInt(),
-                                         5, 10, QChar('0'));
-        painter->save();
-        painter->setRenderHints(QPainter::Antialiasing|
-                                QPainter::TextAntialiasing);
-        if (opt.state & QStyle::State_Selected) {
-            painter->fillRect(opt.rect, opt.palette.highlight());
-            painter->setPen(opt.palette.highlightedText().color());
-        }
-        else
-            painter->setPen(opt.palette.windowText().color());
-        painter->drawText(opt.rect.adjusted(0, 0, -3, 0), text,
-                QTextOption(Qt::AlignVCenter|Qt::AlignRight));
-        painter->restore();
-    }
-    */
 
     /*
     if(index.column() == Zipcode){
@@ -76,36 +57,6 @@ QWidget *ImageModelDelegate::createEditor(QWidget *parent,
     editor->setFilter("*.bmp");
 
     return editor;
-
-    /*
-    static QStringList usStates;
-    if (usStates.isEmpty())
-        usStates << "(Unknown)" << "Alabama" << "Alaska"
-            << "Arizona" << "Arkansas" << "California"
-            << "Colorado" << "Connecticut" << "Delaware"
-            << "District Of Columbia" << "Florida" << "Georgia"
-            << "Hawaii" << "Idaho" << "Illinois" << "Indiana"
-            << "Iowa" << "Kansas" << "Kentucky" << "Louisiana"
-            << "Maine" << "Maryland" << "Massachusetts"
-            << "Michigan" << "Minnesota" << "Mississippi"
-            << "Missouri" << "Montana" << "Nebraska" << "Nevada"
-            << "New Hampshire" << "New Jersey" << "New Mexico"
-            << "New York" << "North Carolina" << "North Dakota"
-            << "Ohio" << "Oklahoma" << "Oregon" << "Pennsylvania"
-            << "Rhode Island" << "South Carolina"
-            << "South Dakota" << "State" << "Tennessee" << "Texas"
-            << "Utah" << "Vermont" << "Virginia" << "Washington"
-            << "West Virginia" << "Wisconsin" << "Wyoming";
-
-    if (index.column() == Zipcode)
-        return new ZipcodeSpinBox(parent);
-    if (index.column() == State) {
-        QComboBox *editor = new QComboBox(parent);
-        editor->addItems(usStates);
-        return editor;
-    }
-    */
-
     //return QStyledItemDelegate::createEditor(parent, option, index);
 }
 
@@ -141,20 +92,6 @@ void ImageModelDelegate::setModelData(QWidget *editor,
 {
     FileEdit* fileEditor = qobject_cast<FileEdit*>(editor);
     model->setData(index,fileEditor->filePath());
-    /*
-    if (index.column() == Zipcode) {
-        ZipcodeSpinBox *spinBox =
-                qobject_cast<ZipcodeSpinBox*>(editor);
-        Q_ASSERT(spinBox);
-        spinBox->interpretText();
-        model->setData(index, spinBox->value());
-    }
-    else if (index.column() == State) {
-        QComboBox *comboBox = qobject_cast<QComboBox*>(editor);
-        Q_ASSERT(comboBox);
-        model->setData(index, comboBox->currentText());
-    }
-    else
-    */
+
     //QStyledItemDelegate::setModelData(editor, model, index);
 }

@@ -56,7 +56,10 @@ HEADERS += \
     $$PWD/SSobjects/proxymodel.hpp \
     $$PWD/SSobjects/templateimage.h \
     $$PWD/SSobjects/imagemodeldelegate.hpp \
-    $$PWD/SSobjects/fileedit.h
+    $$PWD/SSobjects/fileedit.h \
+    $$PWD/SSobjects/templmodelinfo.h \
+    $$PWD/SSobjects/checkboxdelegate.h \
+    $$PWD/SSobjects/uniqueproxymodel.hpp
 
 SOURCES += \
     $$PWD/main.cpp \
@@ -79,5 +82,7 @@ SOURCES += \
     $$PWD/SSobjects/proxymodel.cpp \
     $$PWD/SSobjects/templateimage.cpp \
     $$PWD/SSobjects/imagemodeldelegate.cpp \
-    $$PWD/SSobjects/fileedit.cpp
+    $$PWD/SSobjects/fileedit.cpp \
+    $$PWD/SSobjects/checkboxdelegate.cpp \
+    $$PWD/SSobjects/uniqueproxymodel.cpp
 

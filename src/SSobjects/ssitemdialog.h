@@ -4,7 +4,7 @@
 #include <QDialog>
 class SSGraphicData;
 class QGraphicsScene;
-class QListWidget;
+class QListView;
 class QTableWidget;
 class QComboBox;
 class QLabel;
@@ -31,8 +31,9 @@ public slots:
     void accept();
 
 private slots:
+    void templateChanged(const QModelIndex& index);
     void updateUi();
-    void imageChanged(QString);
+    void imageChanged(const QPixmap&);
     //void stateCountChanged(int value);
 
 private:
@@ -56,12 +57,14 @@ private:
     //QSpinBox* stateIndex;
     QLabel* stateCountLbl;
     QSpinBox* stateCount;
-    QListWidget* listwdg;
+    QListView* listview;
     QGroupBox* filterSelectGroupBox;
     //модель/представл. таблицы
     StandardTableModel *model;
     ProxyModel *proxyModel;
     QTableView *tableView;
+
+    void createUniqListModel(QListView *curlistview, int column);
 };
 
 

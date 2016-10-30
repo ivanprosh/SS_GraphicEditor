@@ -1,7 +1,10 @@
 #include "ssitemdialog.h"
 #include "ssgraphobjinfo.h"
 #include "templateimage.h"
+#include "templmodelinfo.h"
+#include "checkboxdelegate.h"
 #include "../aqp/alt_key.hpp"
+#include "uniqueproxymodel.hpp"
 /*
 #include "swatch.hpp"
 #include "textedit.hpp"
@@ -58,7 +61,7 @@ void SSitemdialog::createWidgets()
 
     //элементы для фильтрации и общих настроек
     filterSelectGroupBox = new QGroupBox(tr("Properties"));
-    filterSelectGroupBox->setMaximumWidth(100);
+    filterSelectGroupBox->setMaximumWidth(150);
     //изображение
     //QLabel* LabelImage = new QLabel(trUtf8("Шаблон(изображение)"));
     image = new TemplateImage(this);
@@ -102,26 +105,32 @@ void SSitemdialog::createWidgets()
     buttonBox->button(QDialogButtonBox::Cancel)->setIcon(
             style()->standardIcon(QStyle::SP_DialogCancelButton));
     //список существующих шаблонов
-    listwdg = new QListWidget(this);
-    listwdg->setIconSize(QSize(48, 48));
-    listwdg->setSelectionMode(QAbstractItemView::SingleSelection);
-    listwdg->setViewMode(QListView::IconMode);
-    listwdg->setMovement(QListView::Static);
-    listwdg->setSpacing(10);
+    listview = new QListView(this);
+    listview->setIconSize(QSize(48, 48));
+    listview->setSelectionMode(QAbstractItemView::SingleSelection);
+    listview->setViewMode(QListView::IconMode);
+    listview->setMovement(QListView::Static);
+    listview->setSpacing(10);
     //listwdg->setWidth(200);
-    initListTemplates();
-    listwdg->setCurrentRow(0);
+    //initListTemplates();
+    //listview->setCurrentRow(0);
+    createUniqListModel(listview,Name);
 
     //таблица свойств
     tableView = new QTableView;
-    tableView->setItemDelegateForColumn(5,new ImageModelDelegate(this));
+
+    for(int i=StFr1;i<=StFr10;i++)
+        tableView->setItemDelegateForColumn(i,new ImageModelDelegate(this));
+    for(int i=StFrTr1;i<=StFrTr10;i++)
+        tableView->setItemDelegateForColumn(i,new CheckBoxDelegate(this));
+
     tableView->setModel(proxyModel);
     tableView->verticalHeader()->setDefaultAlignment(
                 Qt::AlignVCenter|Qt::AlignRight);
     tableView->resizeColumnsToContents();
     //tableView->resizeRowsToContents();
     tableView->setSelectionMode(QAbstractItemView::NoSelection);
-    //tableView->verticalHeader()->setVisible(false);
+    tableView->verticalHeader()->setVisible(false);
     //tableView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     tableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -139,24 +148,35 @@ void SSitemdialog::createWidgets()
     //if (item)
     //textEdit->setHtml(item->toHtml());
 }
-
+void SSitemdialog::createUniqListModel(QListView *curlistview, int column)
+{
+    delete curlistview->model();
+    UniqueProxyModel *uniqueProxyModel = new UniqueProxyModel(column,
+                                                              this);
+    uniqueProxyModel->setSourceModel(model);
+    uniqueProxyModel->sort(column, Qt::AscendingOrder);
+    curlistview->setModel(uniqueProxyModel);
+    curlistview->setModelColumn(column);
+}
 void SSitemdialog::initListTemplates()
 {
-    QListWidgetItem *Test1 = new QListWidgetItem(listwdg);
+    /*
+    QListWidgetItem *Test1 = new QListWidgetItem(listview);
     Test1->setIcon(QIcon(":/images/obj_icons/dd.bmp"));
     Test1->setText("T1");
     Test1->setTextAlignment(Qt::AlignHCenter);
     Test1->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    QListWidgetItem *Test2 = new QListWidgetItem(listwdg);
+    QListWidgetItem *Test2 = new QListWidgetItem(listview);
     Test2->setIcon(QIcon(":/images/obj_icons/dp.bmp"));
     Test2->setText("T2");
     Test2->setTextAlignment(Qt::AlignHCenter);
     Test2->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    QListWidgetItem *Test3 = new QListWidgetItem(listwdg);
+    QListWidgetItem *Test3 = new QListWidgetItem(listview);
     Test3->setIcon(QIcon(":/images/obj_icons/dt.bmp"));
     Test3->setText("T3");
     Test3->setTextAlignment(Qt::AlignHCenter);
     Test3->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    */
 }
 
 
@@ -173,7 +193,7 @@ void SSitemdialog::createLayout()
 
     QHBoxLayout *topLayout = new QHBoxLayout;
     topLayout->addWidget(filterSelectGroupBox);
-    topLayout->addWidget(listwdg);
+    topLayout->addWidget(listview);
     //left->addWidget(tableView);
     QVBoxLayout *worklayout = new QVBoxLayout;
     worklayout->addLayout(topLayout);
@@ -185,39 +205,46 @@ void SSitemdialog::createLayout()
     mainlayout->addWidget(buttonBox);
     */
     setLayout(worklayout);
-    listwdg->setFocus();
+    listview->setFocus();
 }
 
 
 void SSitemdialog::createConnections()
 {
     //connect(textEdit, SIGNAL(textChanged()), this, SLOT(updateUi()));
-    //connect(model, SIGNAL(itemChanged(QStandardItem*)),
-    //            this, SLOT(setDirty()));
 //    connect(stateIndex, SIGNAL(valueChanged(int)),
 //                this, SLOT(updateUi()));
     connect(stateCount, SIGNAL(valueChanged(int)),
                 this, SLOT(updateUi()));
     connect(stateCount, SIGNAL(valueChanged(int)),
                 model, SLOT(stateCountChanged(int)));
-    connect(listwdg, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
-                this, SLOT(updateUi()));
-    connect(image, SIGNAL(imageChanged(QString)),this, SLOT(imageChanged(QString)));
+    connect(listview, SIGNAL(pressed(QModelIndex)),
+                this, SLOT(templateChanged(QModelIndex)));
+    //connect(listview, SIGNAL(pressed(QModelIndex)),image, SLOT(imageChanged(QString)));
+    connect(image, SIGNAL(imageChanged(QPixmap)),this, SLOT(imageChanged(QPixmap)));
+
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
-
+void SSitemdialog::templateChanged(const QModelIndex& index){
+   image->setPixmap(index.data(Qt::DecorationRole).value<QPixmap>());
+   updateUi();
+}
+void SSitemdialog::imageChanged(const QPixmap&pix){
+   qDebug() << "Change image";
+   QList<QStandardItem*> items= model->findItems(listview->currentIndex().data().toString(),Qt::MatchExactly,Name);
+   //items.first()->setData(listview->currentIndex().data().toString(),Qt::DisplayRole);
+   items.first()->setData(pix,Qt::DecorationRole);
+   listview->update(listview->currentIndex());
+   //listview->update
+   //model->setData(listview->currentIndex(),pix,Qt::DecorationRole);
+}
 
 void SSitemdialog::updateUi()
 {
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(
-            listwdg->selectedItems().size()==1);
+            listview->currentIndex().isValid());
     restoreFilters();
-}
-
-void SSitemdialog::imageChanged(QString)
-{
-
 }
 
 //void SSitemdialog::stateCountChanged(int value)
@@ -228,9 +255,10 @@ void SSitemdialog::imageChanged(QString)
 //}
 void SSitemdialog::restoreFilters()
 {
-    proxyModel->setName(listwdg->selectedItems().size()==1 ?
-                            listwdg->currentItem()->text() : QString());
+    proxyModel->setName(listview->currentIndex().isValid() ?
+                            listview->currentIndex().data(Qt::DisplayRole).toString() : QString());
     proxyModel->setCountState(stateCount->value());
+    qDebug() << "Name^ " << listview->currentIndex().data(Qt::DisplayRole).toString();
     //reportFilterEffect();
 }
 
