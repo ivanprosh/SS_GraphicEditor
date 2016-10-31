@@ -11,6 +11,7 @@
 #include "textitem.hpp"
 #include "SSitemdialog.hpp"
 */
+#include <QAbstractButton>
 #include <QApplication>
 #include <QDialogButtonBox>
 #include <QGraphicsScene>
@@ -99,6 +100,9 @@ void SSitemdialog::createWidgets()
     //кнопки ок/отмена
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok|
                                      QDialogButtonBox::Cancel);
+    QPushButton* AddTemplate = new QPushButton(this);
+    AddTemplate->setCheckable(true);
+    buttonBox->addButton(AddTemplate,QDialogButtonBox::ActionRole);
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     buttonBox->button(QDialogButtonBox::Ok)->setIcon(
             style()->standardIcon(QStyle::SP_DialogApplyButton));
@@ -119,6 +123,8 @@ void SSitemdialog::createWidgets()
     //таблица свойств
     tableView = new QTableView;
 
+    for(int i=StFrTr1;i<=StFrTr10;i++)
+        tableView->setItemDelegateForColumn(i,new CheckBoxDelegate(this));
     for(int i=StFr1;i<=StFr10;i++)
         tableView->setItemDelegateForColumn(i,new ImageModelDelegate(this));
     for(int i=StFrTr1;i<=StFrTr10;i++)
@@ -153,7 +159,7 @@ void SSitemdialog::createUniqListModel(QListView *curlistview, int column)
     delete curlistview->model();
     UniqueProxyModel *uniqueProxyModel = new UniqueProxyModel(column,
                                                               this);
-    uniqueProxyModel->setDynamicSortFilter(true);
+    uniqueProxyModel->setDynamicSortFilter(false);
     uniqueProxyModel->setSourceModel(model);
     uniqueProxyModel->sort(column, Qt::AscendingOrder);
     curlistview->setModel(uniqueProxyModel);
@@ -212,28 +218,36 @@ void SSitemdialog::createLayout()
 
 void SSitemdialog::createConnections()
 {
-    //connect(textEdit, SIGNAL(textChanged()), this, SLOT(updateUi()));
-//    connect(stateIndex, SIGNAL(valueChanged(int)),
-//                this, SLOT(updateUi()));
     connect(stateCount, SIGNAL(valueChanged(int)),
                 this, SLOT(updateUi()));
     connect(stateCount, SIGNAL(valueChanged(int)),
                 model, SLOT(stateCountChanged(int)));
+
+    connect(model, SIGNAL(TemplateNameChanged()),
+                    this, SLOT(updateUi()));
     connect(listview, SIGNAL(pressed(QModelIndex)),
                 this, SLOT(templateChanged(QModelIndex)));
-    //connect(listview, SIGNAL(pressed(QModelIndex)),image, SLOT(imageChanged(QString)));
+
     connect(image, SIGNAL(imageChanged(QPixmap)),this, SLOT(imageChanged(QPixmap)));
 
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttonBox, SIGNAL(clicked(QAbstractButton *)), this, SLOT(buttonClicked(QAbstractButton *)));
 }
+
 void SSitemdialog::templateChanged(const QModelIndex& index){
    image->setPixmap(index.data(Qt::DecorationRole).value<QPixmap>());
    updateUi();
 }
+
 void SSitemdialog::imageChanged(const QPixmap&pix){
    listview->model()->setData(listview->currentIndex(),pix,Qt::DecorationRole);
-   qobject_cast<UniqueProxyModel *>(listview->model())->update();
+   //qobject_cast<UniqueProxyModel *>(listview->model())->update();
+}
+
+void SSitemdialog::buttonClicked(QAbstractButton *)
+{
+    ;
 }
 
 void SSitemdialog::updateUi()

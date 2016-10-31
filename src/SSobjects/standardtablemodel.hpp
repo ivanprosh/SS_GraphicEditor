@@ -27,7 +27,10 @@ public:
     void clear();
     void load(const QString &filename=QString());
     void save(const QString &filename=QString());
-
+    bool setData(const QModelIndex &index, const QVariant &value,
+                     int role=Qt::EditRole);
+signals:
+    void TemplateNameChanged();
 public slots:
     void stateCountChanged(int value);
 

@@ -14,6 +14,7 @@
 #include "../aqp/aqp.hpp"
 #include "../global.hpp"
 #include "standardtablemodel.hpp"
+#include "templmodelinfo.h"
 #include <QDataStream>
 #include <QFile>
 
@@ -73,10 +74,11 @@ void StandardTableModel::initialize()
                 QStandardItem *iStateInd = new QStandardItem;
                 iStateInd->setData(curState,Qt::DisplayRole);
                 items << iStateInd;
-                for(int j=2;j<ColumnNames.size();j++){
+                for(int j=StFrisCycled;j<ColumnNames.size();j++){
                     items << new QStandardItem();
                     items.last()->setData(curState,Qt::DisplayRole);
-                    items.last()->setCheckable(true);
+                    if(j==StFrisCycled || j>StFr10)
+                        items.last()->setCheckable(true);
                     items.last()->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|
                                            Qt::ItemIsEditable|Qt::ItemIsUserCheckable);
                 }
@@ -163,6 +165,30 @@ void StandardTableModel::save(const QString &filename)
             << item(row, County)->text() << item(row, State)->text();
     }
     */
+}
+
+bool StandardTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (!index.isValid() || role != Qt::EditRole)
+        return false;
+    //ZipcodeItem &item = zipcodes[index.row()];
+    if (index.column()==Name) {
+        QList<QStandardItem *> childs = findItems(value.toString(), Qt::MatchExactly, index.column());
+        if(!childs.isEmpty()) return false;
+        else {
+            QString oldName = index.data().toString();
+            QModelIndex it = index;
+            while(it.data()==oldName){
+                QStandardItemModel::setData(it,value,role);
+                it=QStandardItemModel::index(it.row()+1,index.column());
+            }
+            emit TemplateNameChanged();
+            return true;
+        }
+    }
+    //emit dataChanged(index, index);
+    //return true;
+    return QStandardItemModel::setData(index,value,role);
 }
 
 void StandardTableModel::stateCountChanged(int value)

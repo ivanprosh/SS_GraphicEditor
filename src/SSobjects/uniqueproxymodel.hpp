@@ -26,13 +26,16 @@ public:
     explicit UniqueProxyModel(int column, QObject *parent=0)
         : QSortFilterProxyModel(parent), Column(column) {}
 
-    void update(){cache.clear();invalidateFilter();}
     void setSourceModel(QAbstractItemModel *sourceModel);
 
 protected:
     bool filterAcceptsRow(int sourceRow,
                           const QModelIndex &sourceParent) const;
-
+public slots:
+    void update(){
+        cache.clear();
+        invalidateFilter();
+    }
 private slots:
     void clearCache() { cache.clear(); }
 

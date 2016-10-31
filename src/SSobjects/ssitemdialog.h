@@ -15,6 +15,7 @@ class QSpinBox;
 class QTableView;
 class ProxyModel;
 class TemplateImage;
+class QAbstractButton;
 
 class SSitemdialog : public QDialog
 {
@@ -35,7 +36,7 @@ private slots:
     void updateUi();
     void imageChanged(const QPixmap&);
     //void stateCountChanged(int value);
-
+    void buttonClicked(QAbstractButton *);
 private:
     void createWidgets();
     void initListTemplates();
