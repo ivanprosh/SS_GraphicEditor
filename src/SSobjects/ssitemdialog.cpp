@@ -100,14 +100,17 @@ void SSitemdialog::createWidgets()
     //кнопки ок/отмена
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok|
                                      QDialogButtonBox::Cancel);
-    QPushButton* AddTemplate = new QPushButton(this);
-    AddTemplate->setCheckable(true);
-    buttonBox->addButton(AddTemplate,QDialogButtonBox::ActionRole);
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     buttonBox->button(QDialogButtonBox::Ok)->setIcon(
             style()->standardIcon(QStyle::SP_DialogApplyButton));
     buttonBox->button(QDialogButtonBox::Cancel)->setIcon(
             style()->standardIcon(QStyle::SP_DialogCancelButton));
+    QPushButton* AddTemplateBtn = new QPushButton(this);
+    AddTemplateBtn->setMinimumHeight(buttonBox->button(QDialogButtonBox::Ok)->height());
+    AddTemplateBtn->setText("&New Template");
+    AddTemplateBtn->setCheckable(true);
+
+    buttonBox->addButton(AddTemplateBtn,QDialogButtonBox::ActionRole);
     //список существующих шаблонов
     listview = new QListView(this);
     listview->setIconSize(QSize(48, 48));
@@ -245,9 +248,11 @@ void SSitemdialog::imageChanged(const QPixmap&pix){
    //qobject_cast<UniqueProxyModel *>(listview->model())->update();
 }
 
-void SSitemdialog::buttonClicked(QAbstractButton *)
+void SSitemdialog::buttonClicked(QAbstractButton *sender)
 {
-    ;
+    if(sender->text().contains("new template",Qt::CaseInsensitive)){
+        model->addTemplate(listview->currentIndex().data().toString());
+    }
 }
 
 void SSitemdialog::updateUi()

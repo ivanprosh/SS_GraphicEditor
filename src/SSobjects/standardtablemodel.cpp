@@ -62,32 +62,73 @@ void StandardTableModel::initialize()
 
     setHorizontalHeaderLabels(ColumnNames);
 
-    if(!listNames.empty()){
-        for (int it = 0; it < listNames.size(); ++it) {         
-            for(int curState=1;curState<=maxStateValue;curState++){
-                QList<QStandardItem*> items;
-                QStandardItem *iName = new QStandardItem;
-                iName->setData(listNames.at(it),Qt::DisplayRole);
-                if(curState==1)
-                    iName->setData(QPixmap(":/images/obj_icons/dp.bmp"),Qt::DecorationRole);
-                items << iName;
-                QStandardItem *iStateInd = new QStandardItem;
-                iStateInd->setData(curState,Qt::DisplayRole);
-                items << iStateInd;
-                for(int j=StFrisCycled;j<ColumnNames.size();j++){
-                    items << new QStandardItem();
-                    items.last()->setData(curState,Qt::DisplayRole);
-                    if(j==StFrisCycled || j>StFr10)
-                        items.last()->setCheckable(true);
-                    items.last()->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|
-                                           Qt::ItemIsEditable|Qt::ItemIsUserCheckable);
-                }
-                appendRow(items);
-            }
+    addTemplate(listNames);
+}
+
+void StandardTableModel::addTemplate(const QStringList &TemplateNames)
+{
+    for (int it = 0; it < TemplateNames.size(); ++it) {
+        addTemplate(TemplateNames.at(it));
+    }
+}
+void StandardTableModel::copyitems(QList<QStandardItem*>& collection)
+{
+    while(!collection.isEmpty()){
+        QList<QStandardItem*> newitems;
+        for(int column=0;column<columnCount();column++){
+            newitems<<collection.first();
+            collection.pop_front();
         }
+        appendRow(newitems);
     }
 }
 
+void StandardTableModel::addTemplate(const QString &TemplateName)
+{
+    QString curName(TemplateName);
+    QList<QStandardItem*> CloneItems = findItems(TemplateName,Qt::MatchExactly,Name);
+    if(TemplateName.isEmpty())
+        curName = "New Template" + QString::number(rowCount());
+    else if(!CloneItems.isEmpty()){
+        curName = curName + QString::number(rowCount());
+        copyitems(CloneItems);
+    } else {
+
+        for(int curState=1;curState<=maxStateValue;curState++){
+            QList<QStandardItem*> items;
+            QStandardItem *iName = new QStandardItem;
+            iName->setData(curName,Qt::DisplayRole);
+            if(curState==1)
+                iName->setData(QPixmap(":/images/obj_icons/dp.bmp"),Qt::DecorationRole);
+            items << iName;
+            QStandardItem *iStateInd = new QStandardItem;
+            iStateInd->setData(curState,Qt::DisplayRole);
+            items << iStateInd;
+            for(int j=StFrisCycled;j<columnCount();j++){
+                items << new QStandardItem();
+                items.last()->setData(curState,Qt::DisplayRole);
+                if(j==StFrisCycled || j>StFr10)
+                    items.last()->setCheckable(true);
+                items.last()->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|
+                                       Qt::ItemIsEditable|Qt::ItemIsUserCheckable);
+            }
+            appendRow(items);
+        }
+    }
+}
+//void StandardTableModel::addTemplate(const StandardTableModel *from)
+//{
+//    if(!from) return;
+//    int state;
+//    for(state=1;state<=from->rowCount();state++){
+//        QList<QStandardItem*> items;
+//        for(int column=0;column<columnCount();column++){
+//            items << from->item(state-1,column)->clone();
+//        }
+//        appendRow(items);
+//    }
+//    addTemplate(from->item(0,0)->data(Qt::DisplayRole).toString(),state);
+//}
 
 void StandardTableModel::clear()
 {
@@ -169,7 +210,7 @@ void StandardTableModel::save(const QString &filename)
 
 bool StandardTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (!index.isValid() || role != Qt::EditRole)
+    if (!index.isValid() || role != (Qt::EditRole | Qt::CheckStateRole))
         return false;
     //ZipcodeItem &item = zipcodes[index.row()];
     if (index.column()==Name) {

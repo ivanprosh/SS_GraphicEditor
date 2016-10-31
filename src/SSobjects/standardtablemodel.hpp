@@ -28,7 +28,10 @@ public:
     void load(const QString &filename=QString());
     void save(const QString &filename=QString());
     bool setData(const QModelIndex &index, const QVariant &value,
-                     int role=Qt::EditRole);
+                 int role=Qt::EditRole);
+    void addTemplate(const QStringList &TemplateNames);
+    void addTemplate(const QString &TemplateName=QString());
+    //void addTemplate(const StandardTableModel*);
 signals:
     void TemplateNameChanged();
 public slots:
@@ -40,6 +43,7 @@ private:
     //int size;
     QStringList listNames;
 
+    void copyitems(QList<QStandardItem *> &collection);
 };
 
 #endif // STANDARDTABLEMODEL_HPP
