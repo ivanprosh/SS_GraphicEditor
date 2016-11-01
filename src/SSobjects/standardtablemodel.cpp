@@ -71,13 +71,15 @@ void StandardTableModel::addTemplate(const QStringList &TemplateNames)
         addTemplate(TemplateNames.at(it));
     }
 }
-void StandardTableModel::copyitems(QList<QStandardItem*>& collection)
-{
-    while(!collection.isEmpty()){
-        QList<QStandardItem*> newitems;
-        for(int column=0;column<columnCount();column++){
-            newitems<<collection.first();
-            collection.pop_front();
+void StandardTableModel::copyitems(QString templateName,int start_row,int count)
+{  
+    for(int row=start_row;row<start_row+count;row++)
+    {
+        QList<QStandardItem* > newitems;
+        newitems << item(start_row,Name)->clone();
+        newitems.last()->setData(templateName,Qt::DisplayRole);
+        for(int column=1;column<columnCount();column++){
+            newitems<<item(row,column)->clone();
         }
         appendRow(newitems);
     }
@@ -91,9 +93,8 @@ void StandardTableModel::addTemplate(const QString &TemplateName)
         curName = "New Template" + QString::number(rowCount());
     else if(!CloneItems.isEmpty()){
         curName = curName + QString::number(rowCount());
-        copyitems(CloneItems);
+        copyitems(curName,CloneItems.first()->row(),maxStateValue);
     } else {
-
         for(int curState=1;curState<=maxStateValue;curState++){
             QList<QStandardItem*> items;
             QStandardItem *iName = new QStandardItem;
@@ -116,19 +117,13 @@ void StandardTableModel::addTemplate(const QString &TemplateName)
         }
     }
 }
-//void StandardTableModel::addTemplate(const StandardTableModel *from)
-//{
-//    if(!from) return;
-//    int state;
-//    for(state=1;state<=from->rowCount();state++){
-//        QList<QStandardItem*> items;
-//        for(int column=0;column<columnCount();column++){
-//            items << from->item(state-1,column)->clone();
-//        }
-//        appendRow(items);
-//    }
-//    addTemplate(from->item(0,0)->data(Qt::DisplayRole).toString(),state);
-//}
+
+void StandardTableModel::deleteTemplate(const QString &TemplateName)
+{
+    if(TemplateName.isEmpty()) return;
+    QList<QStandardItem* > items = findItems(TemplateName,Qt::MatchExactly,Name);
+    removeRows(items.at(0)->row(),maxStateValue);
+}
 
 void StandardTableModel::clear()
 {
@@ -210,7 +205,8 @@ void StandardTableModel::save(const QString &filename)
 
 bool StandardTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (!index.isValid() || role != (Qt::EditRole | Qt::CheckStateRole))
+    //if (!index.isValid() || role != (Qt::EditRole | Qt::CheckStateRole))
+    if (!index.isValid())
         return false;
     //ZipcodeItem &item = zipcodes[index.row()];
     if (index.column()==Name) {

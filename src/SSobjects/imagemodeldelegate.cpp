@@ -28,24 +28,21 @@ void ImageModelDelegate::paint(QPainter *painter,
         const QModelIndex &index) const
 {
     QString filename = index.data(Qt::EditRole).toString();
-    painter->save();
-    painter->setRenderHints(QPainter::Antialiasing);
-    if(option.state & QStyle::State_Selected)
-        painter->fillRect(option.rect,option.palette.highlight());
     QPixmap pix;
-    if(filename.isEmpty() || !pix.load("resource/"+filename)){
-        pix.load(":/images/obj_icons/default_obj.png");
-    }
-    int x = option.rect.center().x()-option.rect.height()/2;
-    painter->drawPixmap(x,option.rect.y(),option.rect.height(),option.rect.height(),pix);
-    painter->restore();
 
-    /*
-    if(index.column() == Zipcode){
-    }
-    else
-        QStyledItemDelegate::paint(painter, option, index);
-    */
+    //if(filename.isEmpty() || !pix.load("resource/"+filename)){
+    if(filename.isEmpty()){
+        pix.load(":/images/obj_icons/default_obj.png");
+    } else if (pix.load("resource/"+filename)){
+        painter->save();
+        painter->setRenderHints(QPainter::Antialiasing);
+        if(option.state & QStyle::State_Selected)
+            painter->fillRect(option.rect,option.palette.highlight());
+        int x = option.rect.center().x()-option.rect.height()/2;
+        painter->drawPixmap(x,option.rect.y(),option.rect.height(),option.rect.height(),pix);
+        painter->restore();
+    } else
+        QStyledItemDelegate::paint(painter,option,index);
 }
 
 

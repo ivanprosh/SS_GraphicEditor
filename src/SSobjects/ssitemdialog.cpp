@@ -1,4 +1,5 @@
 #include "ssitemdialog.h"
+#include "ssindicator.h"
 #include "ssgraphobjinfo.h"
 #include "templateimage.h"
 #include "templmodelinfo.h"
@@ -103,14 +104,20 @@ void SSitemdialog::createWidgets()
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     buttonBox->button(QDialogButtonBox::Ok)->setIcon(
             style()->standardIcon(QStyle::SP_DialogApplyButton));
+    buttonBox->button(QDialogButtonBox::Ok)->setText("&Create");
     buttonBox->button(QDialogButtonBox::Cancel)->setIcon(
             style()->standardIcon(QStyle::SP_DialogCancelButton));
-    QPushButton* AddTemplateBtn = new QPushButton(this);
-    AddTemplateBtn->setMinimumHeight(buttonBox->button(QDialogButtonBox::Ok)->height());
-    AddTemplateBtn->setText("&New Template");
-    AddTemplateBtn->setCheckable(true);
-
+    QPushButton* AddTemplateBtn = new QPushButton("&New Template",this);
+    //AddTemplateBtn->setFont(buttonBox->button(QDialogButtonBox::Ok)->font());
+    //AddTemplateBtn->setCheckable(true);
+    AddTemplateBtn->setIcon(style()->standardIcon(QStyle::SP_DialogApplyButton));
     buttonBox->addButton(AddTemplateBtn,QDialogButtonBox::ActionRole);
+
+    QPushButton* DelTemplateBtn = new QPushButton("&Delete Template",this);
+    //DelTemplateBtn->setFont(buttonBox->button(QDialogButtonBox::Ok)->font());
+    //DelTemplateBtn->setCheckable(true);
+    DelTemplateBtn->setIcon(style()->standardIcon(QStyle::SP_DialogDiscardButton));
+    buttonBox->addButton(DelTemplateBtn,QDialogButtonBox::ActionRole);
     //список существующих шаблонов
     listview = new QListView(this);
     listview->setIconSize(QSize(48, 48));
@@ -252,6 +259,8 @@ void SSitemdialog::buttonClicked(QAbstractButton *sender)
 {
     if(sender->text().contains("new template",Qt::CaseInsensitive)){
         model->addTemplate(listview->currentIndex().data().toString());
+    } else if(sender->text().contains("delete template",Qt::CaseInsensitive)){
+        model->deleteTemplate(listview->currentIndex().data().toString());
     }
 }
 
@@ -280,11 +289,21 @@ void SSitemdialog::restoreFilters()
 
 void SSitemdialog::accept()
 {
+    if(!listview->currentIndex().isValid())
+    {
+        QDialog::reject();
+        return;
+    }
+
+    item = new SSindicator(position, scene,*model,listview->currentIndex().data().toString());
+    item->update();
+    QDialog::accept();
     /*
     if (item && !textEdit->document()->isModified()) {
         QDialog::reject();
         return;
     }
+
     if (!item)
         item = new TextItem(position, scene);
     item->setHtml(textEdit->toHtml());

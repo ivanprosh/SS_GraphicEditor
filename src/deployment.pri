@@ -51,7 +51,6 @@ HEADERS += \
     $$PWD/propmanager.h \
     $$PWD/SSobjects/ssindicator.h \
     $$PWD/SSobjects/ssitemdialog.h \
-    $$PWD/SSobjects/ssgraphobjinfo.h \
     $$PWD/SSobjects/standardtablemodel.hpp \
     $$PWD/SSobjects/proxymodel.hpp \
     $$PWD/SSobjects/templateimage.h \
@@ -59,8 +58,7 @@ HEADERS += \
     $$PWD/SSobjects/fileedit.h \
     $$PWD/SSobjects/templmodelinfo.h \
     $$PWD/SSobjects/checkboxdelegate.h \
-    $$PWD/SSobjects/uniqueproxymodel.hpp \
-    $$PWD/SSobjects/listviewtemplates.h
+    $$PWD/SSobjects/uniqueproxymodel.hpp
 
 SOURCES += \
     $$PWD/main.cpp \
@@ -78,13 +76,11 @@ SOURCES += \
     $$PWD/propmanager.cpp \
     $$PWD/SSobjects/ssindicator.cpp \
     $$PWD/SSobjects/ssitemdialog.cpp \
-    $$PWD/SSobjects/ssgraphobjinfo.cpp \
     $$PWD/SSobjects/standardtablemodel.cpp \
     $$PWD/SSobjects/proxymodel.cpp \
     $$PWD/SSobjects/templateimage.cpp \
     $$PWD/SSobjects/imagemodeldelegate.cpp \
     $$PWD/SSobjects/fileedit.cpp \
     $$PWD/SSobjects/checkboxdelegate.cpp \
-    $$PWD/SSobjects/uniqueproxymodel.cpp \
-    $$PWD/SSobjects/listviewtemplates.cpp
+    $$PWD/SSobjects/uniqueproxymodel.cpp
 

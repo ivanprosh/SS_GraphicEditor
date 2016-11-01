@@ -2,7 +2,7 @@
 #define SSITEMDIALOG_H
 
 #include <QDialog>
-class SSGraphicData;
+class SSindicator;
 class QGraphicsScene;
 class QListView;
 class QTableWidget;
@@ -26,7 +26,7 @@ public:
             const QPoint &position_=QPoint(),
             QGraphicsScene *scene_=0, QWidget *parent=0);
 
-    SSGraphicData *GraphicDataItem() const { return item; }
+    SSindicator *GraphicDataItem() const { return item; }
     QStringList initlistNames;
 public slots:
     void accept();
@@ -46,7 +46,7 @@ private:
     //TextEdit *textEdit;
     QDialogButtonBox *buttonBox;
     TemplateImage *image;
-    SSGraphicData *item;
+    SSindicator *item;
     QPoint position;
     QGraphicsScene *scene;
 

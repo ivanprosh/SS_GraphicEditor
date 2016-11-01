@@ -15,7 +15,6 @@ class QGraphicsScene;
 class QtVariantProperty;
 class QtProperty;
 class TPropManager;
-class SSGraphicData;
 class StandardTableModel;
 class SSitemdialog;
 
@@ -140,7 +139,6 @@ private:
     //class TPropManager *m_readOnlyManager;
     class QtTreePropertyBrowser *propertyEditor;
 
-    QMap<QString,SSGraphicData> SSObjectsInfo;
     StandardTableModel *model;
 
     int addOffset;

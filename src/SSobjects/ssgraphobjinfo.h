@@ -1,6 +1,6 @@
 #ifndef SSABSTRACTGRAPHOBJ_H
 #define SSABSTRACTGRAPHOBJ_H
-
+/*
 #include <QObject>
 #include <QVector>
 
@@ -25,7 +25,7 @@ signals:
 
 public slots:
 };
-/*
+
 //на будущее
 class SSAbstractGraphObj : public QObject
 {

@@ -31,6 +31,7 @@ public:
                  int role=Qt::EditRole);
     void addTemplate(const QStringList &TemplateNames);
     void addTemplate(const QString &TemplateName=QString());
+    void deleteTemplate(const QString &TemplateName=QString());
     //void addTemplate(const StandardTableModel*);
 signals:
     void TemplateNameChanged();
@@ -43,7 +44,7 @@ private:
     //int size;
     QStringList listNames;
 
-    void copyitems(QList<QStandardItem *> &collection);
+    void copyitems(QString templateName, int start_row, int count);
 };
 
 #endif // STANDARDTABLEMODEL_HPP
