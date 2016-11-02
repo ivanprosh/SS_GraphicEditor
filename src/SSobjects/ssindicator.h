@@ -15,7 +15,7 @@ public:
     enum {Type = SSIndItemType};
     int type() const { return Type; }
 
-    explicit SSindicator(const QPoint &position, QGraphicsScene *scene, const StandardTableModel& sourceModel, const QString &n_TemplateName, QGraphicsItem *parent=nullptr);
+    explicit SSindicator(const QPoint &position, QGraphicsScene *scene, const StandardTableModel& sourceModel, const QModelIndex &Template_Index, QGraphicsItem *parent=nullptr);
     QString TemplateName() const { return m_TemplateName; }
 
     void paint(QPainter *painter,
@@ -23,7 +23,7 @@ public:
     QRectF boundingRect() const;
     QPainterPath shape() const;
 private:
-    QPixmap* image;
+    QPixmap image;
     QString m_TemplateName;
     const StandardTableModel& model;
     void paintSelectionOutline(QPainter *painter);

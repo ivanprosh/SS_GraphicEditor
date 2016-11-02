@@ -295,7 +295,7 @@ void SSitemdialog::accept()
         return;
     }
 
-    item = new SSindicator(position, scene,*model,listview->currentIndex().data().toString());
+    item = new SSindicator(position, scene,*model,listview->currentIndex());
     item->update();
     QDialog::accept();
     /*

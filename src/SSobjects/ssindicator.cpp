@@ -3,12 +3,13 @@
 #include "standardtablemodel.hpp"
 #include <QGraphicsScene>
 #include "../global.hpp"
+#include <QStyleOptionGraphicsItem>
 #include <QGraphicsPixmapItem>
 #include <QPainter>
 
 SSindicator::SSindicator(const QPoint &position, QGraphicsScene *scene,
-                         const StandardTableModel& sourceModel,const QString &n_TemplateName, QGraphicsItem *parent):QGraphicsObject(parent),
-                        model(sourceModel),m_TemplateName(n_TemplateName)
+                         const StandardTableModel& sourceModel,const QModelIndex &Template_Index, QGraphicsItem *parent):QGraphicsObject(parent),
+                        model(sourceModel),m_TemplateName(Template_Index.data().toString()),image(Template_Index.data(Qt::DecorationRole).value<QPixmap>())
 {
     setFlags(QGraphicsItem::ItemIsSelectable|
              QGraphicsItem::ItemSendsGeometryChanges|
@@ -18,27 +19,22 @@ SSindicator::SSindicator(const QPoint &position, QGraphicsScene *scene,
     scene->addItem(this);
     setSelected(true);
 
-    QList<QStandardItem*> items = model.findItems(TemplateName(),Qt::MatchExactly,Name);
-    Q_ASSERT(!items.isEmpty());
-    image = &(items.at(0)->data(Qt::DecorationRole).value<QPixmap>());
 }
 
 void SSindicator::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    painter->drawPixmap(image->rect(),*image);
-    if (isSelected())
-        paintSelectionOutline(painter);
+    painter->drawPixmap(option->rect.x(),option->rect.y(),image.width(),image.height(),image);
 }
 
 QRectF SSindicator::boundingRect() const
 {
-   return image->rect();
+    return QRect(0,0,image.width(),image.height());
 }
 
 QPainterPath SSindicator::shape() const
 {
    QPainterPath path;
-   path.addRect(image->rect());
+   path.addRect(image.rect());
    return path;
 }
 
@@ -49,7 +45,7 @@ void SSindicator::paintSelectionOutline(QPainter *painter)
     painter->setPen(pen);
     painter->setBrush(Qt::NoBrush);
     QPainterPath path;
-    path.addRect(image->rect());
+    path.addRect(image.rect());
     painter->drawPath(path);
 }
 
