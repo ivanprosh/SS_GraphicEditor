@@ -212,15 +212,18 @@ bool StandardTableModel::setData(const QModelIndex &index, const QVariant &value
     if (index.column()==Name) {
         QList<QStandardItem *> childs = findItems(value.toString(), Qt::MatchExactly, index.column());
         if(!childs.isEmpty()) return false;
-        else {
+        else if(role==Qt::EditRole){
             QString oldName = index.data().toString();
             QModelIndex it = index;
             while(it.data()==oldName){
                 QStandardItemModel::setData(it,value,role);
+                //QStandardItemModel::setData(it,oldName,OldNameRole);
                 it=QStandardItemModel::index(it.row()+1,index.column());
             }
-            emit TemplateNameChanged();
+            emit TemplateNameChanged(oldName,value.toString());
             return true;
+        } else if(role==Qt::DecorationRole){
+            emit ImageChanged(index.data().toString(),value.value<QPixmap>());
         }
     }
     //emit dataChanged(index, index);

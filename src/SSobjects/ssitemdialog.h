@@ -28,6 +28,7 @@ public:
 
     SSindicator *GraphicDataItem() const { return item; }
     QStringList initlistNames;
+    TemplateImage *image;
 public slots:
     void accept();
 
@@ -43,9 +44,9 @@ private:
     void createLayout();
     void createConnections();
     void restoreFilters();
+    //void connectItem(QObject *item);
     //TextEdit *textEdit;
     QDialogButtonBox *buttonBox;
-    TemplateImage *image;
     SSindicator *item;
     QPoint position;
     QGraphicsScene *scene;

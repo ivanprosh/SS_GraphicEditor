@@ -34,7 +34,8 @@ public:
     void deleteTemplate(const QString &TemplateName=QString());
     //void addTemplate(const StandardTableModel*);
 signals:
-    void TemplateNameChanged();
+    void TemplateNameChanged(const QString& oldName,const QString& newName);
+    void ImageChanged(const QString& TemplateName,const QPixmap&);
 public slots:
     void stateCountChanged(int value);
 

@@ -1,6 +1,6 @@
 #include "ssitemdialog.h"
 #include "ssindicator.h"
-#include "ssgraphobjinfo.h"
+//#include "ssgraphobjinfo.h"
 #include "templateimage.h"
 #include "templmodelinfo.h"
 #include "checkboxdelegate.h"
@@ -233,7 +233,7 @@ void SSitemdialog::createConnections()
     connect(stateCount, SIGNAL(valueChanged(int)),
                 model, SLOT(stateCountChanged(int)));
 
-    connect(model, SIGNAL(TemplateNameChanged()),
+    connect(model, SIGNAL(TemplateNameChanged(QString,QString)),
                     this, SLOT(updateUi()));
     connect(listview, SIGNAL(pressed(QModelIndex)),
                 this, SLOT(templateChanged(QModelIndex)));
@@ -295,7 +295,9 @@ void SSitemdialog::accept()
         return;
     }
 
-    item = new SSindicator(position, scene,*model,listview->currentIndex());
+    item = new SSindicator(position, scene,listview->currentIndex());
+    //связывание свойств в классе главного окна
+    //connectItem(item);
     item->update();
     QDialog::accept();
     /*

@@ -9,7 +9,7 @@
 #include "graphicsview.hpp"
 #include "propmanager.h"
 #include "boxitem.hpp"
-#include "SSobjects/ssgraphobjinfo.h"
+//#include "SSobjects/ssgraphobjinfo.h"
 #include "SSobjects/ssitemdialog.h"
 #include "SSobjects/standardtablemodel.hpp"
 //#include "brushwidget.hpp"
@@ -591,11 +591,10 @@ void MainWindow::readItems(QDataStream &in, int offset, bool select)
                 break;
             }
             case SSIndItemType: {
-                SmileyItem *smileyItem = new SmileyItem(QPoint(),
-                                                        scene);
-                in >> *smileyItem;
-                connectItem(smileyItem);
-                item = smileyItem;
+                SSindicator *indicator = new SSindicator(QPoint(),scene);
+                in >> *indicator;
+                connectItem(indicator);
+                item = indicator;
                 break;
             }
             case TextItemType: {
@@ -659,7 +658,7 @@ void MainWindow::writeItems(QDataStream &out,
             case BoxItemType:
                     out << *static_cast<BoxItem*>(item); break;
             case SSIndItemType:
-                    out << *static_cast<SmileyItem*>(item); break;
+                    out << *static_cast<SSindicator*>(item); break;
             case TextItemType:
                     out << *static_cast<TextItem*>(item); break;
             default: Q_ASSERT(false);
@@ -825,6 +824,14 @@ void MainWindow::editAddItem()
 void MainWindow::connectItem(QObject *item)
 {
     connect(item, SIGNAL(dirty()), this, SLOT(setDirty()));
+
+    if(dynamic_cast<SSindicator*>(item)){
+        connect(model,
+                SIGNAL(ImageChanged(QString,QPixmap)),
+                item, SLOT(ImageChanged(QString,QPixmap)));
+        connect(model, SIGNAL(TemplateNameChanged(QString,QString)),
+                item, SLOT(TemplateNameChanged(QString,QString)));
+    }
     /*
     const QMetaObject *metaObject = item->metaObject();
     if (metaObject->indexOfProperty("brush") > -1)
