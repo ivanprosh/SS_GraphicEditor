@@ -6,9 +6,11 @@
 #include "mainwindow.hpp"
 #include "textitemdialog.hpp"
 #include "textitem.hpp"
+#include "graphicscene.h"
 #include "graphicsview.hpp"
 #include "propmanager.h"
 #include "boxitem.hpp"
+#include "commands.h"
 //#include "SSobjects/ssgraphobjinfo.h"
 #include "SSobjects/ssitemdialog.h"
 #include "SSobjects/standardtablemodel.hpp"
@@ -16,7 +18,7 @@
 //#include "penwidget.hpp"
 #include "smileyitem.hpp"
 //#include "transformwidget.hpp"
-
+#include <QtWidgets>
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -109,7 +111,10 @@ MainWindow::MainWindow(QWidget *parent)
     printer = new QPrinter(QPrinter::HighResolution);
     model = new StandardTableModel(this,QStringList()<<"T1"<<"T2"<<"T3");
 
+    undoStack = new QUndoStack(this);
+
     createSceneAndView();
+    createUndoView();
     createActions();
     createMenusAndToolBars();
     createDockWidgets();
@@ -126,7 +131,13 @@ MainWindow::MainWindow(QWidget *parent)
         QTimer::singleShot(0, this, SLOT(loadFile()));
     }
 }
-
+void MainWindow::createUndoView()
+{
+    undoView = new QUndoView(undoStack);
+    undoView->setWindowTitle(tr("Command List"));
+    undoView->show();
+    undoView->setAttribute(Qt::WA_QuitOnClose, false);
+}
 /*
 QSize MainWindow::sizeHint() const
 {
@@ -140,7 +151,7 @@ QSize MainWindow::sizeHint() const
 void MainWindow::createSceneAndView()
 {
     view = new GraphicsView;
-    scene = new QGraphicsScene(this);
+    scene = new GraphicScene(this);
     QSize pageSize = printer->paperSize(QPrinter::Point).toSize();
     scene->setSceneRect(0, 0, pageSize.width(), pageSize.height());
     view->setScene(scene);
@@ -172,6 +183,12 @@ void MainWindow::createActions()
             tr("Quit"), this);
 
     fileQuitAction->setShortcuts(QKeySequence::Quit);
+
+    undoAction = undoStack->createUndoAction(this, tr("&Undo"));
+    undoAction->setShortcuts(QKeySequence::Undo);
+
+    redoAction = undoStack->createRedoAction(this, tr("&Redo"));
+    redoAction->setShortcuts(QKeySequence::Redo);
 
     editSelectedItemAction = new QAction(
             QIcon(":images/editselecteditem.png"),
@@ -262,6 +279,9 @@ void MainWindow::createMenusAndToolBars()
 
     QMenu *editMenu = menuBar()->addMenu(tr("Edit"));
     QToolBar *editToolBar = addToolBar(tr("Edit"));
+    editMenu->addAction(undoAction);
+    editMenu->addAction(redoAction);
+    editMenu->addSeparator();
     populateMenuAndToolBar(editMenu, editToolBar, QList<QAction*>()
             << editSelectedItemAction << separator
             << editAddTextAction << editAddBoxAction
@@ -369,11 +389,13 @@ void MainWindow::createConnections()
     connect(editAddBoxAction, SIGNAL(triggered()),
             this, SLOT(editAddItem()));
     //SS
+    /*
     foreach (QAction *action, QList<QAction*>()
             << editAddSSAction << editAddSSIndAction)
         connect(action, SIGNAL(triggered()), this, SLOT(editSSobj()));
-//    connect(editAddSSAction, SIGNAL(triggered()),
-//            this, SLOT(editAddItem()));
+    */
+    connect(editAddSSAction, SIGNAL(triggered()),
+            this, SLOT(editAddItem()));
     connect(editCopyAction, SIGNAL(triggered()),
             this, SLOT(editCopy()));
     connect(editCutAction, SIGNAL(triggered()),
@@ -403,9 +425,10 @@ void MainWindow::createConnections()
 /*
     connect(view, SIGNAL(itemClicked(QGraphicsItem *)),
             this, SLOT(itemClicked(QGraphicsItem *)));
-    connect(view, SIGNAL(itemMoved(QGraphicsItem *)),
-            this, SLOT(itemMoved(QGraphicsItem *)));
 */
+    connect(scene, SIGNAL(itemMoved(QHash<QGraphicsItem *,QPointF>)),
+            this, SLOT(itemMoved(QHash<QGraphicsItem *,QPointF>)));
+
     connect(this, SIGNAL(itemChanged(QObject*)),
             variantManager, SLOT(itemChanged(QObject*)));
 }
@@ -609,6 +632,8 @@ void MainWindow::readItems(QDataStream &in, int offset, bool select)
             item->moveBy(offset, offset);
             if (select)
                 items << item;
+            QUndoCommand *addCommand = new AddCommand(dynamic_cast<QGraphicsItem*>(item), scene);
+            undoStack->push(addCommand);
             item = 0;
         }
     }
@@ -807,14 +832,23 @@ void MainWindow::editAddItem()
     int type = action->data().toInt();
     if (type == BoxItemType)
         item = new BoxItem(QRect(position(), QSize(90, 30)), scene);
-//    else if (type == SSIndItemType)
-//        item = new SmileyItem(position(), scene);
+    else if (type == SSIndItemType){
+        if(!dialog){
+            dialog = new SSitemdialog(model,position(), scene, this);
+        } else {
+            dialog->show();
+        }
+        if (dialog->exec())
+            item = dialog->GraphicDataItem();
+    }
     else if (type == TextItemType) {
         TextItemDialog dialog(0, position(), scene, this);
         if (dialog.exec())
             item = dialog.textItem();
     }
     if (item) {
+        QUndoCommand *addCommand = new AddCommand(dynamic_cast<QGraphicsItem*>(item), scene);
+        undoStack->push(addCommand);
         connectItem(item);
         setDirty(true);
     }
@@ -909,11 +943,16 @@ void MainWindow::editCut()
     if (items.isEmpty())
         return;
     copyItems(items);
+
+    QUndoCommand *deleteCommand = new DeleteCommand(scene);
+    undoStack->push(deleteCommand);
+    /*
     QListIterator<QGraphicsItem*> i(items);
     while (i.hasNext()) {
         QScopedPointer<QGraphicsItem> item(i.next());
         scene->removeItem(item.data());
     }
+    */
     setDirty(true);
 }
 
@@ -946,6 +985,7 @@ void MainWindow::editPaste()
 
 void MainWindow::editSSobj()
 {
+    /*
     QAction *action = qobject_cast<QAction*>(sender());
     if (!action)
         return;
@@ -964,7 +1004,8 @@ void MainWindow::editSSobj()
         connectItem(item);
         setDirty(true);
     }
-/*
+    */
+    /*
     Qt::Alignment alignment = static_cast<Qt::Alignment>(
             action->data().toInt());
     if (action != editAlignmentAction) {
@@ -1406,14 +1447,11 @@ void MainWindow::itemClicked(QGraphicsItem *item)
     }
 }
 */
-void MainWindow::itemMoved(QGraphicsItem *item)
+void MainWindow::itemMoved(QHash<QGraphicsItem *,QPointF> sceneBefore)
 {
-    if (item != currentItem)
+    if (sceneBefore.empty())
         return;
-    /*
-    variantManager->setValue(idToProperty[QLatin1String("xpos")], item->x());
-    variantManager->setValue(idToProperty[QLatin1String("ypos")], item->y());
-    variantManager->setValue(idToProperty[QLatin1String("zpos")], item->zValue());
-    */
+
+    undoStack->push(new MoveCommand(sceneBefore));
 }
 

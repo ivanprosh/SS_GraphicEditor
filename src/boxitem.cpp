@@ -15,6 +15,7 @@
 #include "aqp/aqp.hpp"
 #include "boxitem.hpp"
 #include "global.hpp"
+#include "commands.h"
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QKeyEvent>
@@ -37,10 +38,14 @@ BoxItem::BoxItem(const QRect &rect_, QGraphicsScene *scene)
                            -rect_.height() / 2.0), rect_.size()));
     QGraphicsRectItem::setBrush(QBrush(Qt::SolidPattern));
 
-    scene->clearSelection();
-    scene->addItem(this);
+    /*
+       Добавление на сцену производится через команды QUndoCommand для
+       реализации механизма повтора-отмены действий
+    */
+    //scene->clearSelection();
+    //scene->addItem(this);
     setSelected(true);
-    setFocus();
+    //setFocus();
 }
 
 

@@ -17,6 +17,9 @@ class QtProperty;
 class TPropManager;
 class StandardTableModel;
 class SSitemdialog;
+class QUndoStack;
+class QUndoView;
+class GraphicScene;
 
 class MainWindow : public QMainWindow
 {
@@ -55,7 +58,7 @@ private slots:
     void editSSobj();
     //
     //void itemClicked(QGraphicsItem *item);
-    void itemMoved(QGraphicsItem *item);
+    void itemMoved(QHash<QGraphicsItem *,QPointF> sceneBefore);
     void valueChanged(QtProperty *property, const QVariant &value);
 #ifdef SCREENSHOTS
     void takeScreenshot();
@@ -112,6 +115,8 @@ private:
     QAction *editAddSSAnparAction;
     QAction *editAddSSDynTextAction;
 
+    QAction *undoAction;
+    QAction *redoAction;
     QAction *editCopyAction;
     QAction *editCutAction;
     QAction *editPasteAction;
@@ -126,7 +131,7 @@ private:
     QAction *viewShowGridAction;
 
     QPrinter *printer;
-    QGraphicsScene *scene;
+    GraphicScene *scene;
     GraphicsView *view;
     QGraphicsItemGroup *gridGroup;
     QPoint previousPoint;
@@ -141,8 +146,14 @@ private:
 
     StandardTableModel *model;
 
+    //система повтора-отмены действий
+    QUndoStack *undoStack;
+    QUndoView *undoView;
+    void createUndoView();
+
     int addOffset;
     int pasteOffset;
+
 signals:
     void itemChanged(QObject* object);
 #ifdef SCREENSHOTS
