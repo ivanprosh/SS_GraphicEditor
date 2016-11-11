@@ -14,6 +14,7 @@
 */
 
 #include <QGraphicsItem>
+class QtVariantProperty;
 
 const int BoxItemType = QGraphicsItem::UserType + 1;
 const int SmileyItemType = QGraphicsItem::UserType + 2;
@@ -22,5 +23,12 @@ const int TextItemType = QGraphicsItem::UserType + 3;
 const int SSAnparItemType = QGraphicsItem::UserType + 4;
 const int SSDynTextItemType = QGraphicsItem::UserType + 5;
 const int SSIndItemType = QGraphicsItem::UserType + 6;
+
+//для идентификации свойства в браузере свойств
+class SScommandProperty{
+};
+Q_DECLARE_METATYPE(SScommandProperty)
+
+//const int SSCommandType = QVariant::UserType + 1;
 
 #endif // ITEMTYPES_HPP

@@ -19,12 +19,20 @@ SSindicator::SSindicator(const QPoint &position, QGraphicsScene *scene,
     scene->clearSelection();
     scene->addItem(this);
     setSelected(true);
-
+    setAutoCloseDUWnd(0);
+    setBorderCtrlDigPar_Tag(QString());
+    setBorderCtrlDigPar_Unit(QString());
+    setBorderCtrlDigParInvert(0);
+    setBorderColor(Qt::yellow);
+    setBorderWidth(1);
+    setBorderBlinkFreq(1000);
 }
 
 void SSindicator::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     painter->drawPixmap(option->rect.x(),option->rect.y(),image.width(),image.height(),image);
+    if(isSelected())
+        paintSelectionOutline(painter);
 }
 
 QRectF SSindicator::boundingRect() const
@@ -45,9 +53,9 @@ void SSindicator::paintSelectionOutline(QPainter *painter)
     pen.setColor(Qt::black);
     painter->setPen(pen);
     painter->setBrush(Qt::NoBrush);
-    QPainterPath path;
-    path.addRect(image.rect());
-    painter->drawPath(path);
+    QPainterPath bound;
+    bound.addRect(image.rect());
+    painter->drawPath(bound);
 }
 
 void SSindicator::setTemplateName(const QString &newName)

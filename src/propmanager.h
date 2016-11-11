@@ -9,8 +9,7 @@ class QtVariantProperty;
 class QtProperty;
 class QStringList;
 class QtAbstractPropertyBrowser;
-//class QList;
-//class QMap;
+class SScommandProperty;
 
 class TPropManager : public QtVariantPropertyManager
 {
@@ -21,15 +20,27 @@ private:
     QStringList ignoreClassNames,brushesStyles;
     QtAbstractPropertyBrowser *browser;
 
+    struct SScommand {
+            QVariant value;
+            QtVariantProperty *name;
+            QtVariantProperty *tag;
+    };
     struct brush {
             QVariant value;
             QtVariantProperty *color;
             QtVariantProperty *style;
     };
 
+    //для пользовательского свойства brush
     QMap<const QtProperty *, brush> propertyToData;
     QMap<const QtProperty *, QtProperty *> ColorToProperty;
     QMap<const QtProperty *, QtProperty *> StyleToProperty;
+    //для пользовательского свойства command
+    QMap<const QtProperty *, SScommand> commandPropertyToData;
+    QMap<const QtProperty *, QtProperty *> commandNameToProperty;
+    QMap<const QtProperty *, QtProperty *> commandTagToProperty;
+
+
     QMap<const QMetaObject *, QtProperty *> m_classToProperty;
     QMap<QtProperty *, const QMetaObject *> m_propertyToClass;
     //QMap<QtProperty *, QString> propertyToId;
