@@ -865,6 +865,8 @@ void MainWindow::connectItem(QObject *item)
                 item, SLOT(ImageChanged(QString,QPixmap)));
         connect(model, SIGNAL(TemplateNameChanged(QString,QString)),
                 item, SLOT(TemplateNameChanged(QString,QString)));
+        connect(dialog, SIGNAL(updateStatesCount(QString,int)),
+                item, SLOT(StatesCountChanged(QString,int)));
     }
     /*
     const QMetaObject *metaObject = item->metaObject();

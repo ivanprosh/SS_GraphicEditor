@@ -8,7 +8,7 @@
 #include <QPainter>
 
 SSindicator::SSindicator(const QPoint &position, QGraphicsScene *scene,
-                         const QModelIndex &Template_Index, QGraphicsItem *parent):QGraphicsObject(parent),
+                         const QModelIndex &Template_Index,QGraphicsItem *parent):QGraphicsObject(parent),
                         m_TemplateName(Template_Index.isValid() ? Template_Index.data().toString():QString()),
                         image(Template_Index.isValid() ? Template_Index.data(Qt::DecorationRole).value<QPixmap>():QPixmap(":/images/obj_icons/default_obj.png"))
 {
@@ -19,6 +19,13 @@ SSindicator::SSindicator(const QPoint &position, QGraphicsScene *scene,
     scene->clearSelection();
     scene->addItem(this);
     setSelected(true);
+    setStatesCount(Template_Index.isValid() ? Template_Index.data(StatesCountRole).toInt():1);
+
+    initializeProperties();
+
+}
+void SSindicator::initializeProperties(){
+
     setAutoCloseDUWnd(0);
     setBorderCtrlDigPar_Tag(QString());
     setBorderCtrlDigPar_Unit(QString());
@@ -26,7 +33,7 @@ SSindicator::SSindicator(const QPoint &position, QGraphicsScene *scene,
     setBorderColor(Qt::yellow);
     setBorderWidth(1);
     setBorderBlinkFreq(1000);
-
+    //setStatesCount
     commands.push_back(qMakePair(QString("First name"),QString("First Tag")));
 }
 
@@ -51,8 +58,9 @@ QPainterPath SSindicator::shape() const
 
 void SSindicator::paintSelectionOutline(QPainter *painter)
 {
-    QPen pen(Qt::DashLine);
-    pen.setColor(Qt::black);
+    QPen pen;
+    pen.setColor(Qt::red);
+    pen.setWidth(2);
     painter->setPen(pen);
     painter->setBrush(Qt::NoBrush);
     QPainterPath bound;
@@ -78,6 +86,14 @@ void SSindicator::ImageChanged(const QString& m_TemplateName,const QPixmap &pix)
 {
     if(m_TemplateName==TemplateName() && image.cacheKey()!=pix.cacheKey()){
         image = pix;
+        emit dirty();
+    }
+}
+
+void SSindicator::StatesCountChanged(QString m_TemplateName, int value)
+{
+    if(m_TemplateName==TemplateName()){
+        setStatesCount(value);
         emit dirty();
     }
 }

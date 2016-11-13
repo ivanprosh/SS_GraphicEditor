@@ -50,17 +50,19 @@ HEADERS += \
     $$PWD/global.hpp \
     $$PWD/propmanager.h \
     $$PWD/SSobjects/ssindicator.h \
-    $$PWD/SSobjects/ssitemdialog.h \
-    $$PWD/SSobjects/standardtablemodel.hpp \
-    $$PWD/SSobjects/proxymodel.hpp \
-    $$PWD/SSobjects/templateimage.h \
-    $$PWD/SSobjects/imagemodeldelegate.hpp \
-    $$PWD/SSobjects/fileedit.h \
-    $$PWD/SSobjects/templmodelinfo.h \
-    $$PWD/SSobjects/checkboxdelegate.h \
-    $$PWD/SSobjects/uniqueproxymodel.hpp \
     $$PWD/commands.h \
-    $$PWD/graphicscene.h
+    $$PWD/graphicscene.h \
+    $$PWD/SSobjects/DialogIndSource/spinbox.h \
+    $$PWD/SSobjects/DialogIndSource/checkboxdelegate.h \
+    $$PWD/SSobjects/DialogIndSource/fileedit.h \
+    $$PWD/SSobjects/DialogIndSource/imagemodeldelegate.hpp \
+    $$PWD/SSobjects/DialogIndSource/proxymodel.hpp \
+    $$PWD/SSobjects/DialogIndSource/ssitemdialog.h \
+    $$PWD/SSobjects/DialogIndSource/standardtablemodel.hpp \
+    $$PWD/SSobjects/DialogIndSource/templateimage.h \
+    $$PWD/SSobjects/DialogIndSource/templmodelinfo.h \
+    $$PWD/SSobjects/DialogIndSource/uniqueproxymodel.hpp \
+    $$PWD/SSobjects/DialogIndSource/spinbox.h
 
 SOURCES += \
     $$PWD/main.cpp \
@@ -77,14 +79,16 @@ SOURCES += \
     $$PWD/global.cpp \
     $$PWD/propmanager.cpp \
     $$PWD/SSobjects/ssindicator.cpp \
-    $$PWD/SSobjects/ssitemdialog.cpp \
-    $$PWD/SSobjects/standardtablemodel.cpp \
-    $$PWD/SSobjects/proxymodel.cpp \
-    $$PWD/SSobjects/templateimage.cpp \
-    $$PWD/SSobjects/imagemodeldelegate.cpp \
-    $$PWD/SSobjects/fileedit.cpp \
-    $$PWD/SSobjects/checkboxdelegate.cpp \
-    $$PWD/SSobjects/uniqueproxymodel.cpp \
     $$PWD/commands.cpp \
-    $$PWD/graphicscene.cpp
+    $$PWD/graphicscene.cpp \
+    $$PWD/SSobjects/DialogIndSource/spinbox.cpp \
+    $$PWD/SSobjects/DialogIndSource/checkboxdelegate.cpp \
+    $$PWD/SSobjects/DialogIndSource/fileedit.cpp \
+    $$PWD/SSobjects/DialogIndSource/imagemodeldelegate.cpp \
+    $$PWD/SSobjects/DialogIndSource/proxymodel.cpp \
+    $$PWD/SSobjects/DialogIndSource/ssitemdialog.cpp \
+    $$PWD/SSobjects/DialogIndSource/standardtablemodel.cpp \
+    $$PWD/SSobjects/DialogIndSource/templateimage.cpp \
+    $$PWD/SSobjects/DialogIndSource/uniqueproxymodel.cpp \
+    $$PWD/SSobjects/DialogIndSource/spinbox.cpp
 

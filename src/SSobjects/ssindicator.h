@@ -71,9 +71,11 @@ private:
 
     QVector<SScommandProperty> commands;
 
+    void initializeProperties();
 public slots:
     void TemplateNameChanged(const QString& oldName,const QString& newName);
     void ImageChanged(const QString& ,const QPixmap& pix);
+    void StatesCountChanged(QString TemplateName,int value);
     //void ModelDataChanged(const QModelIndex& indexStart,const QModelIndex& indexFinish);
 
     //свойства

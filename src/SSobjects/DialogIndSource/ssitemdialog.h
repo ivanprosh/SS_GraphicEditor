@@ -36,7 +36,7 @@ private slots:
     void templateChanged(const QModelIndex& index);
     void updateUi();
     void imageChanged(const QPixmap&);
-    //void stateCountChanged(int value);
+    void stateCountChanged(int value);
     void buttonClicked(QAbstractButton *);
 private:
     void createWidgets();
@@ -67,6 +67,8 @@ private:
     QTableView *tableView;
 
     void createUniqListModel(QListView *curlistview, int column);
+ signals:
+    void updateStatesCount(QString TemplateName,int value);
 };
 
 

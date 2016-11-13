@@ -5,6 +5,7 @@
 #include "templmodelinfo.h"
 #include "checkboxdelegate.h"
 #include "../aqp/alt_key.hpp"
+#include "../aqp/aqp.hpp"
 #include "uniqueproxymodel.hpp"
 /*
 #include "swatch.hpp"
@@ -228,10 +229,10 @@ void SSitemdialog::createLayout()
 
 void SSitemdialog::createConnections()
 {
+    //connect(stateCount, SIGNAL(valueChanged(int)),
+    //            this, SLOT(updateUi()));
     connect(stateCount, SIGNAL(valueChanged(int)),
-                this, SLOT(updateUi()));
-    connect(stateCount, SIGNAL(valueChanged(int)),
-                model, SLOT(stateCountChanged(int)));
+                this, SLOT(stateCountChanged(int)));
 
     connect(model, SIGNAL(TemplateNameChanged(QString,QString)),
                     this, SLOT(updateUi()));
@@ -244,15 +245,29 @@ void SSitemdialog::createConnections()
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
     connect(buttonBox, SIGNAL(clicked(QAbstractButton *)), this, SLOT(buttonClicked(QAbstractButton *)));
 }
+void SSitemdialog::stateCountChanged(int value){
+
+    if(AQP::question(this, tr("Change Counts in Template"),
+                     tr("All childs will update!"),
+                     "", tr("&Yes"), tr("&No"))) {
+
+        QString TemplateName = listview->currentIndex().data().toString();
+        listview->model()->setData(listview->currentIndex(),value,StatesCountRole);
+        emit updateStatesCount(TemplateName,value);
+        updateUi();
+    } else {
+        stateCount->setValue(listview->currentIndex().data(StatesCountRole).toInt());
+    }
+}
 
 void SSitemdialog::templateChanged(const QModelIndex& index){
    image->setPixmap(index.data(Qt::DecorationRole).value<QPixmap>());
+   stateCount->setValue(listview->currentIndex().data(StatesCountRole).toInt());
    updateUi();
 }
 
 void SSitemdialog::imageChanged(const QPixmap&pix){
    listview->model()->setData(listview->currentIndex(),pix,Qt::DecorationRole);
-   //qobject_cast<UniqueProxyModel *>(listview->model())->update();
 }
 
 void SSitemdialog::buttonClicked(QAbstractButton *sender)
@@ -271,12 +286,6 @@ void SSitemdialog::updateUi()
     restoreFilters();
 }
 
-//void SSitemdialog::stateCountChanged(int value)
-//{
-//    if(stateIndex->value()>value)
-//        stateIndex->setValue(value);
-//    stateIndex->setRange(1,value);
-//}
 void SSitemdialog::restoreFilters()
 {
     proxyModel->setName(listview->currentIndex().isValid() ?
