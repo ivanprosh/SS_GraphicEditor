@@ -3,13 +3,14 @@
 
 #include <QObject>
 #include "qtvariantproperty.h"
+#include "itemtypes.hpp"
 
 class QtVariantPropertyManager;
 class QtVariantProperty;
 class QtProperty;
 class QStringList;
 class QtAbstractPropertyBrowser;
-class SScommandProperty;
+//class SScommandProperty;
 
 class TPropManager : public QtVariantPropertyManager
 {

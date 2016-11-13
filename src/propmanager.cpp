@@ -30,8 +30,8 @@ void TPropManager::slotValueChanged(QtProperty *property, const QVariant &change
         b.setColor(changedContent.value<QColor>());
         setValue(brushProperty, b);
 
-        QMetaProperty metaProperty = metaObject->property(m_propertyToIndex.value(brushProperty));
-        metaProperty.write(object,b);
+        //QMetaProperty metaProperty = metaObject->property(m_propertyToIndex.value(brushProperty));
+        //metaProperty.write(object,b);
     } else if(StyleToProperty.contains(property)) {
         QtProperty *brushProperty = StyleToProperty[property];
         QVariant v = this->value(brushProperty);
@@ -39,28 +39,35 @@ void TPropManager::slotValueChanged(QtProperty *property, const QVariant &change
         b.setStyle((Qt::BrushStyle)changedContent.toInt());
         setValue(brushProperty, b);
 
-        QMetaProperty metaProperty = metaObject->property(m_propertyToIndex.value(brushProperty));
-        metaProperty.write(object,b);
+        //QMetaProperty metaProperty = metaObject->property(m_propertyToIndex.value(brushProperty));
+        //metaProperty.write(object,b);
     } else if(commandNameToProperty.contains(property)) {
         QtProperty *parentProperty = commandNameToProperty[property];
         QVariant v = this->value(parentProperty);
         QStringList values = v.toString().split("::");
         Q_ASSERT(!values.isEmpty());
-        values.first() = changedContent.toString();
-        setValue(parentProperty, values);
+        SScommandProperty valueParentProperty;
+        valueParentProperty.first = changedContent.toString();
+        valueParentProperty.second = values.last();
 
-        QMetaProperty metaProperty = metaObject->property(m_propertyToIndex.value(parentProperty));
-        metaProperty.write(object,values);
+        setValue(parentProperty, QVariant::fromValue(valueParentProperty));
+
+        //QMetaProperty metaProperty = metaObject->property(m_propertyToIndex.value(parentProperty));
+        //metaProperty.write(object,QVariant::fromValue(valueParentProperty));
 
     } else if(commandTagToProperty.contains(property)) {
         QtProperty *parentProperty = commandTagToProperty[property];
         QVariant v = this->value(parentProperty);
         QStringList values = v.toString().split("::");
         Q_ASSERT(!values.isEmpty());
-        values.last() = changedContent.toString();
-        setValue(parentProperty,values);
-        QMetaProperty metaProperty = metaObject->property(m_propertyToIndex.value(parentProperty));
-        metaProperty.write(object,values);
+        SScommandProperty valueParentProperty;
+        valueParentProperty.first = values.first();
+        valueParentProperty.second = changedContent.toString();
+
+        setValue(parentProperty, QVariant::fromValue(valueParentProperty));
+
+        //QMetaProperty metaProperty = metaObject->property(m_propertyToIndex.value(parentProperty));
+        //metaProperty.write(object,QVariant::fromValue(valueParentProperty));
 
     } else {
         if (!m_propertyToIndex.contains(property))
@@ -80,50 +87,48 @@ void TPropManager::slotValueChanged(QtProperty *property, const QVariant &change
         }
     }
 
-    updateClassProperties(metaObject, true);
+    //updateClassProperties(metaObject, true);
 }
-void TPropManager::slotPropertyDestroyed(QtProperty *property)
+void TPropManager::slotPropertyDestroyed(QtProperty *parentProperty)
 {
-    if (ColorToProperty.contains(property)) {
-        QtProperty *brushProperty = ColorToProperty[property];
+    if (ColorToProperty.contains(parentProperty)) {
+        QtProperty *brushProperty = ColorToProperty[parentProperty];
         propertyToData[brushProperty].color = 0;
-        ColorToProperty.remove(property);
-    } else if(StyleToProperty.contains(property)) {
-        QtProperty *brushProperty = StyleToProperty[property];
+        ColorToProperty.remove(parentProperty);
+    } else if(StyleToProperty.contains(parentProperty)) {
+        QtProperty *brushProperty = StyleToProperty[parentProperty];
         propertyToData[brushProperty].style = 0;
-        StyleToProperty.remove(property);
-    } else if(commandNameToProperty.contains(property)) {
-        QtProperty *curProperty = commandNameToProperty[property];
+        StyleToProperty.remove(parentProperty);
+    } else if(commandNameToProperty.contains(parentProperty)) {
+        QtProperty *curProperty = commandNameToProperty[parentProperty];
         commandPropertyToData[curProperty].name = 0;
-        commandNameToProperty.remove(property);
-    } else if(commandTagToProperty.contains(property)) {
-        QtProperty *curProperty = commandTagToProperty[property];
+        commandNameToProperty.remove(parentProperty);
+    } else if(commandTagToProperty.contains(parentProperty)) {
+        QtProperty *curProperty = commandTagToProperty[parentProperty];
         commandPropertyToData[curProperty].tag = 0;
-        commandTagToProperty.remove(property);
+        commandTagToProperty.remove(parentProperty);
     }
 }
 void TPropManager::initializeProperty(QtProperty *property)
 {
     if (propertyType(property) == QVariant::Brush) {
         brush b;
-        TPropManager *that = (TPropManager *)this;
 
-        b.color = that->addProperty(QVariant::Color);
-        b.color->setPropertyName(tr("Color"));
-
-        property->addSubProperty(b.color);
-        ColorToProperty[b.color] = property;
-
-        b.style = that->addProperty(QtVariantPropertyManager::enumTypeId());
+        b.color = this->addProperty(QVariant::Color);
+        b.color->setPropertyName(tr("Color"));   
+        b.style = this->addProperty(QtVariantPropertyManager::enumTypeId());
         b.style->setPropertyName(tr("Style"));
         b.style->setAttribute("enumNames",brushesStyles);
-        //b.style->setValue();
-        property->addSubProperty(b.style);
-        StyleToProperty[b.style] = property;
 
+        property->addSubProperty(b.color);
+        property->addSubProperty(b.style);
+
+        ColorToProperty[b.color] = property;
+        StyleToProperty[b.style] = property;
         propertyToData[property] = b;
     } else if (propertyType(property) == qMetaTypeId<SScommandProperty>()) {
         SScommand prop;
+
         prop.name = this->addProperty(QVariant::String);
         prop.name->setPropertyName(tr("Name"));
         prop.tag = this->addProperty(QVariant::String);
@@ -199,52 +204,52 @@ QString TPropManager::valueText(const QtProperty *property) const
     return QtVariantPropertyManager::valueText(property);
 }
 
-void TPropManager::setValue(QtProperty *property, const QVariant &val)
+void TPropManager::setValue(QtProperty *property, const QVariant &newContentValue)
 {
     if (propertyToData.contains(property)) {
-        if (val.type() != QVariant::Brush)
+        if (newContentValue.type() != QVariant::Brush)
             return;
 
-        QBrush curbrush = val.value<QBrush>();
-        brush b = propertyToData[property];
+        QBrush curbrush = newContentValue.value<QBrush>();
+        brush& b = propertyToData[property];
         b.value = curbrush;
-        if(b.color->value().value<QColor>() == curbrush.color()
-                && b.style->value().toInt() == (int)curbrush.style()) return;
+        //if(b.color->value().value<QColor>() == curbrush.color()
+        //        && b.style->value().toInt() == (int)curbrush.style()) return;
 
         if(b.color)
             b.color->setValue(curbrush.color());
         if(b.style)
             b.style->setValue((int)curbrush.style());
 
-        propertyToData[property] = b;
+        //propertyToData[property] = b;
 
         emit propertyChanged(property);
         emit valueChanged(property, curbrush);
         return;
     }
     if (commandPropertyToData.contains(property)) {
-        if (val.type() != QVariant::String)
+
+        if (propertyType(property) != qMetaTypeId<SScommandProperty>())
             return;
 
-        QStringList curCommand = val.toStringList();
-        SScommand cmd = commandPropertyToData[property];
-        cmd.value = curCommand.first() + "::" + curCommand.last();
+        SScommandProperty newData = newContentValue.value<SScommandProperty>();
+        SScommand& context = commandPropertyToData[property];
 
-        //if(cmd.color->value().value<QColor>() == curbrush.color()
-        //        && cmd.style->value().toInt() == (int)curbrush.style()) return;
+        context.value = newData.first + "::" + newData.second;
 
-        if(cmd.name)
-            cmd.name->setValue(curCommand.first());
-        if(cmd.tag)
-            cmd.tag->setValue(curCommand.last());
-
-        commandPropertyToData[property] = cmd;
+        if(context.name){
+            context.name->setValue(newData.first);
+        }
+        if(context.tag) {
+            context.tag->setValue(newData.second);
+        }
 
         emit propertyChanged(property);
-        emit valueChanged(property, curCommand);
+        emit valueChanged(property,QVariant::fromValue(newData));
+
         return;
     }
-    QtVariantPropertyManager::setValue(property, val);
+    QtVariantPropertyManager::setValue(property, newContentValue);
 }
 
 void TPropManager::updateClassProperties(const QMetaObject *metaObject, bool recursive)
@@ -270,7 +275,7 @@ void TPropManager::updateClassProperties(const QMetaObject *metaObject, bool rec
                     else
                         subProperty->setValue(enumToInt(metaProperty.enumerator(), metaProperty.read(object).toInt()));
                 } else {
-                    subProperty->setValue(metaProperty.read(object));
+                        subProperty->setValue(metaProperty.read(object));
                 }
             }
         }

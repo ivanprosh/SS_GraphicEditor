@@ -6,7 +6,7 @@
 GraphicScene::GraphicScene(QObject *parent)
     : QGraphicsScene(parent)
 {
-    //itemList = 0;
+    ;//itemList = 0;
 }
 /*
 void GraphicScene::removeItem(QGraphicsItem *item)

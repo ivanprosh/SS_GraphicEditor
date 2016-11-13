@@ -45,6 +45,7 @@
 
 class QGraphicsItem;
 class QGraphicsScene;
+//class QtVariantProperty;
 
 /*
     Класс, регистрирующий перемещение элемента, добавляется на стек

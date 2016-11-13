@@ -25,8 +25,7 @@ const int SSDynTextItemType = QGraphicsItem::UserType + 5;
 const int SSIndItemType = QGraphicsItem::UserType + 6;
 
 //для идентификации свойства в браузере свойств
-class SScommandProperty{
-};
+typedef QPair<QString, QString> SScommandProperty;
 Q_DECLARE_METATYPE(SScommandProperty)
 
 //const int SSCommandType = QVariant::UserType + 1;

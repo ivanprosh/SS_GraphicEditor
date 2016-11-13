@@ -26,6 +26,8 @@ SSindicator::SSindicator(const QPoint &position, QGraphicsScene *scene,
     setBorderColor(Qt::yellow);
     setBorderWidth(1);
     setBorderBlinkFreq(1000);
+
+    commands.push_back(qMakePair(QString("First name"),QString("First Tag")));
 }
 
 void SSindicator::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
