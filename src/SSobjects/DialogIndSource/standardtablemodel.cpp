@@ -11,8 +11,8 @@
     the GNU General Public License for more details.
 */
 
-#include "../aqp/aqp.hpp"
-#include "../global.hpp"
+#include "../../aqp/aqp.hpp"
+#include "../../global.hpp"
 #include "standardtablemodel.hpp"
 #include "templmodelinfo.h"
 #include <QDataStream>
@@ -99,8 +99,10 @@ void StandardTableModel::addTemplate(const QString &TemplateName)
             QList<QStandardItem*> items;
             QStandardItem *iName = new QStandardItem;
             iName->setData(curName,Qt::DisplayRole);
-            if(curState==1)
+            if(curState==1){
                 iName->setData(QPixmap(":/images/obj_icons/dp.bmp"),Qt::DecorationRole);
+                iName->setData(1,StatesCountRole);
+            }
             items << iName;
             QStandardItem *iStateInd = new QStandardItem;
             iStateInd->setData(curState,Qt::DisplayRole);

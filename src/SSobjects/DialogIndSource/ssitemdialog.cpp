@@ -1,11 +1,11 @@
 #include "ssitemdialog.h"
-#include "ssindicator.h"
+#include "../ssindicator.h"
 //#include "ssgraphobjinfo.h"
 #include "templateimage.h"
 #include "templmodelinfo.h"
 #include "checkboxdelegate.h"
-#include "../aqp/alt_key.hpp"
-#include "../aqp/aqp.hpp"
+#include "../../aqp/alt_key.hpp"
+#include "../../aqp/aqp.hpp"
 #include "uniqueproxymodel.hpp"
 /*
 #include "swatch.hpp"
@@ -49,6 +49,7 @@ SSitemdialog::SSitemdialog(StandardTableModel* newmodel,const QPoint &position_,
     createWidgets();
     createLayout();
     createConnections();
+    initializeModel();
 
     AQP::accelerateWidget(this);
     setWindowTitle(tr("%1 - %2 Indicator Object")
@@ -176,25 +177,9 @@ void SSitemdialog::createUniqListModel(QListView *curlistview, int column)
     curlistview->setModel(uniqueProxyModel);
     curlistview->setModelColumn(column);
 }
-void SSitemdialog::initListTemplates()
+void SSitemdialog::initializeModel()
 {
-    /*
-    QListWidgetItem *Test1 = new QListWidgetItem(listview);
-    Test1->setIcon(QIcon(":/images/obj_icons/dd.bmp"));
-    Test1->setText("T1");
-    Test1->setTextAlignment(Qt::AlignHCenter);
-    Test1->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    QListWidgetItem *Test2 = new QListWidgetItem(listview);
-    Test2->setIcon(QIcon(":/images/obj_icons/dp.bmp"));
-    Test2->setText("T2");
-    Test2->setTextAlignment(Qt::AlignHCenter);
-    Test2->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    QListWidgetItem *Test3 = new QListWidgetItem(listview);
-    Test3->setIcon(QIcon(":/images/obj_icons/dt.bmp"));
-    Test3->setText("T3");
-    Test3->setTextAlignment(Qt::AlignHCenter);
-    Test3->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    */
+
 }
 
 
@@ -231,8 +216,8 @@ void SSitemdialog::createConnections()
 {
     //connect(stateCount, SIGNAL(valueChanged(int)),
     //            this, SLOT(updateUi()));
-    connect(stateCount, SIGNAL(valueChanged(int)),
-                this, SLOT(stateCountChanged(int)));
+    connect(stateCount, SIGNAL(editingFinished()),
+                this, SLOT(stateCountChanged()));
 
     connect(model, SIGNAL(TemplateNameChanged(QString,QString)),
                     this, SLOT(updateUi()));
@@ -245,19 +230,25 @@ void SSitemdialog::createConnections()
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
     connect(buttonBox, SIGNAL(clicked(QAbstractButton *)), this, SLOT(buttonClicked(QAbstractButton *)));
 }
-void SSitemdialog::stateCountChanged(int value){
+void SSitemdialog::stateCountChanged(){
+
+    QString TemplateName = listview->currentIndex().data().toString();
+
+    int curModelStatesCount = listview->model()->data(listview->currentIndex(),StatesCountRole).toInt();
+
+    if(curModelStatesCount==stateCount->value()) return;
 
     if(AQP::question(this, tr("Change Counts in Template"),
-                     tr("All childs will update!"),
-                     "", tr("&Yes"), tr("&No"))) {
-
-        QString TemplateName = listview->currentIndex().data().toString();
-        listview->model()->setData(listview->currentIndex(),value,StatesCountRole);
-        emit updateStatesCount(TemplateName,value);
+                         tr("All childs will update!"),
+                         "", tr("&Yes"), tr("&No")))
+    {
+        listview->model()->setData(listview->currentIndex(),stateCount->value(),StatesCountRole);
+        emit updateStatesCount(TemplateName,stateCount->value());
         updateUi();
     } else {
-        stateCount->setValue(listview->currentIndex().data(StatesCountRole).toInt());
+        stateCount->setValue(curModelStatesCount);
     }
+
 }
 
 void SSitemdialog::templateChanged(const QModelIndex& index){

@@ -11,7 +11,7 @@
     the GNU General Public License for more details.
 */
 
-#include "../global.hpp"
+#include "../../global.hpp"
 #include "proxymodel.hpp"
 
 ProxyModel::ProxyModel(QObject *parent)

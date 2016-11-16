@@ -11,7 +11,7 @@
     the GNU General Public License for more details.
 */
 
-#include "../global.hpp"
+#include "../../global.hpp"
 #include "imagemodeldelegate.hpp"
 #include "proxymodel.hpp"
 #include "fileedit.h"

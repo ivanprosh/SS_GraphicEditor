@@ -1,6 +1,6 @@
 #include "ssindicator.h"
-#include "templmodelinfo.h"
-#include "standardtablemodel.hpp"
+#include "DialogIndSource/templmodelinfo.h"
+#include "DialogIndSource/standardtablemodel.hpp"
 #include <QGraphicsScene>
 #include "../global.hpp"
 #include <QStyleOptionGraphicsItem>

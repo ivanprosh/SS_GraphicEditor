@@ -388,10 +388,10 @@ void TPropManager::itemChanged(QObject *curobject)
     }
     m_topLevelProperties.clear();
 
-    addClassProperties(object->metaObject());
-    //Выставляем развернустость узлов
-    //goal = SetExpandState;
-    ExpandState(&TPropManager::SetExpandState);
+    if(object){
+        addClassProperties(object->metaObject());
+        ExpandState(&TPropManager::SetExpandState);
+    }
 }
 
 void TPropManager::SetExpandState(const QMetaObject* metaObject, int key, QtBrowserItem *subitem)

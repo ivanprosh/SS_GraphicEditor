@@ -52,7 +52,6 @@ HEADERS += \
     $$PWD/SSobjects/ssindicator.h \
     $$PWD/commands.h \
     $$PWD/graphicscene.h \
-    $$PWD/SSobjects/DialogIndSource/spinbox.h \
     $$PWD/SSobjects/DialogIndSource/checkboxdelegate.h \
     $$PWD/SSobjects/DialogIndSource/fileedit.h \
     $$PWD/SSobjects/DialogIndSource/imagemodeldelegate.hpp \
@@ -61,8 +60,7 @@ HEADERS += \
     $$PWD/SSobjects/DialogIndSource/standardtablemodel.hpp \
     $$PWD/SSobjects/DialogIndSource/templateimage.h \
     $$PWD/SSobjects/DialogIndSource/templmodelinfo.h \
-    $$PWD/SSobjects/DialogIndSource/uniqueproxymodel.hpp \
-    $$PWD/SSobjects/DialogIndSource/spinbox.h
+    $$PWD/SSobjects/DialogIndSource/uniqueproxymodel.hpp
 
 SOURCES += \
     $$PWD/main.cpp \
@@ -81,7 +79,6 @@ SOURCES += \
     $$PWD/SSobjects/ssindicator.cpp \
     $$PWD/commands.cpp \
     $$PWD/graphicscene.cpp \
-    $$PWD/SSobjects/DialogIndSource/spinbox.cpp \
     $$PWD/SSobjects/DialogIndSource/checkboxdelegate.cpp \
     $$PWD/SSobjects/DialogIndSource/fileedit.cpp \
     $$PWD/SSobjects/DialogIndSource/imagemodeldelegate.cpp \
@@ -89,6 +86,5 @@ SOURCES += \
     $$PWD/SSobjects/DialogIndSource/ssitemdialog.cpp \
     $$PWD/SSobjects/DialogIndSource/standardtablemodel.cpp \
     $$PWD/SSobjects/DialogIndSource/templateimage.cpp \
-    $$PWD/SSobjects/DialogIndSource/uniqueproxymodel.cpp \
-    $$PWD/SSobjects/DialogIndSource/spinbox.cpp
+    $$PWD/SSobjects/DialogIndSource/uniqueproxymodel.cpp
 

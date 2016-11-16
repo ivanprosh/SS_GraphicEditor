@@ -12,8 +12,8 @@
 #include "boxitem.hpp"
 #include "commands.h"
 //#include "SSobjects/ssgraphobjinfo.h"
-#include "SSobjects/ssitemdialog.h"
-#include "SSobjects/standardtablemodel.hpp"
+#include "SSobjects/DialogIndSource/ssitemdialog.h"
+#include "SSobjects/DialogIndSource/standardtablemodel.hpp"
 //#include "brushwidget.hpp"
 //#include "penwidget.hpp"
 #include "smileyitem.hpp"
@@ -1246,11 +1246,11 @@ void MainWindow::selectionChanged()
     QList<QGraphicsItem*> items = scene->selectedItems();
     if (items.count() == 1) {
 
-        if (QObject *item = dynamic_cast<QObject*>(items.at(0))){
-            currentItem = items.at(0);
-            //variantManager->addClassProperties(item,item->metaObject());
-            emit itemChanged(item);
-        }
+       //QObject *item = dynamic_cast<QObject*>(items.first());
+       currentItem = items.first();
+       //variantManager->addClassProperties(item,item->metaObject());
+       emit itemChanged(dynamic_cast<QObject*>(items.first()));
+
 
 
         //общие свойства
@@ -1297,6 +1297,8 @@ void MainWindow::selectionChanged()
 
         }
         */
+    } else {
+        emit itemChanged(0);
     }
     updateUi();
 }
