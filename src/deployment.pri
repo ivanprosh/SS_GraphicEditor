@@ -88,3 +88,6 @@ SOURCES += \
     $$PWD/SSobjects/DialogIndSource/templateimage.cpp \
     $$PWD/SSobjects/DialogIndSource/uniqueproxymodel.cpp
 
+INCLUDEPATH += $$PWD \
+    $$PWD/SSobjects \
+    $$PWD/aqp/

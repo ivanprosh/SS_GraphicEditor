@@ -104,11 +104,11 @@ bool question(QWidget *parent, const QString &title,
               const QString &text, const QString &detailedText,
               const QString &yesText, const QString &noText)
 {
-#if QT_VERSION >= 0x040600
+//#if QT_VERSION >= 0x040600
     QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
-#else
-    QSharedPointer<QMessageBox> messageBox(new QMessageBox(parent));
-#endif
+//#else
+   // QSharedPointer<QMessageBox> messageBox(new QMessageBox(parent));
+//#endif
     if (parent)
         messageBox->setWindowModality(Qt::WindowModal);
     messageBox->setWindowTitle(QString("%1 - %2")

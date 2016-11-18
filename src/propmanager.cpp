@@ -10,7 +10,7 @@
 TPropManager::TPropManager(QObject *parent, QtAbstractPropertyBrowser *curBrowser):QtVariantPropertyManager(parent),
     browser(curBrowser)
 {
-    ignoreClassNames << "QObject" << "QWidget" << "QGraphicItem";
+    ignoreClassNames << "QWidget" << "QGraphicItem";
     brushesStyles << "No Brush" << "Solid" << "Dense #1" << "Dense #2" << "Dense #3" << "Dense #4" << "Dense #5" << "Dense #6" << "Dense #7"
                   << "Horizontal" << "Vertical" << "Cross";
 
@@ -75,15 +75,25 @@ void TPropManager::slotValueChanged(QtProperty *property, const QVariant &change
 
         int idx = m_propertyToIndex.value(property);
 
-        QMetaProperty metaProperty = metaObject->property(idx);
-
-        if (metaProperty.isEnumType()) {
-            if (metaProperty.isFlagType())
-                metaProperty.write(object, intToFlag(metaProperty.enumerator(), changedContent.toInt()));
-            else
-                metaProperty.write(object, intToEnum(metaProperty.enumerator(), changedContent.toInt()));
+        /*
+         * С учетом наличия динамических свойств (для команд, например),
+         * которые не попадают в MetaProperty (их индекс в m_propertyToIndex превышает object->metaObject()->propertyCount()),
+         * обработка будет отличной
+        */
+        if(idx < object->metaObject()->propertyCount()){
+            QMetaProperty metaProperty = metaObject->property(idx);
+            if (metaProperty.isEnumType()) {
+                if (metaProperty.isFlagType())
+                    metaProperty.write(object, intToFlag(metaProperty.enumerator(), changedContent.toInt()));
+                else
+                    metaProperty.write(object, intToEnum(metaProperty.enumerator(), changedContent.toInt()));
+            } else {
+                metaProperty.write(object, changedContent);
+            }
         } else {
-            metaProperty.write(object, changedContent);
+            int indexObjectProp = idx - object->metaObject()->propertyCount();
+            Q_ASSERT(object->dynamicPropertyNames().size() >= indexObjectProp + 1);
+            object->setProperty(object->dynamicPropertyNames().at(indexObjectProp), changedContent);
         }
     }
 
@@ -281,6 +291,32 @@ void TPropManager::updateClassProperties(const QMetaObject *metaObject, bool rec
         }
     }
 }
+void TPropManager::addCurObjectDynProperties(){
+        //QList<QByteArray> DynPropsList = object->dynamicPropertyNames();
+        QListIterator<QByteArray> DynPropIter(object->dynamicPropertyNames());
+        QtProperty *classProperty = addProperty(QtVariantPropertyManager::groupTypeId(), tr("Commands"));
+        int idx = object->metaObject()->propertyCount();
+        while(DynPropIter.hasNext()){
+            QtVariantProperty *subProperty = 0;
+            QByteArray name = DynPropIter.next();
+            subProperty = addProperty(qMetaTypeId<SScommandProperty>(), QLatin1String(name));
+            subProperty->setValue(QVariant::fromValue(object->property(name)));
+            classProperty->addSubProperty(subProperty);
+            m_propertyToIndex[subProperty] = idx;
+            m_classToIndexToProperty[object->metaObject()][idx] = subProperty;
+            idx++;
+        }
+        m_topLevelProperties.append(classProperty);
+        browser->addProperty(classProperty);
+        /*
+        QListIterator<QGraphicsItem*> i(items);
+        while (i.hasNext()) {
+            QScopedPointer<QGraphicsItem> item(i.next());
+            scene->removeItem(item.data());
+        }
+        */
+}
+
 void TPropManager::addClassProperties(const QMetaObject* metaObject){
 
     //const QMetaObject* metaObject = object->metaObject();
@@ -300,6 +336,8 @@ void TPropManager::addClassProperties(const QMetaObject* metaObject){
         //addProperty(classProperty, className);
         m_classToProperty[metaObject] = classProperty;
         m_propertyToClass[classProperty] = metaObject;
+
+        //qDebug() <<  "Property count of:" << metaObject->className() << " :" << metaObject->propertyCount();
 
         for (int idx = metaObject->propertyOffset(); idx < metaObject->propertyCount(); idx++) {
             QMetaProperty metaProperty = metaObject->property(idx);
@@ -355,7 +393,8 @@ void TPropManager::addClassProperties(const QMetaObject* metaObject){
             classProperty->addSubProperty(subProperty);
             m_propertyToIndex[subProperty] = idx;
             m_classToIndexToProperty[metaObject][idx] = subProperty;
-        }
+        }      
+
     } else {
         updateClassProperties(metaObject, false);
     }
@@ -390,6 +429,8 @@ void TPropManager::itemChanged(QObject *curobject)
 
     if(object){
         addClassProperties(object->metaObject());
+        if(!object->dynamicPropertyNames().isEmpty())
+            addCurObjectDynProperties();
         ExpandState(&TPropManager::SetExpandState);
     }
 }

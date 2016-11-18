@@ -6,9 +6,12 @@
 #include <QStyleOptionGraphicsItem>
 #include <QGraphicsPixmapItem>
 #include <QPainter>
+#include <QTimer>
+#include <QDynamicPropertyChangeEvent>
 
 SSindicator::SSindicator(const QPoint &position, QGraphicsScene *scene,
                          const QModelIndex &Template_Index,QGraphicsItem *parent):QGraphicsObject(parent),
+                        m_commandsCount(0),
                         m_TemplateName(Template_Index.isValid() ? Template_Index.data().toString():QString()),
                         image(Template_Index.isValid() ? Template_Index.data(Qt::DecorationRole).value<QPixmap>():QPixmap(":/images/obj_icons/default_obj.png"))
 {
@@ -22,6 +25,7 @@ SSindicator::SSindicator(const QPoint &position, QGraphicsScene *scene,
     setStatesCount(Template_Index.isValid() ? Template_Index.data(StatesCountRole).toInt():1);
 
     initializeProperties();
+    createInternalConnections();
 
 }
 void SSindicator::initializeProperties(){
@@ -33,8 +37,73 @@ void SSindicator::initializeProperties(){
     setBorderColor(Qt::yellow);
     setBorderWidth(1);
     setBorderBlinkFreq(1000);
-    //setStatesCount
-    commands.push_back(qMakePair(QString("First name"),QString("First Tag")));
+    qDebug() << this->metaObject()->propertyCount();
+    setProperty("test", QVariant::fromValue(qMakePair(QString(),QString())));
+    QTimer::singleShot(0,this,SLOT(debinfo()));
+    //commands.push_back(qMakePair(QString("First name"),QString("First Tag")));
+}
+
+void SSindicator::createInternalConnections()
+{
+    ;
+}
+void SSindicator::updateCommandsView(){
+
+    //if(commands.size() == commandsCount()) return;
+    int index;
+    for(index=0;index<commandsCount();index++){
+       QString propName("Command"+QString::number(index+1));
+       if(!commands.contains(propName))
+           commands.insert(propName,qMakePair(QString(),QString()));
+       setProperty(propName.toUtf8(),QVariant::fromValue(commands.value(propName)));
+    }
+    QRegExp rgxPattern("Command([0-9]{1,2})");
+    QListIterator<QByteArray> iter(dynamicPropertyNames());
+    while(iter.hasNext()){
+        if(rgxPattern.exactMatch(iter.next()) && rgxPattern.cap(1).toInt() > commandsCount())
+        {
+            setProperty(QString("Command"+rgxPattern.cap(1)).toUtf8(),QVariant());
+        }
+    }
+    /*
+    if(commands.size() < commandsCount()){
+       for(int index=commands.size();index<commandsCount();index++){
+           QString propName("Command"+QString::number(index+1));
+           SScommandProperty value = qMakePair(QString(),QString());
+           commands.insert(propName,value);
+           setProperty(propName.toUtf8(),QVariant::fromValue(value));
+       }
+    } else {
+        for(int index=commandsCount();index<commands.size();index++){
+            QString propName("Command"+QString::number(index+1));
+            //SScommandProperty value = qMakePair(QString(),QString());
+            //commands.insert(propName,value);
+            if(dynamicPropertyNames().contains(propName))
+                setProperty(propName.toUtf8(),QVariant());
+        }
+    }
+    */
+    qDebug() << dynamicPropertyNames();
+
+//    if(static_cast<QObject*>(this)->dynamicPropertyNames().isEmpty() ||
+//            static_cast<QObject*>(this)->dynamicPropertyNames().size() == commandsCount()) return;
+
+//    setProperty("Command"+QString::number(static_cast<QObject*>(this)->dynamicPropertyNames().size()).toUtf8(),
+//                static_cast<QObject*>(this)->dynamicPropertyNames().size() < commandsCount() ? QVariant::fromValue(qMakePair(QString(),QString())) : QVariant());
+
+    /*
+    }
+    while (static_cast<QObject*>(this)->dynamicPropertyNames().size() > commandsCount())
+    {
+        setProperty("Command"+QString::number(static_cast<QObject*>(this)->dynamicPropertyNames().size()), QVariant());
+    }
+    qDebug() << static_cast<QObject*>(this)->dynamicPropertyNames();
+    */
+}
+
+void SSindicator::debinfo(){
+    qDebug() << this->metaObject()->propertyCount();
+    qDebug() << static_cast<QObject*>(this)->dynamicPropertyNames();
 }
 
 void SSindicator::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -103,6 +172,29 @@ QVariant SSindicator::itemChange(QGraphicsItem::GraphicsItemChange change, const
     if (isDirtyChange(change))
         emit dirty();
     return QGraphicsItem::itemChange(change, value);
+}
+
+void SSindicator::dynPropertyChanged(QByteArray propName){
+
+    if(commands.contains(propName)){
+        SScommandProperty value = property(propName).value<SScommandProperty>();
+        commands[propName].first = value.first;
+        commands[propName].second = value.second;
+        qDebug() << "DynPropChanged: " << propName << ": " << value.first << " " << value.second;
+    }
+}
+
+bool SSindicator::event(QEvent *event)
+{
+    if (event->type() == QEvent::DynamicPropertyChange)
+    {
+        QDynamicPropertyChangeEvent *const propEvent = static_cast<QDynamicPropertyChangeEvent*>(event);
+        QByteArray propName = propEvent->propertyName();
+        dynPropertyChanged(propName);
+        return true;
+    }
+
+    return QGraphicsObject::event(event);
 }
 
 QDataStream &operator<<(QDataStream &out, const SSindicator &indicator)

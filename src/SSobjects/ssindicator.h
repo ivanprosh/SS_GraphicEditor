@@ -4,6 +4,10 @@
 #include <QGraphicsPixmapItem>
 #include <QModelIndex>
 #include "../itemtypes.hpp"
+#include "aqp.hpp"
+#include "graphicscene.h"
+#include "mainwindow.hpp"
+#include <QtWidgets>
 
 class StandardTableModel;
 
@@ -13,6 +17,7 @@ class SSindicator: public QGraphicsObject
 
     Q_PROPERTY(QString TemplateName READ TemplateName WRITE setTemplateName)
     Q_PROPERTY(int statesCount READ statesCount WRITE setStatesCount)
+    Q_PROPERTY(int commandsCount READ commandsCount WRITE setCommandsCount NOTIFY commandsCountChanged)
     Q_PROPERTY(int BorderBlinkFreq READ BorderBlinkFreq WRITE setBorderBlinkFreq)
 
     Q_PROPERTY(bool AutoCloseDUWnd READ isAutoCloseDUWnd WRITE setAutoCloseDUWnd)
@@ -24,7 +29,7 @@ class SSindicator: public QGraphicsObject
     Q_PROPERTY(int BorderWidth READ BorderWidth WRITE setBorderWidth)
     Q_PROPERTY(int BorderBlinkFreq READ BorderBlinkFreq WRITE setBorderBlinkFreq)
 
-    Q_PROPERTY(SScommandProperty CMD1 READ CMD1 WRITE setCMD1)
+    //Q_PROPERTY(SScommandProperty Commands READ Command WRITE setCommand)
 
 public:
     enum {Type = SSIndItemType};
@@ -51,11 +56,13 @@ public:
     int BorderBlinkFreq() const {return m_BorderBlinkFreq; }
     int StateDigParCount() const {return m_StateDigParCount; }
     int statesCount() const {return m_statesCount; }
-    SScommandProperty CMD1() const {return commands.isEmpty() ? qMakePair(QString(),QString()): commands.first();}
+    int commandsCount() const {return m_commandsCount;}
+    //SScommandProperty Command1() const {return commands.isEmpty() ? qMakePair(QString(),QString()): commands.first();}
 
 private:
     QPixmap image;
     QString m_TemplateName;
+    //QStringList &dynamicPropertyList;
     void paintSelectionOutline(QPainter *painter);
 
     //свойства
@@ -68,14 +75,17 @@ private:
     int m_BorderBlinkFreq;
     int m_StateDigParCount;
     int m_statesCount;
+    int m_commandsCount;
 
-    QVector<SScommandProperty> commands;
+    QHash<QString,SScommandProperty> commands;
 
     void initializeProperties();
+    void createInternalConnections();
 public slots:
     void TemplateNameChanged(const QString& oldName,const QString& newName);
     void ImageChanged(const QString& ,const QPixmap& pix);
     void StatesCountChanged(QString TemplateName,int value);
+    void dynPropertyChanged(QByteArray propName);
     //void ModelDataChanged(const QModelIndex& indexStart,const QModelIndex& indexFinish);
 
     //свойства
@@ -88,18 +98,24 @@ public slots:
     void setBorderWidth(const int& value){ if(value != m_BorderWidth){m_BorderWidth=value;emit dirty();}}
     void setBorderBlinkFreq(const int& value){ if(value != m_BorderBlinkFreq){m_BorderBlinkFreq=value;emit dirty();}}
     void setStatesCount(const int& value){ if(value != m_statesCount){m_statesCount=value;emit dirty();}}
-    void setCMD1(const SScommandProperty& value){
-        if(!commands.isEmpty()){
-            commands[0].first = value.first;
-            commands[0].second = value.second;
+    void setCommandsCount(const int& value){
+        if(value != m_commandsCount){
+            m_commandsCount=value;
+            updateCommandsView();
+            emit dirty();
         }
     }
+    void updateCommandsView();
 
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
+    bool event(QEvent *event);
 signals:
     void dirty();
+    void commandsCountChanged();
+private slots:
+    void debinfo();
 };
 
 #endif // SSINDICATOR_H
