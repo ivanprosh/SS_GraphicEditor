@@ -53,7 +53,6 @@ private:
 
     QtBrowserItem* findchildrens(QtBrowserItem *item, QList<QtBrowserItem *> &list);
 
-    void addCurObjectDynProperties();
 private slots:
     void slotValueChanged(QtProperty *property, const QVariant &value);
     void slotPropertyDestroyed(QtProperty *property);
@@ -78,6 +77,7 @@ public:
 public slots:
     virtual void setValue(QtProperty *property, const QVariant &val);
     void itemChanged(QObject* curobject);
+    void editAddCurObjectCommands();
 };
 
 

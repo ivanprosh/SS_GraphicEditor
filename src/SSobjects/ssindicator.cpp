@@ -37,9 +37,9 @@ void SSindicator::initializeProperties(){
     setBorderColor(Qt::yellow);
     setBorderWidth(1);
     setBorderBlinkFreq(1000);
-    qDebug() << this->metaObject()->propertyCount();
-    setProperty("test", QVariant::fromValue(qMakePair(QString(),QString())));
-    QTimer::singleShot(0,this,SLOT(debinfo()));
+    //qDebug() << this->metaObject()->propertyCount();
+    //setProperty("test", QVariant::fromValue(qMakePair(QString(),QString())));
+    //QTimer::singleShot(0,this,SLOT(debinfo()));
     //commands.push_back(qMakePair(QString("First name"),QString("First Tag")));
 }
 
@@ -65,40 +65,9 @@ void SSindicator::updateCommandsView(){
             setProperty(QString("Command"+rgxPattern.cap(1)).toUtf8(),QVariant());
         }
     }
-    /*
-    if(commands.size() < commandsCount()){
-       for(int index=commands.size();index<commandsCount();index++){
-           QString propName("Command"+QString::number(index+1));
-           SScommandProperty value = qMakePair(QString(),QString());
-           commands.insert(propName,value);
-           setProperty(propName.toUtf8(),QVariant::fromValue(value));
-       }
-    } else {
-        for(int index=commandsCount();index<commands.size();index++){
-            QString propName("Command"+QString::number(index+1));
-            //SScommandProperty value = qMakePair(QString(),QString());
-            //commands.insert(propName,value);
-            if(dynamicPropertyNames().contains(propName))
-                setProperty(propName.toUtf8(),QVariant());
-        }
-    }
-    */
+
     qDebug() << dynamicPropertyNames();
 
-//    if(static_cast<QObject*>(this)->dynamicPropertyNames().isEmpty() ||
-//            static_cast<QObject*>(this)->dynamicPropertyNames().size() == commandsCount()) return;
-
-//    setProperty("Command"+QString::number(static_cast<QObject*>(this)->dynamicPropertyNames().size()).toUtf8(),
-//                static_cast<QObject*>(this)->dynamicPropertyNames().size() < commandsCount() ? QVariant::fromValue(qMakePair(QString(),QString())) : QVariant());
-
-    /*
-    }
-    while (static_cast<QObject*>(this)->dynamicPropertyNames().size() > commandsCount())
-    {
-        setProperty("Command"+QString::number(static_cast<QObject*>(this)->dynamicPropertyNames().size()), QVariant());
-    }
-    qDebug() << static_cast<QObject*>(this)->dynamicPropertyNames();
-    */
 }
 
 void SSindicator::debinfo(){

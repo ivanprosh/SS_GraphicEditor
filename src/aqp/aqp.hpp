@@ -96,6 +96,19 @@ bool okToClearData(bool (T::*saveData)(), T *parent,
     return true;
 }
 
+template<template<typename T> class S, typename T>
+bool containsString(const S<T> &sequence,QString goal)
+{
+    Q_ASSERT(!sequence.isEmpty());
+    QVariant checkType = sequence.first();
+    if(!checkType.canConvert<QString>()) return false;
+
+    foreach (T item, sequence) {
+        if(QString(item).contains(goal)) return true;
+    }
+    return false;
+}
+
 const int MSecPerSecond = 1000;
 
 void hoursMinutesSecondsForMSec(const int msec, int *hours,

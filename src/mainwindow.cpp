@@ -867,6 +867,8 @@ void MainWindow::connectItem(QObject *item)
                 item, SLOT(TemplateNameChanged(QString,QString)));
         connect(dialog, SIGNAL(updateStatesCount(QString,int)),
                 item, SLOT(StatesCountChanged(QString,int)));
+        connect(item,SIGNAL(commandsCountChanged()),
+                variantManager,SLOT(editAddCurObjectCommands()));
     }
     /*
     const QMetaObject *metaObject = item->metaObject();

@@ -90,14 +90,30 @@ public slots:
 
     //свойства
     void setTemplateName(const QString& newName);
-    void setAutoCloseDUWnd(bool value){ if(value != AutoCloseDUWnd){AutoCloseDUWnd=value;emit dirty();}}
-    void setBorderCtrlDigPar_Tag(const QString& newName){if(newName != m_BorderCtrlDigPar_Tag){m_BorderCtrlDigPar_Tag=newName;emit dirty();}}
-    void setBorderCtrlDigPar_Unit(const QString& newName){if(newName != m_BorderCtrlDigPar_Unit){m_BorderCtrlDigPar_Unit=newName;emit dirty();}}
-    void setBorderCtrlDigParInvert(bool value){ if(value != BorderCtrlDigParInvert){BorderCtrlDigParInvert=value;emit dirty();}}
-    void setBorderColor(const QColor& color){if(color!=m_BorderColor){m_BorderColor=color;emit dirty();}}
-    void setBorderWidth(const int& value){ if(value != m_BorderWidth){m_BorderWidth=value;emit dirty();}}
-    void setBorderBlinkFreq(const int& value){ if(value != m_BorderBlinkFreq){m_BorderBlinkFreq=value;emit dirty();}}
-    void setStatesCount(const int& value){ if(value != m_statesCount){m_statesCount=value;emit dirty();}}
+    void setAutoCloseDUWnd(bool value){
+        if(value != AutoCloseDUWnd){AutoCloseDUWnd=value;emit dirty();}
+    }
+    void setBorderCtrlDigPar_Tag(const QString& newName){
+        if(newName != m_BorderCtrlDigPar_Tag){m_BorderCtrlDigPar_Tag=newName;emit dirty();}
+    }
+    void setBorderCtrlDigPar_Unit(const QString& newName){
+        if(newName != m_BorderCtrlDigPar_Unit){m_BorderCtrlDigPar_Unit=newName;emit dirty();}
+    }
+    void setBorderCtrlDigParInvert(bool value){
+        if(value != BorderCtrlDigParInvert){BorderCtrlDigParInvert=value;emit dirty();}
+    }
+    void setBorderColor(const QColor& color){
+        if(color!=m_BorderColor){m_BorderColor=color;emit dirty();}
+    }
+    void setBorderWidth(const int& value){
+        if(value != m_BorderWidth){m_BorderWidth=value;emit dirty();}
+    }
+    void setBorderBlinkFreq(const int& value){
+        if(value != m_BorderBlinkFreq){m_BorderBlinkFreq=value;emit dirty();}
+    }
+    void setStatesCount(const int& value){
+        if(value != m_statesCount){m_statesCount=value;emit dirty();}
+    }
     void setCommandsCount(const int& value){
         if(value != m_commandsCount){
             m_commandsCount=value;
