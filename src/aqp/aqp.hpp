@@ -97,16 +97,19 @@ bool okToClearData(bool (T::*saveData)(), T *parent,
 }
 
 template<template<typename T> class S, typename T>
-bool containsString(const S<T> &sequence,QString goal)
+QStringList filterString(const S<T> &sequence,QString goal)
 {
-    Q_ASSERT(!sequence.isEmpty());
+    if(sequence.isEmpty()) return QStringList();
+    //Q_ASSERT(!sequence.isEmpty());
     QVariant checkType = sequence.first();
-    if(!checkType.canConvert<QString>()) return false;
+    if(!checkType.canConvert<QString>()) return QStringList();
 
+    QStringList result;
     foreach (T item, sequence) {
-        if(QString(item).contains(goal)) return true;
+        QString it(item);
+        if(it.contains(goal)) result << it;
     }
-    return false;
+    return result;
 }
 
 const int MSecPerSecond = 1000;

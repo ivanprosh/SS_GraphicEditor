@@ -16,8 +16,8 @@ class SSindicator: public QGraphicsObject
     Q_OBJECT
 
     Q_PROPERTY(QString TemplateName READ TemplateName WRITE setTemplateName)
-    Q_PROPERTY(int statesCount READ statesCount WRITE setStatesCount)
-    Q_PROPERTY(int commandsCount READ commandsCount WRITE setCommandsCount NOTIFY commandsCountChanged)
+    Q_PROPERTY(int statesCount READ statesCount)
+    Q_PROPERTY(int commandsCount READ commandsCount WRITE setCommandsCount)
     Q_PROPERTY(int BorderBlinkFreq READ BorderBlinkFreq WRITE setBorderBlinkFreq)
 
     Q_PROPERTY(bool AutoCloseDUWnd READ isAutoCloseDUWnd WRITE setAutoCloseDUWnd)
@@ -118,6 +118,7 @@ public slots:
         if(value != m_commandsCount){
             m_commandsCount=value;
             updateCommandsView();
+            emit commandsCountChanged(value);
             emit dirty();
         }
     }
@@ -129,7 +130,7 @@ protected:
     bool event(QEvent *event);
 signals:
     void dirty();
-    void commandsCountChanged();
+    void commandsCountChanged(int);
 private slots:
     void debinfo();
 };

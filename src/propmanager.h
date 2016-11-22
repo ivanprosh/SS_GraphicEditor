@@ -17,9 +17,13 @@ class TPropManager : public QtVariantPropertyManager
     Q_OBJECT
 
 private:
+    enum PropertyStartIndexes {CommandStartIndex = 1000,StateStartIndex=2000};
     QObject *object;
     QStringList ignoreClassNames,brushesStyles;
     QtAbstractPropertyBrowser *browser;
+    QString prevClassName;
+    //const QString commandNamePrefix;
+    //const QString stateNamePrefix;
 
     struct SScommand {
             QVariant value;
@@ -40,10 +44,9 @@ private:
     QMap<const QtProperty *, SScommand> commandPropertyToData;
     QMap<const QtProperty *, QtProperty *> commandNameToProperty;
     QMap<const QtProperty *, QtProperty *> commandTagToProperty;
-
-
     QMap<const QMetaObject *, QtProperty *> m_classToProperty;
     QMap<QtProperty *, const QMetaObject *> m_propertyToClass;
+
     //QMap<QtProperty *, QString> propertyToId;
     //QMap<QString, QtVariantProperty *> idToProperty;
     QMap<const QMetaObject *, QMap<int, bool> > idToExpanded;
@@ -53,6 +56,18 @@ private:
 
     QtBrowserItem* findchildrens(QtBrowserItem *item, QList<QtBrowserItem *> &list);
 
+    template<template<typename T> class S>
+    QtProperty* addPropertyOrReturnExisted(const S<QtProperty*> &sequence, int propType, QString name){
+        foreach (QtProperty* prop, sequence) {
+            if(prop->propertyName()==name) return prop;
+        }
+        qDebug() << "New dynprop add";
+        return addProperty(propType, name);
+    }
+
+    void syncDynPropWithObj(QStringList &list, QtProperty *classProperty, int startIndex);
+    void topLevelPropertySetVisible(QtProperty *classProperty, bool value = 1);
+    void setAttributes(QtVariantProperty *prop);
 private slots:
     void slotValueChanged(QtProperty *property, const QVariant &value);
     void slotPropertyDestroyed(QtProperty *property);
@@ -62,6 +77,7 @@ protected:
     void updateExpandState(const QMetaObject* metaObject,int key,QtBrowserItem *subitem);
     void SetExpandState(const QMetaObject* metaObject,int key,QtBrowserItem *subitem);
     void ExpandState(void (TPropManager::*func)(const QMetaObject *, int, QtBrowserItem *));
+    void clearData();
 public:
     TPropManager(QObject *parent, QtAbstractPropertyBrowser *curBrowser);
     ~TPropManager(){}

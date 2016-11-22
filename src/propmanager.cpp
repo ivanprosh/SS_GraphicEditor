@@ -9,7 +9,7 @@
 #include <QMap>
 
 TPropManager::TPropManager(QObject *parent, QtAbstractPropertyBrowser *curBrowser):QtVariantPropertyManager(parent),
-    browser(curBrowser)
+    browser(curBrowser),prevClassName()
 {
     ignoreClassNames << "QWidget" << "QGraphicItem";
     brushesStyles << "No Brush" << "Solid" << "Dense #1" << "Dense #2" << "Dense #3" << "Dense #4" << "Dense #5" << "Dense #6" << "Dense #7"
@@ -92,9 +92,9 @@ void TPropManager::slotValueChanged(QtProperty *property, const QVariant &change
                 metaProperty.write(object, changedContent);
             }
         } else {
-            int indexObjectProp = idx - object->metaObject()->propertyCount();
-            Q_ASSERT(object->dynamicPropertyNames().size() >= indexObjectProp + 1);
-            object->setProperty(object->dynamicPropertyNames().at(indexObjectProp), changedContent);
+            //int indexObjectProp = idx - CommandStartIndex;
+            Q_ASSERT(!object->dynamicPropertyNames().isEmpty());
+            object->setProperty(m_classToIndexToProperty[object->metaObject()][idx]->propertyName().toUtf8(), changedContent);
         }
     }
 
@@ -286,54 +286,77 @@ void TPropManager::updateClassProperties(const QMetaObject *metaObject, bool rec
                     else
                         subProperty->setValue(enumToInt(metaProperty.enumerator(), metaProperty.read(object).toInt()));
                 } else {
-                        subProperty->setValue(metaProperty.read(object));
+                    subProperty->setValue(metaProperty.read(object));
                 }
             }
         }
     }
+    topLevelPropertySetVisible(classProperty);
+}
+
+void TPropManager::syncDynPropWithObj(QStringList& list,QtProperty *classProperty, int startIndex){
+
+    QStringListIterator DynPropIter(list);
+    QRegExp rgxPattern(".*([0-9]{1,2})");
+    qDebug() << "Filtered : " << list;
+
+    while(DynPropIter.hasNext()){
+        QString name(DynPropIter.next());
+        if(rgxPattern.exactMatch(name)){
+            QtVariantProperty *subProperty;
+            int idx = startIndex+rgxPattern.cap(1).toInt();
+            if(!m_classToIndexToProperty[object->metaObject()][idx]){
+                subProperty = addProperty(qMetaTypeId<SScommandProperty>(), name);
+                m_propertyToIndex[subProperty] = idx;
+                m_classToIndexToProperty[object->metaObject()][idx] = subProperty;
+            } else {
+                subProperty = m_classToIndexToProperty[object->metaObject()][idx];
+            }
+            classProperty->addSubProperty(subProperty);
+            subProperty->setValue(QVariant::fromValue(object->property(name.toUtf8())));
+        }
+        //idx++;
+    }
+    topLevelPropertySetVisible(classProperty);
 }
 void TPropManager::editAddCurObjectCommands(){
 
-    if(object->dynamicPropertyNames().isEmpty()) return;
-
+    QStringList actualCommandsNameList = AQP::filterString(object->dynamicPropertyNames(),"Command");
     //у объекта команд нет
-    if(!AQP::containsString(object->dynamicPropertyNames(),"Command")){
-        /*
-        if(QtProperty* cmdProp = browser->property(tr("Commands"))){
-            browser->removeProperty(cmdProp);
-            m_topLevelProperties.removeOne(cmdProp);
-        }
-        */
+    if(actualCommandsNameList.isEmpty()){
+        //qDebug() << object->dynamicPropertyNames();
+        if(!m_topLevelProperties.isEmpty())
+            foreach (QtProperty* prop, m_topLevelProperties) {
+                if(prop->propertyName().contains("Command"))
+                {
+                    browser->removeProperty(prop);
+                    m_topLevelProperties.removeOne(prop);
+                }
+            }
+        return;
     }
 
+    QtProperty *classProperty = addPropertyOrReturnExisted(m_topLevelProperties,QtVariantPropertyManager::groupTypeId(), tr("Commands"));
 
-    QListIterator<QByteArray> DynPropIter(object->dynamicPropertyNames());
-//    while(DynPropIter.hasNext()){
-//        QString name(DynPropIter.next());
-
-//    }
-
-    QtProperty *classProperty = addProperty(QtVariantPropertyManager::groupTypeId(), tr("Commands"));
-    int idx = object->metaObject()->propertyCount();
-    while(DynPropIter.hasNext()){
-        QtVariantProperty *subProperty = 0;
-        QByteArray name = DynPropIter.next();
-        subProperty = addProperty(qMetaTypeId<SScommandProperty>(), QLatin1String(name));
-        subProperty->setValue(QVariant::fromValue(object->property(name)));
-        classProperty->addSubProperty(subProperty);
-        m_propertyToIndex[subProperty] = idx;
-        m_classToIndexToProperty[object->metaObject()][idx] = subProperty;
-        idx++;
+    foreach (QtProperty *prop, classProperty->subProperties()) {
+        classProperty->removeSubProperty(prop);
     }
-    m_topLevelProperties.append(classProperty);
-    browser->addProperty(classProperty);
-    /*
-        QListIterator<QGraphicsItem*> i(items);
-        while (i.hasNext()) {
-            QScopedPointer<QGraphicsItem> item(i.next());
-            scene->removeItem(item.data());
-        }
-        */
+    topLevelPropertySetVisible(classProperty,false);
+
+    Q_ASSERT(!browser->properties().contains(classProperty) &&
+             !m_topLevelProperties.contains(classProperty));
+
+    syncDynPropWithObj(actualCommandsNameList,classProperty,CommandStartIndex);
+}
+void TPropManager::setAttributes(QtVariantProperty *prop){
+    switch (prop->propertyName()) {
+    case "commandsCount":
+        prop->setAttribute(QLatin1String("minimum"), 0);
+        prop->setAttribute(QLatin1String("maximum"), 32);
+        break;
+    default:
+        break;
+    }
 }
 
 void TPropManager::addClassProperties(const QMetaObject* metaObject){
@@ -403,12 +426,17 @@ void TPropManager::addClassProperties(const QMetaObject* metaObject){
                 else
                     subProperty = addProperty(type, QLatin1String(metaProperty.name()));
                 subProperty->setValue(metaProperty.read(object));
+
             } else {
+                continue;
+                /*
                 subProperty = addProperty(QVariant::String, QLatin1String(metaProperty.name()));
                 subProperty->setValue(QLatin1String("< Unknown Type >"));
                 subProperty->setEnabled(false);
+                */
             }
             //addProperty(subProperty, QLatin1String(metaProperty.name()));
+            setAttributes(subProperty);
             classProperty->addSubProperty(subProperty);
             m_propertyToIndex[subProperty] = idx;
             m_classToIndexToProperty[metaObject][idx] = subProperty;
@@ -417,18 +445,27 @@ void TPropManager::addClassProperties(const QMetaObject* metaObject){
     } else {
         updateClassProperties(metaObject, false);
     }
-    m_topLevelProperties.append(classProperty);
-    browser->addProperty(classProperty);
+    topLevelPropertySetVisible(classProperty);
+
     //QtBrowserItem *item = browser->addProperty(classProperty);
     //проверка
     //if (idToExpanded.contains(id))
     //  dynamic_cast<QtTreePropertyBrowser*>(browser)->setExpanded(item, 0);
 }
 
+void TPropManager::clearData(){
+    QListIterator<QtProperty *> it(m_topLevelProperties);
+    while (it.hasNext()) {
+        browser->removeProperty(it.next());
+    }
+    m_topLevelProperties.clear();
+    //m_propertyToIndex.clear();
+}
 
 void TPropManager::itemChanged(QObject *curobject)
 {
     ExpandState(&TPropManager::updateExpandState);
+
     //меняем текущий item
     object=curobject;
     /*
@@ -440,23 +477,37 @@ void TPropManager::itemChanged(QObject *curobject)
     propertyToId.clear();
     idToProperty.clear();
     */
-    QListIterator<QtProperty *> it(m_topLevelProperties);
-    while (it.hasNext()) {
-        browser->removeProperty(it.next());
-    }
-    m_topLevelProperties.clear();
+    //clearData();
+
 
     if(!m_propertyToClass.isEmpty())
         qDebug() << "Leak " << "m_propertyToClass.size() = " << m_propertyToClass.size();
     if(!m_propertyToIndex.isEmpty())
         qDebug() << "Leak " << "m_propertyToIndex.size() = " << m_propertyToIndex.size();
 
-    if(object){
-        addClassProperties(object->metaObject());
+    clearData();
+
+    if(object){       
+        //Если переключились на элемент того же типа, то нет необходимости удалять все отображение,
+        //достаточно лишь обновить данные
+        if(prevClassName == object->metaObject()->className() ||
+                m_classToIndexToProperty.contains(object->metaObject())){
+            updateClassProperties(object->metaObject(), true);
+        } else {
+            addClassProperties(object->metaObject());
+        }
         if(!object->dynamicPropertyNames().isEmpty())
             editAddCurObjectCommands();
         ExpandState(&TPropManager::SetExpandState);
+
+        prevClassName = object->metaObject()->className();
     }
+}
+void TPropManager::topLevelPropertySetVisible(QtProperty *classProperty,bool value){
+    if(value ^ m_topLevelProperties.contains(classProperty))
+        value ? m_topLevelProperties.append(classProperty) : m_topLevelProperties.removeOne(classProperty);
+    if(value ^ browser->properties().contains(classProperty))
+        value ? browser->addProperty(classProperty) : browser->removeProperty(classProperty);
 }
 
 void TPropManager::SetExpandState(const QMetaObject* metaObject, int key, QtBrowserItem *subitem)

@@ -867,7 +867,7 @@ void MainWindow::connectItem(QObject *item)
                 item, SLOT(TemplateNameChanged(QString,QString)));
         connect(dialog, SIGNAL(updateStatesCount(QString,int)),
                 item, SLOT(StatesCountChanged(QString,int)));
-        connect(item,SIGNAL(commandsCountChanged()),
+        connect(item,SIGNAL(commandsCountChanged(int)),
                 variantManager,SLOT(editAddCurObjectCommands()));
     }
     /*
