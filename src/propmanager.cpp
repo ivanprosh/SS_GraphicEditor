@@ -81,21 +81,26 @@ void TPropManager::slotValueChanged(QtProperty *property, const QVariant &change
          * которые не попадают в MetaProperty (их индекс в m_propertyToIndex превышает object->metaObject()->propertyCount()),
          * обработка будет отличной
         */
+        //if(metaProperty.isWritable()){
         if(idx < object->metaObject()->propertyCount()){
             QMetaProperty metaProperty = metaObject->property(idx);
-            if (metaProperty.isEnumType()) {
-                if (metaProperty.isFlagType())
-                    metaProperty.write(object, intToFlag(metaProperty.enumerator(), changedContent.toInt()));
-                else
-                    metaProperty.write(object, intToEnum(metaProperty.enumerator(), changedContent.toInt()));
-            } else {
-                metaProperty.write(object, changedContent);
+            if(metaProperty.isWritable()){
+                if (metaProperty.isEnumType()) {
+                    if (metaProperty.isFlagType())
+                        metaProperty.write(object, intToFlag(metaProperty.enumerator(), changedContent.toInt()));
+                    else
+                        metaProperty.write(object, intToEnum(metaProperty.enumerator(), changedContent.toInt()));
+                } else {
+                    metaProperty.write(object, changedContent);
+                }
             }
+
         } else {
             //int indexObjectProp = idx - CommandStartIndex;
             Q_ASSERT(!object->dynamicPropertyNames().isEmpty());
             object->setProperty(m_classToIndexToProperty[object->metaObject()][idx]->propertyName().toUtf8(), changedContent);
         }
+        //}
     }
 
     //updateClassProperties(metaObject, true);
@@ -349,13 +354,10 @@ void TPropManager::editAddCurObjectCommands(){
     syncDynPropWithObj(actualCommandsNameList,classProperty,CommandStartIndex);
 }
 void TPropManager::setAttributes(QtVariantProperty *prop){
-    switch (prop->propertyName()) {
-    case "commandsCount":
+    if(prop->propertyName() == "commandsCount"){
         prop->setAttribute(QLatin1String("minimum"), 0);
         prop->setAttribute(QLatin1String("maximum"), 32);
-        break;
-    default:
-        break;
+        //prop->setAttribute(QLatin1String("readOnly"), true);
     }
 }
 
@@ -420,13 +422,14 @@ void TPropManager::addClassProperties(const QMetaObject* metaObject){
                 }
             } else if (isPropertyTypeSupported(type)) {
                 if (!metaProperty.isWritable())
-                    subProperty = addProperty(type, QLatin1String(metaProperty.name()) + QLatin1String(" (Non Writable)"));
-                if (!metaProperty.isDesignable())
+                {
+                    subProperty = addProperty(type, QLatin1String(metaProperty.name()) + QLatin1String(" (R) "));
+                    subProperty->setAttribute(QLatin1String("readOnly"), true);
+                } else if (!metaProperty.isDesignable())
                     subProperty = addProperty(type, QLatin1String(metaProperty.name()) + QLatin1String(" (Non Designable)"));
                 else
                     subProperty = addProperty(type, QLatin1String(metaProperty.name()));
-                subProperty->setValue(metaProperty.read(object));
-
+                subProperty->setValue(metaProperty.read(object));               
             } else {
                 continue;
                 /*
@@ -436,6 +439,7 @@ void TPropManager::addClassProperties(const QMetaObject* metaObject){
                 */
             }
             //addProperty(subProperty, QLatin1String(metaProperty.name()));
+            //qDebug() << subProperty->propertyName();
             setAttributes(subProperty);
             classProperty->addSubProperty(subProperty);
             m_propertyToIndex[subProperty] = idx;

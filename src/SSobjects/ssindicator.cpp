@@ -37,7 +37,7 @@ void SSindicator::initializeProperties(){
     setBorderColor(Qt::yellow);
     setBorderWidth(1);
     setBorderBlinkFreq(1000);
-    //qDebug() << this->metaObject()->propertyCount();
+
     //setProperty("test", QVariant::fromValue(qMakePair(QString(),QString())));
     //QTimer::singleShot(0,this,SLOT(debinfo()));
     //commands.push_back(qMakePair(QString("First name"),QString("First Tag")));

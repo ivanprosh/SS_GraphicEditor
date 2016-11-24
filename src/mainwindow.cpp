@@ -1,5 +1,6 @@
 #include "qtvariantproperty.h"
 #include "qttreepropertybrowser.h"
+
 #include "SSobjects/ssindicator.h"
 #include "aqp/alt_key.hpp"
 #include "aqp/aqp.hpp"

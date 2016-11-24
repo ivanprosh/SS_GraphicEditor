@@ -1,12 +1,11 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
-** All rights reserved.
+** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Contact: http://www.qt-project.org/legal
 **
-** Contact: Nokia Corporation (qt-info@nokia.com)
+** This file is part of the Qt Solutions component.
 **
-** This file is part of a Qt Solutions component.
-**
+** $QT_BEGIN_LICENSE:BSD$
 ** You may use this file under the terms of the BSD license as follows:
 **
 ** "Redistribution and use in source and binary forms, with or without
@@ -18,10 +17,10 @@
 **     notice, this list of conditions and the following disclaimer in
 **     the documentation and/or other materials provided with the
 **     distribution.
-**   * Neither the name of Nokia Corporation and its Subsidiary(-ies) nor
-**     the names of its contributors may be used to endorse or promote
-**     products derived from this software without specific prior written
-**     permission.
+**   * Neither the name of Digia Plc and its Subsidiary(-ies) nor the names
+**     of its contributors may be used to endorse or promote products derived
+**     from this software without specific prior written permission.
+**
 **
 ** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 ** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -35,6 +34,8 @@
 ** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
 **
+** $QT_END_LICENSE$
+**
 ****************************************************************************/
 
 
@@ -42,7 +43,7 @@
 #define QTPROPERTYMANAGER_H
 
 #include "qtpropertybrowser.h"
-#include "qtpropertybrowser_global.h"
+#include <QLineEdit>
 
 #if QT_VERSION >= 0x040400
 QT_BEGIN_NAMESPACE
@@ -53,7 +54,7 @@ class QTime;
 class QDateTime;
 class QLocale;
 
-class QT_EXPORT QtGroupPropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtGroupPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -69,7 +70,7 @@ protected:
 
 class QtIntPropertyManagerPrivate;
 
-class QT_EXPORT QtIntPropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtIntPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -80,6 +81,7 @@ public:
     int minimum(const QtProperty *property) const;
     int maximum(const QtProperty *property) const;
     int singleStep(const QtProperty *property) const;
+    bool isReadOnly(const QtProperty *property) const;
 
 public Q_SLOTS:
     void setValue(QtProperty *property, int val);
@@ -87,10 +89,12 @@ public Q_SLOTS:
     void setMaximum(QtProperty *property, int maxVal);
     void setRange(QtProperty *property, int minVal, int maxVal);
     void setSingleStep(QtProperty *property, int step);
+    void setReadOnly(QtProperty *property, bool readOnly);
 Q_SIGNALS:
     void valueChanged(QtProperty *property, int val);
     void rangeChanged(QtProperty *property, int minVal, int maxVal);
     void singleStepChanged(QtProperty *property, int step);
+    void readOnlyChanged(QtProperty *property, bool readOnly);
 protected:
     QString valueText(const QtProperty *property) const;
     virtual void initializeProperty(QtProperty *property);
@@ -103,7 +107,7 @@ private:
 
 class QtBoolPropertyManagerPrivate;
 
-class QT_EXPORT QtBoolPropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtBoolPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -111,11 +115,14 @@ public:
     ~QtBoolPropertyManager();
 
     bool value(const QtProperty *property) const;
+    bool textVisible(const QtProperty *property) const;
 
 public Q_SLOTS:
     void setValue(QtProperty *property, bool val);
+    void setTextVisible(QtProperty *property, bool textVisible);
 Q_SIGNALS:
     void valueChanged(QtProperty *property, bool val);
+    void textVisibleChanged(QtProperty *property, bool);
 protected:
     QString valueText(const QtProperty *property) const;
     QIcon valueIcon(const QtProperty *property) const;
@@ -129,7 +136,7 @@ private:
 
 class QtDoublePropertyManagerPrivate;
 
-class QT_EXPORT QtDoublePropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtDoublePropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -141,6 +148,7 @@ public:
     double maximum(const QtProperty *property) const;
     double singleStep(const QtProperty *property) const;
     int decimals(const QtProperty *property) const;
+    bool isReadOnly(const QtProperty *property) const;
 
 public Q_SLOTS:
     void setValue(QtProperty *property, double val);
@@ -149,11 +157,13 @@ public Q_SLOTS:
     void setRange(QtProperty *property, double minVal, double maxVal);
     void setSingleStep(QtProperty *property, double step);
     void setDecimals(QtProperty *property, int prec);
+    void setReadOnly(QtProperty *property, bool readOnly);
 Q_SIGNALS:
     void valueChanged(QtProperty *property, double val);
     void rangeChanged(QtProperty *property, double minVal, double maxVal);
     void singleStepChanged(QtProperty *property, double step);
     void decimalsChanged(QtProperty *property, int prec);
+    void readOnlyChanged(QtProperty *property, bool readOnly);
 protected:
     QString valueText(const QtProperty *property) const;
     virtual void initializeProperty(QtProperty *property);
@@ -166,7 +176,7 @@ private:
 
 class QtStringPropertyManagerPrivate;
 
-class QT_EXPORT QtStringPropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtStringPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -175,15 +185,24 @@ public:
 
     QString value(const QtProperty *property) const;
     QRegExp regExp(const QtProperty *property) const;
+    EchoMode echoMode(const QtProperty *property) const;
+    bool isReadOnly(const QtProperty *property) const;
 
 public Q_SLOTS:
     void setValue(QtProperty *property, const QString &val);
     void setRegExp(QtProperty *property, const QRegExp &regExp);
+    void setEchoMode(QtProperty *property, EchoMode echoMode);
+    void setReadOnly(QtProperty *property, bool readOnly);
+
 Q_SIGNALS:
     void valueChanged(QtProperty *property, const QString &val);
     void regExpChanged(QtProperty *property, const QRegExp &regExp);
+    void echoModeChanged(QtProperty *property, const int);
+    void readOnlyChanged(QtProperty *property, bool);
+
 protected:
     QString valueText(const QtProperty *property) const;
+    QString displayText(const QtProperty *property) const;
     virtual void initializeProperty(QtProperty *property);
     virtual void uninitializeProperty(QtProperty *property);
 private:
@@ -194,7 +213,7 @@ private:
 
 class QtDatePropertyManagerPrivate;
 
-class QT_EXPORT QtDatePropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtDatePropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -225,7 +244,7 @@ private:
 
 class QtTimePropertyManagerPrivate;
 
-class QT_EXPORT QtTimePropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtTimePropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -250,7 +269,7 @@ private:
 
 class QtDateTimePropertyManagerPrivate;
 
-class QT_EXPORT QtDateTimePropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtDateTimePropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -275,7 +294,7 @@ private:
 
 class QtKeySequencePropertyManagerPrivate;
 
-class QT_EXPORT QtKeySequencePropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtKeySequencePropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -300,7 +319,7 @@ private:
 
 class QtCharPropertyManagerPrivate;
 
-class QT_EXPORT QtCharPropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtCharPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -326,7 +345,7 @@ private:
 class QtEnumPropertyManager;
 class QtLocalePropertyManagerPrivate;
 
-class QT_EXPORT QtLocalePropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtLocalePropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -355,7 +374,7 @@ private:
 
 class QtPointPropertyManagerPrivate;
 
-class QT_EXPORT QtPointPropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtPointPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -384,7 +403,7 @@ private:
 
 class QtPointFPropertyManagerPrivate;
 
-class QT_EXPORT QtPointFPropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtPointFPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -416,7 +435,7 @@ private:
 
 class QtSizePropertyManagerPrivate;
 
-class QT_EXPORT QtSizePropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtSizePropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -451,7 +470,7 @@ private:
 
 class QtSizeFPropertyManagerPrivate;
 
-class QT_EXPORT QtSizeFPropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtSizeFPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -489,7 +508,7 @@ private:
 
 class QtRectPropertyManagerPrivate;
 
-class QT_EXPORT QtRectPropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtRectPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -521,7 +540,7 @@ private:
 
 class QtRectFPropertyManagerPrivate;
 
-class QT_EXPORT QtRectFPropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtRectFPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -556,7 +575,7 @@ private:
 
 class QtEnumPropertyManagerPrivate;
 
-class QT_EXPORT QtEnumPropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtEnumPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -588,7 +607,7 @@ private:
 
 class QtFlagPropertyManagerPrivate;
 
-class QT_EXPORT QtFlagPropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtFlagPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -620,7 +639,7 @@ private:
 
 class QtSizePolicyPropertyManagerPrivate;
 
-class QT_EXPORT QtSizePolicyPropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtSizePolicyPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -651,7 +670,7 @@ private:
 
 class QtFontPropertyManagerPrivate;
 
-class QT_EXPORT QtFontPropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtFontPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -687,7 +706,7 @@ private:
 
 class QtColorPropertyManagerPrivate;
 
-class QT_EXPORT QtColorPropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtColorPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -717,7 +736,7 @@ private:
 
 class QtCursorPropertyManagerPrivate;
 
-class QT_EXPORT QtCursorPropertyManager : public QtAbstractPropertyManager
+class QT_QTPROPERTYBROWSER_EXPORT QtCursorPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:

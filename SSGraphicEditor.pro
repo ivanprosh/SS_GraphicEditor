@@ -7,13 +7,11 @@ DEPENDPATH += lib/QtPropertyBrowser
 
 CONFIG(debug, debug|release) {
     # Подключаем debug-версии библиотек для разных платформ
-    #win32: LIBS += -Ld:/WORK/_QT/SS/SSGraphicEditor/QtPropertyBrowser -lqtpropertybrowserd1
     win32: LIBS += -L$${PWD}/lib/QtPropertyBrowser -lqtpropertybrowserd1
-    #unix: LIBS += -Llib -L. -lMyLibraryd -Wl,-rpath,lib -Wl,-rpath,.
+    #LIBS += -L$$QTPROPERTYBROWSER_LIBDIR -l$$QTPROPERTYBROWSER_LIBNAME
 } else {
     # Подключаем release-версии библиотек для разных платформ
     win32: LIBS += -L$${PWD}/lib/QtPropertyBrowser -lqtpropertybrowser1
-    #unix: LIBS += -Llib -L. -lMyLibrary -Wl,-rpath,lib -Wl,-rpath,.
 }
 
 QT += widgets printsupport svg
@@ -22,6 +20,7 @@ QT += widgets printsupport svg
 include($${PWD}/src/deployment.pri)
 
 DEFINES += ANIMATE_ALIGNMENT
+DEFINES += QT_QTPROPERTYBROWSER_IMPORT
 
 RESOURCES += \
     images.qrc \
