@@ -8,6 +8,7 @@
 #include "graphicscene.h"
 #include "mainwindow.hpp"
 #include <QtWidgets>
+#include "propmanager.h"
 
 class StandardTableModel;
 
@@ -18,7 +19,6 @@ class SSindicator: public QGraphicsObject
     Q_PROPERTY(QString TemplateName READ TemplateName WRITE setTemplateName)
     Q_PROPERTY(int statesCount READ statesCount)
     Q_PROPERTY(int commandsCount READ commandsCount WRITE setCommandsCount)
-    Q_PROPERTY(int BorderBlinkFreq READ BorderBlinkFreq WRITE setBorderBlinkFreq)
 
     Q_PROPERTY(bool AutoCloseDUWnd READ isAutoCloseDUWnd WRITE setAutoCloseDUWnd)
     Q_PROPERTY(int StateDigParCount READ StateDigParCount)
@@ -77,10 +77,12 @@ private:
     int m_statesCount;
     int m_commandsCount;
 
-    QHash<QString,SScommandProperty> commands;
+    QHash<QString,SScommandProperty> commands,states;
 
     void initializeProperties();
     void createInternalConnections();
+    void updateDynamicPropView(QString propSingleName, QHash<QString, SScommandProperty>& hash, int count);
+    void updateHashDynProperties(QHash<QString, SScommandProperty> &hash, const QString &propName);
 public slots:
     void TemplateNameChanged(const QString& oldName,const QString& newName);
     void ImageChanged(const QString& ,const QPixmap& pix);
@@ -112,17 +114,23 @@ public slots:
         if(value != m_BorderBlinkFreq){m_BorderBlinkFreq=value;emit dirty();}
     }
     void setStatesCount(const int& value){
-        if(value != m_statesCount){m_statesCount=value;emit dirty();}
+        if(value != m_statesCount){
+            m_statesCount=value;
+            updateDynamicPropView(tr("State"),states,m_statesCount);
+            emit dynamicPropCountChanged(tr("State"),StateStartIndex);
+            emit dirty();
+        }
     }
     void setCommandsCount(const int& value){
         if(value != m_commandsCount){
             m_commandsCount=value;
-            updateCommandsView();
-            emit commandsCountChanged(value);
+            updateDynamicPropView(tr("Command"),commands,m_commandsCount);
+            emit dynamicPropCountChanged(tr("Command"),CommandStartIndex);
             emit dirty();
         }
     }
-    void updateCommandsView();
+    //void updateStatesView();
+    //void updateCommandsView();
 
 protected:
     QVariant itemChange(GraphicsItemChange change,
@@ -130,7 +138,8 @@ protected:
     bool event(QEvent *event);
 signals:
     void dirty();
-    void commandsCountChanged(int);
+    void dynamicPropCountChanged(QString,int);
+    //void statesCountChanged(int);
 private slots:
     void debinfo();
 };

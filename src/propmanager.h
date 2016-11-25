@@ -12,12 +12,14 @@ class QStringList;
 class QtAbstractPropertyBrowser;
 //class SScommandProperty;
 
+enum PropertyStartIndexes {CommandStartIndex = 1000,StateStartIndex=2000};
+
 class TPropManager : public QtVariantPropertyManager
 {
     Q_OBJECT
 
 private:
-    enum PropertyStartIndexes {CommandStartIndex = 1000,StateStartIndex=2000};
+
     QObject *object;
     QStringList ignoreClassNames,brushesStyles;
     QtAbstractPropertyBrowser *browser;
@@ -60,8 +62,9 @@ private:
     QtProperty* addPropertyOrReturnExisted(const S<QtProperty*> &sequence, int propType, QString name){
         foreach (QtProperty* prop, sequence) {
             if(prop->propertyName()==name) return prop;
+            qDebug() << prop->propertyName();
         }
-        qDebug() << "New dynprop add";
+        qDebug() << "New addPropertyOrReturnExisted()";
         return addProperty(propType, name);
     }
 
@@ -93,7 +96,7 @@ public:
 public slots:
     virtual void setValue(QtProperty *property, const QVariant &val);
     void itemChanged(QObject* curobject);
-    void editAddCurObjectCommands();
+    void editAddDynamicProperties(const QString& propSingleName, int index);
 };
 
 

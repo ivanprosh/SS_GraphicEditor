@@ -303,7 +303,7 @@ void TPropManager::syncDynPropWithObj(QStringList& list,QtProperty *classPropert
 
     QStringListIterator DynPropIter(list);
     QRegExp rgxPattern(".*([0-9]{1,2})");
-    qDebug() << "Filtered : " << list;
+    //qDebug() << "Filtered : " << list;
 
     while(DynPropIter.hasNext()){
         QString name(DynPropIter.next());
@@ -312,6 +312,7 @@ void TPropManager::syncDynPropWithObj(QStringList& list,QtProperty *classPropert
             int idx = startIndex+rgxPattern.cap(1).toInt();
             if(!m_classToIndexToProperty[object->metaObject()][idx]){
                 subProperty = addProperty(qMetaTypeId<SScommandProperty>(), name);
+                qDebug() << "New : " << "syncDynPropWithObj(), idx " << idx;
                 m_propertyToIndex[subProperty] = idx;
                 m_classToIndexToProperty[object->metaObject()][idx] = subProperty;
             } else {
@@ -324,15 +325,15 @@ void TPropManager::syncDynPropWithObj(QStringList& list,QtProperty *classPropert
     }
     topLevelPropertySetVisible(classProperty);
 }
-void TPropManager::editAddCurObjectCommands(){
+void TPropManager::editAddDynamicProperties(const QString& propSingleName, int index){
 
-    QStringList actualCommandsNameList = AQP::filterString(object->dynamicPropertyNames(),"Command");
+    QStringList actualCommandsNameList = AQP::filterString(object->dynamicPropertyNames(),propSingleName);
     //у объекта команд нет
     if(actualCommandsNameList.isEmpty()){
         //qDebug() << object->dynamicPropertyNames();
         if(!m_topLevelProperties.isEmpty())
             foreach (QtProperty* prop, m_topLevelProperties) {
-                if(prop->propertyName().contains("Command"))
+                if(prop->propertyName().contains(propSingleName))
                 {
                     browser->removeProperty(prop);
                     m_topLevelProperties.removeOne(prop);
@@ -341,7 +342,7 @@ void TPropManager::editAddCurObjectCommands(){
         return;
     }
 
-    QtProperty *classProperty = addPropertyOrReturnExisted(m_topLevelProperties,QtVariantPropertyManager::groupTypeId(), tr("Commands"));
+    QtProperty *classProperty = addPropertyOrReturnExisted(m_topLevelProperties,QtVariantPropertyManager::groupTypeId(), propSingleName);
 
     foreach (QtProperty *prop, classProperty->subProperties()) {
         classProperty->removeSubProperty(prop);
@@ -351,7 +352,7 @@ void TPropManager::editAddCurObjectCommands(){
     Q_ASSERT(!browser->properties().contains(classProperty) &&
              !m_topLevelProperties.contains(classProperty));
 
-    syncDynPropWithObj(actualCommandsNameList,classProperty,CommandStartIndex);
+    syncDynPropWithObj(actualCommandsNameList,classProperty,index);
 }
 void TPropManager::setAttributes(QtVariantProperty *prop){
     if(prop->propertyName() == "commandsCount"){
@@ -377,11 +378,12 @@ void TPropManager::addClassProperties(const QMetaObject* metaObject){
         if(ignoreClassNames.contains(className)) return;
 
         classProperty = addProperty(QtVariantPropertyManager::groupTypeId(), className);
+        qDebug() << "New addClassProperties() classProperty is " << classProperty->propertyName();
         //addProperty(classProperty, className);
         m_classToProperty[metaObject] = classProperty;
         m_propertyToClass[classProperty] = metaObject;
 
-        //qDebug() <<  "Property count of:" << metaObject->className() << " :" << metaObject->propertyCount();
+        //qDebug() <<  "Property name:" << classProperty->propertyName() << " :m_propertyToClass.size() " << m_propertyToClass.size();
 
         for (int idx = metaObject->propertyOffset(); idx < metaObject->propertyCount(); idx++) {
             QMetaProperty metaProperty = metaObject->property(idx);
@@ -500,8 +502,10 @@ void TPropManager::itemChanged(QObject *curobject)
         } else {
             addClassProperties(object->metaObject());
         }
-        if(!object->dynamicPropertyNames().isEmpty())
-            editAddCurObjectCommands();
+        if(!object->dynamicPropertyNames().isEmpty()){
+            editAddDynamicProperties(tr("State"),StateStartIndex);
+            editAddDynamicProperties(tr("Command"),CommandStartIndex);
+        }
         ExpandState(&TPropManager::SetExpandState);
 
         prevClassName = object->metaObject()->className();
@@ -536,7 +540,7 @@ void TPropManager::ExpandState(void (TPropManager::*func)(const QMetaObject* ,in
     QListIterator<QtBrowserItem *> it(list);
     while (it.hasNext()) {
         QtBrowserItem *item = it.next();
-        const QMetaObject* metaObject=m_propertyToClass[item->property()];
+        const QMetaObject* metaObject=m_propertyToClass.value(item->property());
         int count = 0;
 
         QList<QtBrowserItem *> sublist;

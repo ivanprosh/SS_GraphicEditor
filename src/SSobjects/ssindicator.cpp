@@ -47,6 +47,30 @@ void SSindicator::createInternalConnections()
 {
     ;
 }
+
+void SSindicator::updateDynamicPropView(QString propSingleName, QHash<QString,SScommandProperty>& hash,int count){
+
+    int index;
+    for(index=0;index<count;index++){
+       QString propName(propSingleName+QString::number(index+1));
+       if(!hash.contains(propName)){
+           hash.insert(propName,qMakePair(QString(),QString()));
+       }
+       setProperty(propName.toUtf8(),QVariant::fromValue(hash.value(propName)));
+    }
+    QRegExp rgxPattern(propSingleName+"([0-9])");
+    QListIterator<QByteArray> iter(dynamicPropertyNames());
+    while(iter.hasNext()){
+        if(rgxPattern.exactMatch(iter.next()) && rgxPattern.cap(1).toInt() > count)
+        {
+            setProperty(QString(propSingleName+rgxPattern.cap(1)).toUtf8(),QVariant());
+        }
+    }
+
+    qDebug() << dynamicPropertyNames();
+
+}
+/*
 void SSindicator::updateCommandsView(){
 
     //if(commands.size() == commandsCount()) return;
@@ -69,7 +93,7 @@ void SSindicator::updateCommandsView(){
     qDebug() << dynamicPropertyNames();
 
 }
-
+*/
 void SSindicator::debinfo(){
     qDebug() << this->metaObject()->propertyCount();
     qDebug() << static_cast<QObject*>(this)->dynamicPropertyNames();
@@ -146,11 +170,18 @@ QVariant SSindicator::itemChange(QGraphicsItem::GraphicsItemChange change, const
 void SSindicator::dynPropertyChanged(QByteArray propName){
 
     if(commands.contains(propName)){
-        SScommandProperty value = property(propName).value<SScommandProperty>();
-        commands[propName].first = value.first;
-        commands[propName].second = value.second;
-        qDebug() << "DynPropChanged: " << propName << ": " << value.first << " " << value.second;
+        updateHashDynProperties(commands,propName);
+        //qDebug() << "DynPropChanged: " << propName << ": " << value.first << " " << value.second;
+    } else if(states.contains(propName)) {
+        updateHashDynProperties(states,propName);
     }
+}
+void SSindicator::updateHashDynProperties(QHash<QString,SScommandProperty>& hash,const QString& propName){
+    SScommandProperty value = property(propName.toUtf8()).value<SScommandProperty>();
+    if(!value.first.isNull())
+        hash[propName].first = value.first;
+    if(!value.second.isNull())
+        hash[propName].second = value.second;
 }
 
 bool SSindicator::event(QEvent *event)

@@ -868,8 +868,10 @@ void MainWindow::connectItem(QObject *item)
                 item, SLOT(TemplateNameChanged(QString,QString)));
         connect(dialog, SIGNAL(updateStatesCount(QString,int)),
                 item, SLOT(StatesCountChanged(QString,int)));
-        connect(item,SIGNAL(commandsCountChanged(int)),
-                variantManager,SLOT(editAddCurObjectCommands()));
+        connect(item,SIGNAL(dynamicPropCountChanged(QString,int)),
+                variantManager,SLOT(editAddDynamicProperties(QString,int)));
+        //connect(item,SIGNAL(statesCountChanged(int)),
+        //        variantManager,SLOT(editAddDynamicProperties(QString,int)));
     }
     /*
     const QMetaObject *metaObject = item->metaObject();
