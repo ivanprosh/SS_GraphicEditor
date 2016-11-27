@@ -20,6 +20,7 @@ TPropManager::TPropManager(QObject *parent, QtAbstractPropertyBrowser *curBrowse
     connect(this, SIGNAL(propertyDestroyed(QtProperty *)),
             this, SLOT(slotPropertyDestroyed(QtProperty *)));
 }
+
 void TPropManager::slotValueChanged(QtProperty *property, const QVariant &changedContent)
 {
     const QMetaObject *metaObject = object->metaObject();
@@ -276,9 +277,11 @@ void TPropManager::updateClassProperties(const QMetaObject *metaObject, bool rec
     if (recursive)
         updateClassProperties(metaObject->superClass(), recursive);
 
-    QtProperty *classProperty = m_classToProperty.value(metaObject);
-    if (!classProperty)
-        return;
+    if(m_classToProperty.value(metaObject).isEmpty()) return;
+
+    //foreach (QtProperty *TopLevelProperty, m_classToProperty.value(metaObject))
+
+    QtProperty *TopLevelProperty = m_classToProperty.value(metaObject).first();
 
     for (int idx = metaObject->propertyOffset(); idx < metaObject->propertyCount(); idx++) {
         QMetaProperty metaProperty = metaObject->property(idx);
@@ -296,7 +299,10 @@ void TPropManager::updateClassProperties(const QMetaObject *metaObject, bool rec
             }
         }
     }
-    topLevelPropertySetVisible(classProperty);
+    foreach (QtProperty *TopLevelProperty, m_classToProperty.value(metaObject)) {
+        topLevelPropertySetVisible(TopLevelProperty);
+    }
+
 }
 
 void TPropManager::syncDynPropWithObj(QStringList& list,QtProperty *classProperty, int startIndex){
@@ -328,7 +334,7 @@ void TPropManager::syncDynPropWithObj(QStringList& list,QtProperty *classPropert
 void TPropManager::editAddDynamicProperties(const QString& propSingleName, int index){
 
     QStringList actualCommandsNameList = AQP::filterString(object->dynamicPropertyNames(),propSingleName);
-    //у объекта команд нет
+    //у объекта нет динамических свойств с заданным именем
     if(actualCommandsNameList.isEmpty()){
         //qDebug() << object->dynamicPropertyNames();
         if(!m_topLevelProperties.isEmpty())
@@ -342,17 +348,18 @@ void TPropManager::editAddDynamicProperties(const QString& propSingleName, int i
         return;
     }
 
-    QtProperty *classProperty = addPropertyOrReturnExisted(m_topLevelProperties,QtVariantPropertyManager::groupTypeId(), propSingleName);
-
-    foreach (QtProperty *prop, classProperty->subProperties()) {
-        classProperty->removeSubProperty(prop);
+    QtProperty *TopLevelProperty = addPropertyOrReturnExisted(m_topLevelProperties,QtVariantPropertyManager::groupTypeId(), propSingleName);
+    //if(m_topLevelProperties.contains())
+    //= addPropertyOrReturnExisted(m_topLevelProperties,QtVariantPropertyManager::groupTypeId(), propSingleName);
+    foreach (QtProperty *prop, TopLevelProperty->subProperties()) {
+        TopLevelProperty->removeSubProperty(prop);
     }
-    topLevelPropertySetVisible(classProperty,false);
+    topLevelPropertySetVisible(TopLevelProperty,false);
 
-    Q_ASSERT(!browser->properties().contains(classProperty) &&
-             !m_topLevelProperties.contains(classProperty));
+    Q_ASSERT(!browser->properties().contains(TopLevelProperty) &&
+             !m_topLevelProperties.contains(TopLevelProperty));
 
-    syncDynPropWithObj(actualCommandsNameList,classProperty,index);
+    syncDynPropWithObj(actualCommandsNameList,TopLevelProperty,index);
 }
 void TPropManager::setAttributes(QtVariantProperty *prop){
     if(prop->propertyName() == "commandsCount"){
@@ -371,17 +378,17 @@ void TPropManager::addClassProperties(const QMetaObject* metaObject){
 
     addClassProperties(metaObject->superClass());
 
-    QtProperty *classProperty = m_classToProperty.value(metaObject);
-    if (!classProperty) {
+    QtProperty *TopLevelProperty;// m_classToProperty.value(metaObject).first();
+    if (m_classToProperty.value(metaObject).isEmpty()) {
         QString className = QLatin1String(metaObject->className());
         //Стандартные классы нас не интересуют
         if(ignoreClassNames.contains(className)) return;
 
-        classProperty = addProperty(QtVariantPropertyManager::groupTypeId(), className);
-        qDebug() << "New addClassProperties() classProperty is " << classProperty->propertyName();
+        TopLevelProperty = addProperty(QtVariantPropertyManager::groupTypeId(), className);
+        qDebug() << "New addClassProperties() classProperty is " << TopLevelProperty->propertyName();
         //addProperty(classProperty, className);
-        m_classToProperty[metaObject] = classProperty;
-        m_propertyToClass[classProperty] = metaObject;
+        m_classToProperty[metaObject].append(TopLevelProperty);
+        m_propertyToClass[TopLevelProperty] = metaObject;
 
         //qDebug() <<  "Property name:" << classProperty->propertyName() << " :m_propertyToClass.size() " << m_propertyToClass.size();
 
@@ -443,15 +450,16 @@ void TPropManager::addClassProperties(const QMetaObject* metaObject){
             //addProperty(subProperty, QLatin1String(metaProperty.name()));
             //qDebug() << subProperty->propertyName();
             setAttributes(subProperty);
-            classProperty->addSubProperty(subProperty);
+            TopLevelProperty->addSubProperty(subProperty);
             m_propertyToIndex[subProperty] = idx;
             m_classToIndexToProperty[metaObject][idx] = subProperty;
         }      
 
     } else {
+        TopLevelProperty = m_classToProperty.value(metaObject).first();
         updateClassProperties(metaObject, false);
     }
-    topLevelPropertySetVisible(classProperty);
+    topLevelPropertySetVisible(TopLevelProperty);
 
     //QtBrowserItem *item = browser->addProperty(classProperty);
     //проверка
@@ -511,11 +519,11 @@ void TPropManager::itemChanged(QObject *curobject)
         prevClassName = object->metaObject()->className();
     }
 }
-void TPropManager::topLevelPropertySetVisible(QtProperty *classProperty,bool value){
-    if(value ^ m_topLevelProperties.contains(classProperty))
-        value ? m_topLevelProperties.append(classProperty) : m_topLevelProperties.removeOne(classProperty);
-    if(value ^ browser->properties().contains(classProperty))
-        value ? browser->addProperty(classProperty) : browser->removeProperty(classProperty);
+void TPropManager::topLevelPropertySetVisible(QtProperty *TopLevelProperty,bool value){
+    if(value ^ m_topLevelProperties.contains(TopLevelProperty))
+        value ? m_topLevelProperties.append(TopLevelProperty) : m_topLevelProperties.removeOne(TopLevelProperty);
+    if(value ^ browser->properties().contains(TopLevelProperty))
+        value ? browser->addProperty(TopLevelProperty) : browser->removeProperty(TopLevelProperty);
 }
 
 void TPropManager::SetExpandState(const QMetaObject* metaObject, int key, QtBrowserItem *subitem)

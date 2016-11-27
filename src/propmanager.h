@@ -46,11 +46,9 @@ private:
     QMap<const QtProperty *, SScommand> commandPropertyToData;
     QMap<const QtProperty *, QtProperty *> commandNameToProperty;
     QMap<const QtProperty *, QtProperty *> commandTagToProperty;
-    QMap<const QMetaObject *, QtProperty *> m_classToProperty;
+    QMap<const QMetaObject *, QList<QtProperty *> > m_classToProperty;
     QMap<QtProperty *, const QMetaObject *> m_propertyToClass;
 
-    //QMap<QtProperty *, QString> propertyToId;
-    //QMap<QString, QtVariantProperty *> idToProperty;
     QMap<const QMetaObject *, QMap<int, bool> > idToExpanded;
     QMap<QtProperty *, int> m_propertyToIndex;
     QMap<const QMetaObject *, QMap<int, QtVariantProperty *> > m_classToIndexToProperty;
@@ -58,14 +56,39 @@ private:
 
     QtBrowserItem* findchildrens(QtBrowserItem *item, QList<QtBrowserItem *> &list);
 
+    /*
+     * функция поиска в контейнере <QtProperty*> свойства по имени.
+     * Возвращает указатель на найденное свойство или нулевой указатель
+     */
+    template<template<typename T> class S>
+    QtProperty* findByName(const S<QtProperty*> &sequence, QString name){
+        foreach (QtProperty* prop, sequence) {
+            if(prop->propertyName()==name) {
+                //qDebug() << "addPropertyOrReturnExisted : return " << prop->propertyName();
+                return prop;
+            }
+        }
+        return nullptr;
+    }
+    /*
+     * функция для добавления в менеджер динамических свойств (верхнего уровня).
+     * Выделяет память под новое свойство, если оно не было добавлено ранее в карту m_classToProperty
+     */
     template<template<typename T> class S>
     QtProperty* addPropertyOrReturnExisted(const S<QtProperty*> &sequence, int propType, QString name){
-        foreach (QtProperty* prop, sequence) {
-            if(prop->propertyName()==name) return prop;
-            qDebug() << prop->propertyName();
+        QtProperty* TopLevelProperty = findByName(sequence,name);
+        if(!TopLevelProperty){
+            qDebug() << "New addPropertyOrReturnExisted()";
+            TopLevelProperty = addProperty(propType, name);
+
+            Q_ASSERT(!m_classToProperty[object->metaObject()].isEmpty());
+
+            if(!findByName(m_classToProperty.value(object->metaObject()),name)){
+                m_classToProperty[object->metaObject()].append(TopLevelProperty);
+                m_propertyToClass[TopLevelProperty] = object->metaObject();
+            }
         }
-        qDebug() << "New addPropertyOrReturnExisted()";
-        return addProperty(propType, name);
+        return TopLevelProperty;
     }
 
     void syncDynPropWithObj(QStringList &list, QtProperty *classProperty, int startIndex);
