@@ -136,6 +136,7 @@ void TPropManager::initializeProperty(QtProperty *property)
         b.style = this->addProperty(QtVariantPropertyManager::enumTypeId());
         b.style->setPropertyName(tr("Style"));
         b.style->setAttribute("enumNames",brushesStyles);
+		qDebug() << "New QVariant::Brush";
 
         property->addSubProperty(b.color);
         property->addSubProperty(b.style);
@@ -150,7 +151,8 @@ void TPropManager::initializeProperty(QtProperty *property)
         prop.name->setPropertyName(tr("Name"));
         prop.tag = this->addProperty(QVariant::String);
         prop.tag->setPropertyName(tr("Tag Name"));
-
+		qDebug() << "New qMetaTypeId<SScommandProperty>()";
+		
         property->addSubProperty(prop.name);
         property->addSubProperty(prop.tag);
         commandNameToProperty[prop.name] = property;
@@ -342,7 +344,7 @@ void TPropManager::editAddDynamicProperties(const QString& propSingleName, int i
                 if(prop->propertyName().contains(propSingleName))
                 {
                     browser->removeProperty(prop);
-                    m_topLevelProperties.removeOne(prop);
+                    //m_topLevelProperties.removeOne(prop);
                 }
             }
         return;
