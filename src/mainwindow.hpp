@@ -20,6 +20,7 @@ class SSitemdialog;
 class QUndoStack;
 class QUndoView;
 class GraphicScene;
+class QSettings;
 
 class MainWindow : public QMainWindow
 {
@@ -78,8 +79,28 @@ private:
     void connectItem(QObject *item);
     bool openPageDesignerFile(QFile *file, QDataStream &in);
     void readItems(QDataStream &in, int offset=0, bool select=false);
-    void writeItems(QDataStream &out,
-                    const QList<QGraphicsItem*> &items);
+
+    template<class T>
+    void writeItems(T &out,
+                    const QList<QGraphicsItem*> &items){
+
+        foreach (QGraphicsItem *item, items) {
+            if (item == gridGroup || item->group() == gridGroup)
+                continue;
+            qint32 type = static_cast<qint32>(item->type());
+            out << type;
+            switch (type) {
+                case BoxItemType:
+                        out << *static_cast<BoxItem*>(item); break;
+                case SSIndItemType:
+                        out << *static_cast<SSindicator*>(item); break;
+                case TextItemType:
+                        out << *static_cast<TextItem*>(item); break;
+                default: Q_ASSERT(false);
+            }
+        }
+    }
+
     void copyItems(const QList<QGraphicsItem*> &items);
     void selectItems(const QSet<QGraphicsItem*> &items);
     void alignItems(Qt::Alignment alignment);
@@ -161,5 +182,8 @@ signals:
 #endif
 
 };
+
+QSettings &operator<<(QSettings &out, const int &type);
+QSettings &operator>>(QSettings &in, int &type);
 
 #endif // MAINWINDOW_H

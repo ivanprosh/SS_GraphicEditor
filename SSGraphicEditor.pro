@@ -1,5 +1,5 @@
 #CONFIG += console debug
-TEMPLATE = app
+ TEMPLATE = app
 
 # Подключаем заголовочные файлы библиотеки
 INCLUDEPATH += lib/QtPropertyBrowser

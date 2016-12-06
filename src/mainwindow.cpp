@@ -659,39 +659,19 @@ bool MainWindow::fileSave()
     const QString filename = windowFilePath();
     if (filename.isEmpty() || filename == tr("Unnamed"))
         return fileSaveAs();
-    QFile file(filename);
-    if (!file.open(QIODevice::WriteOnly))
-        return false;
-    QDataStream out(&file);
-    out << MagicNumber << VersionNumber;
-    out.setVersion(QDataStream::Qt_5_3);
-    writeItems(out, scene->items());
-    file.close();
+    QSettings file(filename,QSettings::IniFormat);
+    //QFile file(filename);
+    //if (!file.open(QIODevice::WriteOnly))
+    //    return false;
+    //QDataStream out(&file);
+    //out << MagicNumber << VersionNumber;
+    //out.setVersion(QDataStream::Qt_5_3);
+    writeItems(file, scene->items());
+    //file.close();
     setDirty(false);
     return true;
+
 }
-
-
-void MainWindow::writeItems(QDataStream &out,
-                            const QList<QGraphicsItem*> &items)
-{
-    foreach (QGraphicsItem *item, items) {
-        if (item == gridGroup || item->group() == gridGroup)
-            continue;
-        qint32 type = static_cast<qint32>(item->type());
-        out << type;
-        switch (type) {
-            case BoxItemType:
-                    out << *static_cast<BoxItem*>(item); break;
-            case SSIndItemType:
-                    out << *static_cast<SSindicator*>(item); break;
-            case TextItemType:
-                    out << *static_cast<TextItem*>(item); break;
-            default: Q_ASSERT(false);
-        }
-    }
-}
-
 
 bool MainWindow::fileSaveAs()
 {
@@ -936,7 +916,7 @@ void MainWindow::copyItems(const QList<QGraphicsItem*> &items)
 {
     QByteArray copiedItems;
     QDataStream out(&copiedItems, QIODevice::WriteOnly);
-    writeItems(out, items);
+    writeItems<QDataStream>(out, items);
     QMimeData *mimeData = new QMimeData;
     mimeData->setData(MimeType, copiedItems);
     QClipboard *clipboard = QApplication::clipboard();
@@ -1464,3 +1444,5 @@ void MainWindow::itemMoved(QHash<QGraphicsItem *,QPointF> sceneBefore)
     undoStack->push(new MoveCommand(sceneBefore));
 }
 
+QSettings &operator<<(QSettings &out, const int &type){return out;}
+QSettings &operator>>(QSettings &in, int &type){return in;}

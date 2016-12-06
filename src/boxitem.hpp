@@ -23,6 +23,7 @@ class QDataStream;
 class QGraphicsScene;
 class QGraphicsSceneMouseEvent;
 class QKeyEvent;
+class QSettings;
 
 
 class BoxItem : public QObject,public QGraphicsRectItem
@@ -82,6 +83,9 @@ private:
 
 QDataStream &operator<<(QDataStream &out, const BoxItem &boxItem);
 QDataStream &operator>>(QDataStream &in, BoxItem &boxItem);
+
+QSettings &operator<<(QSettings &out, const BoxItem &boxItem);
+QSettings &operator>>(QSettings &in, BoxItem &boxItem);
 
 
 #endif // BOXITEM_HPP

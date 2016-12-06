@@ -112,3 +112,12 @@ QDataStream &operator>>(QDataStream &in, TextItem &textItem)
     textItem.setHtml(html);
     return in;
 }
+
+QSettings &operator<<(QSettings &out, const TextItem &textItem)
+{
+    return out;
+}
+QSettings &operator>>(QSettings &in, TextItem &textItem)
+{
+    return in;
+}

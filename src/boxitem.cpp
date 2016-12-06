@@ -198,6 +198,7 @@ void BoxItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 QDataStream &operator<<(QDataStream &out, const BoxItem &boxItem)
 {
+    //out << static_cast<qint32>(BoxItemType);
     out << boxItem.pos() << boxItem.angle()
         << boxItem.shearHorizontal() << boxItem.shearVertical()
         << boxItem.zValue() << boxItem.rect() << boxItem.pen()
@@ -225,5 +226,16 @@ QDataStream &operator>>(QDataStream &in, BoxItem &boxItem)
     boxItem.setRect(rect);
     boxItem.setPen(pen);
     boxItem.setBrush(brush);
+    return in;
+}
+
+QSettings &operator<<(QSettings &out, const BoxItem &boxItem)
+{
+    qDebug() << "In << oper";
+    return out;
+}
+QSettings &operator>>(QSettings &in, const BoxItem &boxItem)
+{
+    qDebug() << "In >> oper";
     return in;
 }

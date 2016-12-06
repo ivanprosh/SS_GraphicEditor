@@ -60,11 +60,11 @@ HEADERS += \
     $$PWD/SSobjects/DialogIndSource/standardtablemodel.hpp \
     $$PWD/SSobjects/DialogIndSource/templateimage.h \
     $$PWD/SSobjects/DialogIndSource/templmodelinfo.h \
-    $$PWD/SSobjects/DialogIndSource/uniqueproxymodel.hpp
+    $$PWD/SSobjects/DialogIndSource/uniqueproxymodel.hpp \
+    $$PWD/SSobjects/transitionbutton.h
 
 SOURCES += \
     $$PWD/main.cpp \
-    $$PWD/aqp/alt_key.cpp \
     $$PWD/aqp/aqp.cpp \
     $$PWD/aqp/kuhn_munkres.cpp \
     $$PWD/swatch.cpp \
@@ -86,7 +86,9 @@ SOURCES += \
     $$PWD/SSobjects/DialogIndSource/ssitemdialog.cpp \
     $$PWD/SSobjects/DialogIndSource/standardtablemodel.cpp \
     $$PWD/SSobjects/DialogIndSource/templateimage.cpp \
-    $$PWD/SSobjects/DialogIndSource/uniqueproxymodel.cpp
+    $$PWD/SSobjects/DialogIndSource/uniqueproxymodel.cpp \
+    $$PWD/aqp/alt_key.cpp \
+    $$PWD/SSobjects/transitionbutton.cpp
 
 INCLUDEPATH += $$PWD \
     $$PWD/SSobjects \

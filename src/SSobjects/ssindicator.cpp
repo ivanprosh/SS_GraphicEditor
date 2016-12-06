@@ -22,7 +22,7 @@ SSindicator::SSindicator(const QPoint &position, QGraphicsScene *scene,
     scene->clearSelection();
     scene->addItem(this);
     setSelected(true);
-    setStatesCount(Template_Index.isValid() ? Template_Index.data(StatesCountRole).toInt():1);
+    setStatesCount(Template_Index.isValid() ? Template_Index.data(StatesCountRole).toInt():0);
 
     initializeProperties();
     createInternalConnections();
@@ -117,7 +117,12 @@ QPainterPath SSindicator::shape() const
    path.addRect(image.rect());
    return path;
 }
+/*
+bool SSindicator::saveToFile(QSettings &file)
+{
 
+}
+*/
 void SSindicator::paintSelectionOutline(QPainter *painter)
 {
     QPen pen;
@@ -204,7 +209,11 @@ QDataStream &operator<<(QDataStream &out, const SSindicator &indicator)
         //<< indicator.rect()
         //<< indicator.model
         << indicator.TemplateName()
-        << indicator.image;
+        << indicator.image
+        << indicator.statesCount()
+        << indicator.commandsCount()
+        << indicator.states
+        << indicator.commands;
     return out;
 }
 
@@ -218,13 +227,31 @@ QDataStream &operator>>(QDataStream &in, SSindicator &indicator)
     QString TemplName;
     QPixmap pix;
 
-    in >> position >> z >> TemplName >> pix;
+    //карта состояний и команд
+    QHash<QString,SScommandProperty> commands,states;
+    int statesCount,commandsCount;
+
+    in >> position >> z >> TemplName >> pix >> statesCount >> commandsCount >> states >> commands;
 
     indicator.setPos(position);
     indicator.setZValue(z);
     //indicator.model = mod;
     indicator.setTemplateName(TemplName);
-    indicator.image = pix;
+    indicator.image = pix; 
+    indicator.states = states;
+    indicator.commands = commands;
+    indicator.setStatesCount(statesCount);
+    //indicator.updateDynamicPropView(tr("State"),indicator.states,indicator.statesCount());
+    indicator.setCommandsCount(commandsCount);
 
     return in;
+}
+QSettings &operator<<(QSettings &out, const SSindicator &indicator)
+{
+   return out;
+}
+
+QSettings &operator>>(QSettings &in, SSindicator &indicator)
+{
+   return in;
 }

@@ -17,7 +17,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
 
-
+class QSettings;
 class TextItem : public QGraphicsTextItem
 {
     Q_OBJECT
@@ -65,7 +65,8 @@ private:
     double m_shearVertical;
 };
 
-
+QSettings &operator<<(QSettings &out, const TextItem &textItem);
+QSettings &operator>>(QSettings &in, TextItem &textItem);
 QDataStream &operator<<(QDataStream &out, const TextItem &textItem);
 QDataStream &operator>>(QDataStream &in, TextItem &textItem);
 

@@ -44,6 +44,8 @@ public:
 
     friend QDataStream &operator<<(QDataStream &out, const SSindicator &ind);
     friend QDataStream &operator>>(QDataStream &in, SSindicator &ind);
+    friend QSettings &operator<<(QSettings &out, const SSindicator &ind);
+    friend QSettings &operator>>(QSettings &in, SSindicator &ind);
 
     //свойства
     QString TemplateName() const { return m_TemplateName; }
@@ -58,7 +60,9 @@ public:
     int statesCount() const {return m_statesCount; }
     int commandsCount() const {return m_commandsCount;}
     //SScommandProperty Command1() const {return commands.isEmpty() ? qMakePair(QString(),QString()): commands.first();}
-
+    //bool saveToFile(QSettings &file);
+    //карта соответствий программного тега и индекса состояния/команды
+    QHash<QString,SScommandProperty> commands,states;
 private:
     QPixmap image;
     QString m_TemplateName;
@@ -76,8 +80,6 @@ private:
     int m_StateDigParCount;
     int m_statesCount;
     int m_commandsCount;
-
-    QHash<QString,SScommandProperty> commands,states;
 
     void initializeProperties();
     void createInternalConnections();
