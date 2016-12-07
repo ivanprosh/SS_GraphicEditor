@@ -59,10 +59,10 @@ public:
     int StateDigParCount() const {return m_StateDigParCount; }
     int statesCount() const {return m_statesCount; }
     int commandsCount() const {return m_commandsCount;}
-    //SScommandProperty Command1() const {return commands.isEmpty() ? qMakePair(QString(),QString()): commands.first();}
-    //bool saveToFile(QSettings &file);
+
     //карта соответствий программного тега и индекса состояния/команды
     QHash<QString,SScommandProperty> commands,states;
+
 private:
     QPixmap image;
     QString m_TemplateName;

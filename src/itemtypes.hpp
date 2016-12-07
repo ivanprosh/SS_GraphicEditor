@@ -23,6 +23,7 @@ const int TextItemType = QGraphicsItem::UserType + 3;
 const int SSAnparItemType = QGraphicsItem::UserType + 4;
 const int SSDynTextItemType = QGraphicsItem::UserType + 5;
 const int SSIndItemType = QGraphicsItem::UserType + 6;
+const int SSTransitionButtonType = QGraphicsItem::UserType + 7;
 
 //для идентификации свойства в браузере свойств
 typedef QPair<QString, QString> SScommandProperty;

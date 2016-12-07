@@ -61,7 +61,10 @@ HEADERS += \
     $$PWD/SSobjects/DialogIndSource/templateimage.h \
     $$PWD/SSobjects/DialogIndSource/templmodelinfo.h \
     $$PWD/SSobjects/DialogIndSource/uniqueproxymodel.hpp \
-    $$PWD/SSobjects/transitionbutton.h
+    $$PWD/SSobjects/sstransitionbutton.h \
+    $$PWD/SSobjects/sscontrolbutton.h \
+    $$PWD/SSobjects/ssanpar.h \
+    $$PWD/SSobjects/ssdyntext.h
 
 SOURCES += \
     $$PWD/main.cpp \
@@ -88,7 +91,10 @@ SOURCES += \
     $$PWD/SSobjects/DialogIndSource/templateimage.cpp \
     $$PWD/SSobjects/DialogIndSource/uniqueproxymodel.cpp \
     $$PWD/aqp/alt_key.cpp \
-    $$PWD/SSobjects/transitionbutton.cpp
+    $$PWD/SSobjects/sstransitionbutton.cpp \
+    $$PWD/SSobjects/sscontrolbutton.cpp \
+    $$PWD/SSobjects/ssanpar.cpp \
+    $$PWD/SSobjects/ssdyntext.cpp
 
 INCLUDEPATH += $$PWD \
     $$PWD/SSobjects \

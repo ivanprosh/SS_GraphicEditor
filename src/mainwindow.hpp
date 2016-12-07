@@ -135,6 +135,8 @@ private:
     QAction *editAddSSIndAction;
     QAction *editAddSSAnparAction;
     QAction *editAddSSDynTextAction;
+    QAction *editAddSSTransitionButtonAction;
+    QAction *editAddSSControlButtonAction;
 
     QAction *undoAction;
     QAction *redoAction;
