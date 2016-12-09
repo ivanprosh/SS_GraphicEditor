@@ -1,6 +1,6 @@
 #include "sstransitionbutton.h"
 
-SSTransitionButton::SSTransitionButton()
+SSTransitionButton::SSTransitionButton(const QRect &rect, QGraphicsScene *scene)
 {
-
+    ;
 }

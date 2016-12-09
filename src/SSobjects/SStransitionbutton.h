@@ -75,7 +75,7 @@ public slots:
         if(value != m_MnemoNum){m_MnemoNum=value;emit dirty();}
     }
     void setNewWnd(const bool& value){
-        if(value != m_NewWnd){m_NewWnd=value;emit dirty();}
+        if(value != m_IsNewWnd){m_IsNewWnd=value;emit dirty();}
     }
     void setHelp(const QString& value){
         if(value != m_Help){m_Help=value;emit dirty();}
@@ -95,7 +95,7 @@ public slots:
     void setPictureDisabledTransparent(const bool& value){
         if(value != m_PictureDisabledTransparent){m_PictureDisabledTransparent=value;emit dirty();}
     }
-
+/*
 protected:
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
@@ -103,7 +103,7 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
+*/
 private:
     void updateTransform();
 
@@ -114,7 +114,7 @@ private:
     QFont m_Text;
     QString m_UnitName;
     int m_MnemoNum;
-    bool m_NewWnd;
+    bool m_IsNewWnd;
     QString m_Help;
     QString m_BtnState_Tag;
     QString m_BtnState_Unit;

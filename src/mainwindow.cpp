@@ -201,12 +201,24 @@ void MainWindow::createActions()
             tr("Add Box"), this);
     editAddBoxAction->setData(BoxItemType);
     //ֳנאפ.מבתוךעû SS
-    editAddSSAction = new QAction(QIcon(":images/ind_default.png"),
+    editAddSSAction = new QAction(QIcon(":images/ind_default.bmp"),
             tr("SS objects"), this);
     editAddSSAction->setData(SSIndItemType);
-    editAddSSIndAction = new QAction(QIcon(":images/ind_default.png"),
-            tr("Add Indicator"), this);
+    editAddSSIndAction = new QAction(QIcon(":images/ind_default.bmp"),
+           tr("Indicator"), this);
     editAddSSIndAction->setData(SSIndItemType);
+    editAddSSAnparAction = new QAction(QIcon(":images/anpar.png"),
+           tr("Anpar"), this);
+    editAddSSIndAction->setData(SSAnparItemType);
+    editAddSSControlButtonAction = new QAction(QIcon(":images/controlbutton.png"),
+           tr("ControlButton"), this);
+    editAddSSControlButtonAction->setData(SSControlButtonType);
+    editAddSSTransitionButtonAction = new QAction(QIcon(":images/transitionbutton.png"),
+           tr("TransitionButton"), this);
+    editAddSSTransitionButtonAction->setData(SSTransitionButtonType);
+    editAddSSDynTextAction = new QAction(QIcon(":images/dynamicText.png"),
+           tr("DynamicText"), this);
+    editAddSSDynTextAction->setData(SSDynTextItemType);
     //
     editCopyAction = new QAction(QIcon(":images/editcopy.png"), tr("&Copy"),
                                  this);
@@ -274,7 +286,7 @@ void MainWindow::createMenusAndToolBars()
 
     QMenu *SSMenu = new QMenu(tr("SS object"), this);
     foreach (QAction *action, QList<QAction*>()
-            << editAddSSIndAction)
+            << editAddSSIndAction << editAddSSAnparAction << editAddSSControlButtonAction << editAddSSDynTextAction << editAddSSTransitionButtonAction)
         SSMenu->addAction(action);
     editAddSSAction->setMenu(SSMenu);
 
@@ -389,14 +401,14 @@ void MainWindow::createConnections()
             this, SLOT(editAddItem()));
     connect(editAddBoxAction, SIGNAL(triggered()),
             this, SLOT(editAddItem()));
-    //SS
-    /*
+    //SS    
     foreach (QAction *action, QList<QAction*>()
-            << editAddSSAction << editAddSSIndAction)
-        connect(action, SIGNAL(triggered()), this, SLOT(editSSobj()));
-    */
-    connect(editAddSSAction, SIGNAL(triggered()),
-            this, SLOT(editAddItem()));
+            << editAddSSAction << editAddSSIndAction << editAddSSAnparAction << editAddSSControlButtonAction << editAddSSDynTextAction
+            << editAddSSTransitionButtonAction)
+        connect(action, SIGNAL(triggered()), this, SLOT(editAddItem()));
+
+    //connect(editAddSSAction, SIGNAL(triggered()),
+    //        this, SLOT(editAddItem()));
     connect(editCopyAction, SIGNAL(triggered()),
             this, SLOT(editCopy()));
     connect(editCutAction, SIGNAL(triggered()),

@@ -1,0 +1,62 @@
+#ifndef TRANSITIONBUTTON_H
+#define TRANSITIONBUTTON_H
+
+
+class TransitionButton : public QObject,public QGraphicsRectItem
+{
+    Q_OBJECT
+    Q_PROPERTY(QString DisplayOptions READ DisplayOptions WRITE setDisplayOptions)
+    Q_PROPERTY(QString PictureEnabled READ PictureEnabled WRITE setPictureEnabled)
+    Q_PROPERTY(QString PictureDisabled READ PictureDisabled WRITE setPictureDisabled)
+    
+    Q_PROPERTY(QFont Text READ Text WRITE setText)
+    Q_PROPERTY(QString UnitName READ PictureDisabled WRITE setPictureDisabled)
+    
+
+public:
+    enum {Type = BoxItemType};
+
+    explicit BoxItem(const QRect &rect, QGraphicsScene *scene);
+    int type() const { return Type; }
+
+    double angle() const { return m_angle; }
+    double shearHorizontal() const { return m_shearHorizontal; }
+    double shearVertical() const { return m_shearVertical; }
+
+signals:
+    void dirty();
+
+public slots:
+    void setPen(const QPen &pen);
+    void setBrush(const QBrush &brush);
+    void setAngle(double angle);
+    void setShearHorizontal(double shearHorizontal)
+        { setShear(shearHorizontal, m_shearVertical); }
+    void setShearVertical(double shearVertical)
+        { setShear(m_shearHorizontal, shearVertical); }
+    void setShear(double shearHorizontal, double shearVertical);
+
+protected:
+    QVariant itemChange(GraphicsItemChange change,
+                        const QVariant &value);
+    void keyPressEvent(QKeyEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+private:
+    void updateTransform();
+
+    bool m_resizing;
+    double m_angle;
+    double m_shearHorizontal;
+    double m_shearVertical;
+};
+
+QDataStream &operator<<(QDataStream &out, const TransitionButton &boxItem);
+QDataStream &operator>>(QDataStream &in, TransitionButton &boxItem);
+
+QSettings &operator<<(QSettings &out, const TransitionButton &boxItem);
+QSettings &operator>>(QSettings &in, TransitionButton &boxItem);
+
+#endif // TRANSITIONBUTTON_H

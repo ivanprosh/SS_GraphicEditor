@@ -34,12 +34,12 @@
         <file>images/solidlinestyle.png</file>
         <file>images/zoom-in.png</file>
         <file>images/zoom-out.png</file>
-        <file>images/ind_default.png</file>
         <file>images/obj_icons/dd.bmp</file>
         <file>images/obj_icons/dp.bmp</file>
         <file>images/obj_icons/dt.bmp</file>
         <file>images/obj_icons/IM_small_cmn.bmp</file>
         <file>images/obj_icons/rpi.bmp</file>
         <file>images/obj_icons/default_obj.png</file>
+        <file>images/ind_default.bmp</file>
     </qresource>
 </RCC>
