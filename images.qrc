@@ -40,6 +40,10 @@
         <file>images/obj_icons/IM_small_cmn.bmp</file>
         <file>images/obj_icons/rpi.bmp</file>
         <file>images/obj_icons/default_obj.png</file>
-        <file>images/ind_default.bmp</file>
+        <file>images/controlbutton.svg</file>
+        <file>images/ind_default.svg</file>
+        <file>images/transitionbutton.svg</file>
+        <file>images/dynamicText.svg</file>
+        <file>images/anpar.svg</file>
     </qresource>
 </RCC>

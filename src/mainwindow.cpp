@@ -201,22 +201,22 @@ void MainWindow::createActions()
             tr("Add Box"), this);
     editAddBoxAction->setData(BoxItemType);
     //ֳנאפ.מבתוךעû SS
-    editAddSSAction = new QAction(QIcon(":images/ind_default.bmp"),
+    editAddSSAction = new QAction(QIcon(":images/ind_default.svg"),
             tr("SS objects"), this);
     editAddSSAction->setData(SSIndItemType);
-    editAddSSIndAction = new QAction(QIcon(":images/ind_default.bmp"),
+    editAddSSIndAction = new QAction(QIcon(":images/ind_default.svg"),
            tr("Indicator"), this);
     editAddSSIndAction->setData(SSIndItemType);
-    editAddSSAnparAction = new QAction(QIcon(":images/anpar.png"),
+    editAddSSAnparAction = new QAction(QIcon(":images/anpar.svg"),
            tr("Anpar"), this);
-    editAddSSIndAction->setData(SSAnparItemType);
-    editAddSSControlButtonAction = new QAction(QIcon(":images/controlbutton.png"),
+    editAddSSAnparAction->setData(SSAnparItemType);
+    editAddSSControlButtonAction = new QAction(QIcon(":images/controlbutton.svg"),
            tr("ControlButton"), this);
     editAddSSControlButtonAction->setData(SSControlButtonType);
-    editAddSSTransitionButtonAction = new QAction(QIcon(":images/transitionbutton.png"),
+    editAddSSTransitionButtonAction = new QAction(QIcon(":images/transitionbutton.svg"),
            tr("TransitionButton"), this);
     editAddSSTransitionButtonAction->setData(SSTransitionButtonType);
-    editAddSSDynTextAction = new QAction(QIcon(":images/dynamicText.png"),
+    editAddSSDynTextAction = new QAction(QIcon(":images/dynamicText.svg"),
            tr("DynamicText"), this);
     editAddSSDynTextAction->setData(SSDynTextItemType);
     //
@@ -821,6 +821,10 @@ void MainWindow::editAddItem()
     QAction *action = qobject_cast<QAction*>(sender());
     if (!action)
         return;
+    if (action != editAddSSAction) {
+        editAddSSAction->setData(action->data());
+        editAddSSAction->setIcon(action->icon());
+    }
     QObject *item = 0;
     int type = action->data().toInt();
     if (type == BoxItemType)
