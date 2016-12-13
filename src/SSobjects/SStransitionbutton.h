@@ -19,7 +19,8 @@ class SSTransitionButton : public QObject,public QGraphicsRectItem
     Q_PROPERTY(QString DisplayOptions READ DisplayOptions WRITE setDisplayOptions)
     Q_PROPERTY(QString PictureEnabled READ PictureEnabled WRITE setPictureEnabled)
     Q_PROPERTY(QString PictureDisabled READ PictureDisabled WRITE setPictureDisabled)
-    Q_PROPERTY(QFont Text READ Text WRITE setText)
+    Q_PROPERTY(QString Text READ Text WRITE setText)
+    Q_PROPERTY(QFont Font READ Font WRITE setFont)
     Q_PROPERTY(QString UnitName READ UnitName WRITE setUnitName)
     Q_PROPERTY(int MnemoNum READ MnemoNum WRITE setMnemoNum)
     Q_PROPERTY(bool IsNewWnd READ IsNewWnd WRITE setNewWnd)
@@ -40,7 +41,8 @@ public:
     QString DisplayOptions() const { return m_DisplayOptions; }
     QString PictureEnabled() const { return m_PictureEnabled;}
     QString PictureDisabled() const { return m_PictureDisabled;}
-    QFont Text() const { return m_Text;}
+    QString Text() const { return m_Text;}
+    QFont Font() const { return m_Font;}
     QString UnitName() const { return m_UnitName; }
     int MnemoNum() const { return m_MnemoNum; }
     bool IsNewWnd() const { return m_IsNewWnd; }
@@ -67,6 +69,9 @@ public slots:
     }
     void setText(const QFont& value){
         if(value != m_Text){m_Text=value;emit dirty();}
+    }
+    void setFont(const QFont& value){
+        if(value != m_Font){m_Font=value;emit dirty();}
     }
     void setUnitName(const QString& value){
         if(value != m_UnitName){m_UnitName=value;emit dirty();}
@@ -111,7 +116,8 @@ private:
     QString m_DisplayOptions;
     QString m_PictureEnabled;
     QString m_PictureDisabled;
-    QFont m_Text;
+    QFont m_Font;
+    QString m_Text;
     QString m_UnitName;
     int m_MnemoNum;
     bool m_IsNewWnd;

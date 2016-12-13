@@ -827,6 +827,42 @@ void MainWindow::editAddItem()
     }
     QObject *item = 0;
     int type = action->data().toInt();
+
+    switch (type) {
+    case BoxItemType:
+        item = new BoxItem(QRect(position(), QSize(90, 30)), scene);
+        break;
+    case TextItemType:
+        TextItemDialog dialog(0, position(), scene, this);
+        if (dialog.exec())
+            item = dialog.textItem();
+        break;
+    //элементы SS
+    case SSIndItemType:
+        if(!dialog){
+            dialog = new SSitemdialog(model,position(), scene, this);
+        } else {
+            dialog->show();
+        }
+        if (dialog->exec())
+            item = dialog->GraphicDataItem();
+        break;
+    case SSAnparItemType:
+        ;
+        break;
+    case SSControlButtonType:
+        ;
+        break;
+    case SSTransitionButtonType:
+        ;
+        break;
+    case SSDynTextItemType:
+        ;
+        break;
+    default:
+        break;
+    }
+    /*
     if (type == BoxItemType)
         item = new BoxItem(QRect(position(), QSize(90, 30)), scene);
     else if (type == SSIndItemType){
@@ -843,6 +879,7 @@ void MainWindow::editAddItem()
         if (dialog.exec())
             item = dialog.textItem();
     }
+    */
     if (item) {
         QUndoCommand *addCommand = new AddCommand(dynamic_cast<QGraphicsItem*>(item), scene);
         undoStack->push(addCommand);
