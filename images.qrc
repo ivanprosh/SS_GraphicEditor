@@ -45,5 +45,6 @@
         <file>images/transitionbutton.svg</file>
         <file>images/dynamicText.svg</file>
         <file>images/anpar.svg</file>
+        <file>images/obj_icons/anpar_title.bmp</file>
     </qresource>
 </RCC>

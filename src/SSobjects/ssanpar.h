@@ -86,6 +86,7 @@ protected:
 */
 private:
     void updateTransform();
+    void paintSelectionOutline(QPainter *painter);
 
     //свойства
     QColor m_BackColor;

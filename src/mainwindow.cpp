@@ -2,6 +2,11 @@
 #include "qttreepropertybrowser.h"
 
 #include "SSobjects/ssindicator.h"
+#include "SSobjects/ssanpar.h"
+#include "SSobjects/ssdyntext.h"
+#include "SSobjects/sscontrolbutton.h"
+#include "SSobjects/sstransitionbutton.h"
+
 #include "aqp/alt_key.hpp"
 #include "aqp/aqp.hpp"
 #include "mainwindow.hpp"
@@ -848,7 +853,7 @@ void MainWindow::editAddItem()
             item = dialog->GraphicDataItem();
         break;
     case SSAnparItemType:
-        ;
+        item = new SSAnpar(QRect(position(), QSize(45, 18)), scene);
         break;
     case SSControlButtonType:
         ;
@@ -905,6 +910,15 @@ void MainWindow::connectItem(QObject *item)
                 variantManager,SLOT(editAddDynamicProperties(QString,int)));
         //connect(item,SIGNAL(statesCountChanged(int)),
         //        variantManager,SLOT(editAddDynamicProperties(QString,int)));
+    } else if(dynamic_cast<SSTransitionButtonType*>(item)){
+
+    } else if(dynamic_cast<SSControlButtonType*>(item)) {
+
+    } else if(dynamic_cast<SSAnparItemType*>(item)) {
+
+    } else if(dynamic_cast<SSDynTextItemType*>(item)) {
+        connect(item,SIGNAL(dynamicPropCountChanged(QString,int)),
+                variantManager,SLOT(editAddDynamicProperties(QString,int)));
     }
     /*
     const QMetaObject *metaObject = item->metaObject();

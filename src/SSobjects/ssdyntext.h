@@ -16,7 +16,7 @@ class SSDynText:   public QObject,public QGraphicsRectItem
     Q_OBJECT
 
     Q_PROPERTY(QString Help READ Help WRITE setHelp)
-    //Q_PROPERTY(int statesCount READ statesCount)
+    Q_PROPERTY(int statesCount READ statesCount WRITE setStatesCount)
     Q_PROPERTY(int StateDigParCount READ StateDigParCount WRITE setStateDigParCount)
     Q_PROPERTY(QFont Font READ Font WRITE setFont)
     Q_PROPERTY(QColor BackColor READ BackColor WRITE setBackColor)
@@ -46,8 +46,12 @@ public:
     Aligment XAlignment() const {return m_XAlignment;}
     Aligment YAlignment() const {return m_YAlignment;}
 
+    //карта соответствий программного тега и индекса состояния
+    QHash<QString,SScommandProperty> states;
+
 signals:
     void dirty();
+    void dynamicPropCountChanged(QString,int);
 
 public slots:
     //свойства
@@ -75,7 +79,14 @@ public slots:
     void setYAlignment(Aligment value) {
         if(value != m_YAlignment){m_YAlignment=value;emit dirty();}
     }
-
+    void setStatesCount(const int& value){
+        if(value != m_statesCount){
+            m_statesCount=value;
+            updateDynamicPropView(tr("State"),states,m_statesCount);
+            emit dynamicPropCountChanged(tr("State"),StateStartIndex);
+            emit dirty();
+        }
+    }
 /*
 protected:
     QVariant itemChange(GraphicsItemChange change,
@@ -87,8 +98,10 @@ protected:
 */
 private:
     void updateTransform();
+    void updateDynamicPropView(QString propSingleName, QHash<QString, SScommandProperty> &hash, int count);
 
     //свойства
+    int m_statesCount;
     QString m_Help;
     QColor m_BackColor;
     QColor m_ForeColor;
@@ -97,6 +110,7 @@ private:
     bool m_3DText;
     Aligment m_XAlignment;
     Aligment m_YAlignment;
+
 };
 
 QDataStream &operator<<(QDataStream &out, const SSDynText &DynTextItem);

@@ -32,6 +32,7 @@ private:
             QtVariantProperty *name;
             QtVariantProperty *tag;
     };
+
     struct brush {
             QVariant value;
             QtVariantProperty *color;

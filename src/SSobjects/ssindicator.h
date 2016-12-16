@@ -28,8 +28,10 @@ class SSindicator: public QGraphicsObject
     Q_PROPERTY(QColor BorderColor READ BorderColor WRITE setBorderColor)
     Q_PROPERTY(int BorderWidth READ BorderWidth WRITE setBorderWidth)
     Q_PROPERTY(int BorderBlinkFreq READ BorderBlinkFreq WRITE setBorderBlinkFreq)
-
-    //Q_PROPERTY(SScommandProperty Commands READ Command WRITE setCommand)
+    //свойства для объекта типа "Переход"
+    Q_PROPERTY(QString UnitName READ UnitName WRITE setUnitName)
+    Q_PROPERTY(int MnemoNum READ MnemoNum WRITE setMnemoNum)
+    Q_PROPERTY(bool IsNewWnd READ IsNewWnd WRITE setNewWnd)
 
 public:
     enum {Type = SSIndItemType};
@@ -59,6 +61,10 @@ public:
     int StateDigParCount() const {return m_StateDigParCount; }
     int statesCount() const {return m_statesCount; }
     int commandsCount() const {return m_commandsCount;}
+    //свойства для объекта типа "Переход"
+    QString UnitName() const { return m_UnitName; }
+    int MnemoNum() const { return m_MnemoNum; }
+    bool IsNewWnd() const { return m_IsNewWnd; }
 
     //карта соответствий программного тега и индекса состояния/команды
     QHash<QString,SScommandProperty> commands,states;
@@ -80,6 +86,9 @@ private:
     int m_StateDigParCount;
     int m_statesCount;
     int m_commandsCount;
+    QString m_UnitName;
+    int m_MnemoNum;
+    bool m_IsNewWnd;
 
     void initializeProperties();
     void createInternalConnections();
@@ -130,6 +139,15 @@ public slots:
             emit dynamicPropCountChanged(tr("Command"),CommandStartIndex);
             emit dirty();
         }
+    }
+    void setUnitName(const QString& value){
+        if(value != m_UnitName){m_UnitName=value;emit dirty();}
+    }
+    void setMnemoNum(const int& value){
+        if(value != m_MnemoNum){m_MnemoNum=value;emit dirty();}
+    }
+    void setNewWnd(const bool& value){
+        if(value != m_IsNewWnd){m_IsNewWnd=value;emit dirty();}
     }
     //void updateStatesView();
     //void updateCommandsView();

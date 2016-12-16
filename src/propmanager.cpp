@@ -148,9 +148,10 @@ void TPropManager::initializeProperty(QtProperty *property)
         SScommand prop;
 
         prop.name = this->addProperty(QVariant::String);
-        prop.name->setPropertyName(tr("Name"));
+        prop.name->setPropertyName(tr("Value"));
+        prop.name->setWhatsThis("Здесь будет справка");
         prop.tag = this->addProperty(QVariant::String);
-        prop.tag->setPropertyName(tr("Tag Name"));
+        prop.tag->setPropertyName(tr("Tag"));
 		qDebug() << "New qMetaTypeId<SScommandProperty>()";
 		
         property->addSubProperty(prop.name);
@@ -364,7 +365,7 @@ void TPropManager::editAddDynamicProperties(const QString& propSingleName, int i
     syncDynPropWithObj(actualCommandsNameList,TopLevelProperty,index);
 }
 void TPropManager::setAttributes(QtVariantProperty *prop){
-    if(prop->propertyName() == "commandsCount"){
+    if(prop->propertyName() == "commandsCount" || prop->propertyName() == "statesCount"){
         prop->setAttribute(QLatin1String("minimum"), 0);
         prop->setAttribute(QLatin1String("maximum"), 32);
         //prop->setAttribute(QLatin1String("readOnly"), true);

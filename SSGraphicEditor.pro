@@ -26,3 +26,5 @@ RESOURCES += \
     images.qrc \
     src/aqp/aqp.qrc
 
+DISTFILES +=
+
