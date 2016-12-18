@@ -16,7 +16,7 @@ class SSTransitionButton : public QObject,public QGraphicsRectItem
     Q_OBJECT
 
     //свойства
-    Q_PROPERTY(QString DisplayOptions READ DisplayOptions WRITE setDisplayOptions)
+    Q_PROPERTY(DisplayOption DisplayOptions READ DisplayOptions WRITE setDisplayOptions)
     Q_PROPERTY(QString PictureEnabled READ PictureEnabled WRITE setPictureEnabled)
     Q_PROPERTY(QString PictureDisabled READ PictureDisabled WRITE setPictureDisabled)
     Q_PROPERTY(QString Text READ Text WRITE setText)
@@ -32,13 +32,17 @@ class SSTransitionButton : public QObject,public QGraphicsRectItem
     Q_PROPERTY(bool PictureDisabledTransparent READ PictureDisabledTransparent WRITE setPictureDisabledTransparent)
 
 public:
+    enum DisplayOption {Text_Only,Picture_Only};
     enum {Type = SSTransitionButtonType};
 
-    explicit SSTransitionButton(const QRect &rect, QGraphicsScene *scene);
+    Q_ENUM(DisplayOption)
+
+
+    explicit SSTransitionButton(const QRect &rect);
     int type() const { return Type; }
 
     //свойства
-    QString DisplayOptions() const { return m_DisplayOptions; }
+    DisplayOption DisplayOptions() const { return m_DisplayOptions; }
     QString PictureEnabled() const { return m_PictureEnabled;}
     QString PictureDisabled() const { return m_PictureDisabled;}
     QString Text() const { return m_Text;}
@@ -58,7 +62,7 @@ signals:
 
 public slots:
     //свойства
-    void setDisplayOptions(const QString& value) {
+    void setDisplayOptions(DisplayOption value) {
         if(value != m_DisplayOptions){m_DisplayOptions=value;emit dirty();}
     }
     void setPictureEnabled(const QString& value){
@@ -67,7 +71,7 @@ public slots:
     void setPictureDisabled(const QString& value){
         if(value != m_PictureDisabled){m_PictureDisabled=value;emit dirty();}
     }
-    void setText(const QFont& value){
+    void setText(const QString& value){
         if(value != m_Text){m_Text=value;emit dirty();}
     }
     void setFont(const QFont& value){
@@ -100,20 +104,28 @@ public slots:
     void setPictureDisabledTransparent(const bool& value){
         if(value != m_PictureDisabledTransparent){m_PictureDisabledTransparent=value;emit dirty();}
     }
-/*
+
 protected:
-    QVariant itemChange(GraphicsItemChange change,
-                        const QVariant &value);
+    //QVariant itemChange(GraphicsItemChange change,
+    //                    const QVariant &value);
     void keyPressEvent(QKeyEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-*/
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
+    void paintSelectionOutline(QPainter *painter);
+
 private:
+    static QPixmap* ButtonTitleimage;
+    //если используется изображение
+    QPixmap* PrivateTitleImage;
     void updateTransform();
 
     //свойства
-    QString m_DisplayOptions;
+    DisplayOption m_DisplayOptions;
     QString m_PictureEnabled;
     QString m_PictureDisabled;
     QFont m_Font;
@@ -127,6 +139,9 @@ private:
     bool m_BtnStateInvert;
     bool m_PictureEnabledTransparent;
     bool m_PictureDisabledTransparent;
+    //доп.св-ва
+    bool m_resizing;
+    QRect minRect;
 };
 
 QDataStream &operator<<(QDataStream &out, const SSTransitionButton &boxItem);

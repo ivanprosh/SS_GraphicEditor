@@ -4,6 +4,7 @@
 #include "itemtypes.hpp"
 #include <QFont>
 #include <QGraphicsRectItem>
+#include "propmanager.h"
 
 class QDataStream;
 class QGraphicsScene;
@@ -16,8 +17,8 @@ class SSDynText:   public QObject,public QGraphicsRectItem
     Q_OBJECT
 
     Q_PROPERTY(QString Help READ Help WRITE setHelp)
-    Q_PROPERTY(int statesCount READ statesCount WRITE setStatesCount)
-    Q_PROPERTY(int StateDigParCount READ StateDigParCount WRITE setStateDigParCount)
+    //Q_PROPERTY(int statesCount READ statesCount WRITE setStatesCount)
+    //Q_PROPERTY(int StateDigParCount READ StateDigParCount WRITE setStateDigParCount)
     Q_PROPERTY(QFont Font READ Font WRITE setFont)
     Q_PROPERTY(QColor BackColor READ BackColor WRITE setBackColor)
     Q_PROPERTY(QColor ForeColor READ ForeColor WRITE setForeColor)

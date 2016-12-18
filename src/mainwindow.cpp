@@ -837,11 +837,14 @@ void MainWindow::editAddItem()
     case BoxItemType:
         item = new BoxItem(QRect(position(), QSize(90, 30)), scene);
         break;
+
     case TextItemType:
-        TextItemDialog dialog(0, position(), scene, this);
-        if (dialog.exec())
-            item = dialog.textItem();
+    {
+        TextItemDialog textdialog(0, position(), scene, this);
+        if (textdialog.exec())
+            item = textdialog.textItem();
         break;
+    }
     //элементы SS
     case SSIndItemType:
         if(!dialog){
@@ -856,10 +859,10 @@ void MainWindow::editAddItem()
         item = new SSAnpar(QRect(position(), QSize(45, 18)), scene);
         break;
     case SSControlButtonType:
-        ;
+        //item = new SSControlButton(QRect(position(), QSize(45, 18)));
         break;
     case SSTransitionButtonType:
-        ;
+        item = new SSTransitionButton(QRect(position(), QSize(45, 18)));
         break;
     case SSDynTextItemType:
         ;
@@ -910,13 +913,13 @@ void MainWindow::connectItem(QObject *item)
                 variantManager,SLOT(editAddDynamicProperties(QString,int)));
         //connect(item,SIGNAL(statesCountChanged(int)),
         //        variantManager,SLOT(editAddDynamicProperties(QString,int)));
-    } else if(dynamic_cast<SSTransitionButtonType*>(item)){
-
-    } else if(dynamic_cast<SSControlButtonType*>(item)) {
-
-    } else if(dynamic_cast<SSAnparItemType*>(item)) {
-
-    } else if(dynamic_cast<SSDynTextItemType*>(item)) {
+    } else if(dynamic_cast<SSTransitionButton*>(item)){
+    ;
+    } else if(dynamic_cast<SSControlButton*>(item)) {
+    ;
+    } else if(dynamic_cast<SSAnpar*>(item)) {
+    ;
+    } else if(dynamic_cast<SSDynText*>(item)) {
         connect(item,SIGNAL(dynamicPropCountChanged(QString,int)),
                 variantManager,SLOT(editAddDynamicProperties(QString,int)));
     }

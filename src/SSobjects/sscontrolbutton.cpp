@@ -1,6 +1,6 @@
 #include "sscontrolbutton.h"
 
-SSControlButton::SSControlButton()
+SSControlButton::SSControlButton(const QRect &rect, QGraphicsScene *scene)
 {
 
 }

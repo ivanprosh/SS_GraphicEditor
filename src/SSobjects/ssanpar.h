@@ -26,6 +26,7 @@ class SSAnpar :public QObject,public QGraphicsRectItem
     Q_PROPERTY(QString DigParUnit READ DigParUnit WRITE setDigParUnit)
 
 public:
+
     enum {Type = SSAnparItemType};
     enum AnparTypes { Default, Horizontal, Vertical };
 
@@ -33,6 +34,14 @@ public:
 
     explicit SSAnpar(const QRect &rect, QGraphicsScene *scene);
     int type() const { return Type; }
+
+    //отрисовка
+    //static void initImage(const QPixmap& img){anparTitleimage = img;}
+    //QPixmap SSAnpar::anparTitleimage = QPixmap(":/images/obj_icons/anpar_title.bmp");
+    void paint(QPainter *painter,
+            const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
 
     //свойства
     QColor BackColor() const { return m_BackColor;}
@@ -75,8 +84,10 @@ public slots:
         if(value != m_DigParUnit){m_DigParUnit=value;emit dirty();}
     }
 
-/*
+
 protected:
+    static QPixmap* anparTitleimage;
+/*
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
     void keyPressEvent(QKeyEvent *event);

@@ -87,7 +87,7 @@ public slots:
     void setPictureDisabled(const QString& value){
         if(value != m_PictureDisabled){m_PictureDisabled=value;emit dirty();}
     }
-    void setText(const QFont& value){
+    void setText(const QString& value){
         if(value != m_Text){m_Text=value;emit dirty();}
     }
     void setFont(const QFont& value){

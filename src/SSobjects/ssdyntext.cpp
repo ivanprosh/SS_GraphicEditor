@@ -1,10 +1,5 @@
 #include "ssdyntext.h"
 
-SSDynText::SSDynText()
-{
-
-}
-
 void SSDynText::updateDynamicPropView(QString propSingleName, QHash<QString,SScommandProperty>& hash,int count){
 
     int index;
@@ -24,6 +19,6 @@ void SSDynText::updateDynamicPropView(QString propSingleName, QHash<QString,SSco
         }
     }
 
-    qDebug() << dynamicPropertyNames();
+    //qDebug() << dynamicPropertyNames();
 
 }
