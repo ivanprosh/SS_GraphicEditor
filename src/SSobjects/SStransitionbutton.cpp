@@ -39,7 +39,7 @@ SSTransitionButton::SSTransitionButton(const QRect &rect) : QObject(), QGraphics
 void SSTransitionButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     //qDebug() << option->rect;
-    painter->drawPixmap(option->rect.x(),option->rect.y(),ButtonTitleimage->width(),ButtonTitleimage->height(),*ButtonTitleimage);
+    painter->drawPixmap(option->rect.x(),option->rect.y(),rect().width(),rect().height(),*ButtonTitleimage);
     if(isSelected())
         paintSelectionOutline(painter);
 }

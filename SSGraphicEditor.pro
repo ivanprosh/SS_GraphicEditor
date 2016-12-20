@@ -19,7 +19,7 @@ QT += widgets printsupport svg
 # All sources
 include($${PWD}/src/deployment.pri)
 
-DEFINES += ANIMATE_ALIGNMENT
+DEFINES += ANIMATE_ALIGNMENT ALTERNATIVE_RESIZING
 DEFINES += QT_QTPROPERTYBROWSER_IMPORT
 
 RESOURCES += \
