@@ -6,44 +6,61 @@
 #include <QKeyEvent>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
+#include <QPixmapCache>
+#include <QGraphicsDropShadowEffect>
 #ifdef QT_DEBUG
 #include <QDebug>
 #endif
 
-QPixmap* SSTransitionButton::ButtonTitleimage = 0;
-
-SSTransitionButton::SSTransitionButton(const QRect &rect) : QObject(), QGraphicsRectItem(),m_resizing(false),
-    minRect(rect)
+SSTransitionButton::SSTransitionButton(const QRect &_rect) : QObject(), QGraphicsRectItem(),m_resizing(false)
 {
   setFlags(QGraphicsItem::ItemIsSelectable|
 //           QGraphicsItem::ItemSendsGeometryChanges|
            QGraphicsItem::ItemIsMovable|
            QGraphicsItem::ItemIsFocusable|
            QGraphicsItem::ItemIgnoresTransformations);
-  setPos(rect.center());
+  setPos(_rect.center());
+  setRect(QRectF(QPointF(-_rect.width() / 2.0,
+                         -_rect.height() / 2.0), _rect.size()));
 
-  if(!ButtonTitleimage){
-    ButtonTitleimage = new QPixmap(":/images/controlbutton.svg");
-    //ButtonTitleimage->
-  }
+  QGraphicsRectItem::setBrush(QBrush(Qt::lightGray,Qt::SolidPattern));
+  QGraphicsRectItem::setPen(QPen(Qt::MiterJoin));
+  QGraphicsItem::setCacheMode(DeviceCoordinateCache);
   /*
      Добавление на сцену производится через команды QUndoCommand для
      реализации механизма повтора-отмены действий
   */
-
-  setRect(rect);
+  //setRect(rect);
   setSelected(true);
 
 }
 
+
 void SSTransitionButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    //qDebug() << option->rect;
-    painter->drawPixmap(option->rect.x(),option->rect.y(),rect().width(),rect().height(),*ButtonTitleimage);
-    if(isSelected())
+    painter->setBrush(QBrush(Qt::NoBrush));
+    painter->setPen(QPen(Qt::black,4,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
+    painter->drawRect(option->rect.x() + 2,option->rect.y() + 3,rect().width(),rect().height());
+    painter->setPen(QGraphicsRectItem::pen());
+    painter->setBrush(QGraphicsRectItem::brush());
+    painter->drawRect(rect());
+
+    if (option->state & QStyle::State_Selected)
         paintSelectionOutline(painter);
 }
 
+void SSTransitionButton::paintSelectionOutline(QPainter *painter)
+{
+    QPen pen;
+    pen.setColor(Qt::red);
+    pen.setWidth(2);
+    painter->setPen(pen);
+    painter->setBrush(Qt::NoBrush);
+    QPainterPath bound;
+    bound.addRect(rect());
+    painter->drawPath(bound);
+}
+/*
 QRectF SSTransitionButton::boundingRect() const
 {
     QRect result(ButtonTitleimage->rect());
@@ -58,18 +75,8 @@ QPainterPath SSTransitionButton::shape() const
    path.addRect(boundingRect());
    return path;
 }
+*/
 
-void SSTransitionButton::paintSelectionOutline(QPainter *painter)
-{
-    QPen pen;
-    pen.setColor(Qt::red);
-    pen.setWidth(2);
-    painter->setPen(pen);
-    painter->setBrush(Qt::NoBrush);
-    QPainterPath bound;
-    bound.addRect(boundingRect());
-    painter->drawPath(bound);
-}
 void SSTransitionButton::keyPressEvent(QKeyEvent *event)
 {
     if (event->modifiers() & Qt::ShiftModifier ||

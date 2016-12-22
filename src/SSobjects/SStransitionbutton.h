@@ -114,13 +114,17 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    /*
     QRectF boundingRect() const;
     QPainterPath shape() const;
+    */
     void paintSelectionOutline(QPainter *painter);
 
+    void paintButton(QPainter *painter);
 private:
-    static QPixmap* ButtonTitleimage;
+    //static QImage* ButtonTitleimage;
     //если используется изображение
+    //static QString TransitionButtonKey;
     QPixmap* PrivateTitleImage;
     void updateTransform();
 
@@ -141,7 +145,7 @@ private:
     bool m_PictureDisabledTransparent;
     //доп.св-ва
     bool m_resizing;
-    QRect minRect;
+    //QRect minRect;
 };
 
 QDataStream &operator<<(QDataStream &out, const SSTransitionButton &boxItem);
