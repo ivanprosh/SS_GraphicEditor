@@ -96,6 +96,14 @@ private:
                         out << *static_cast<SSindicator*>(item); break;
                 case TextItemType:
                         out << *static_cast<TextItem*>(item); break;
+                case SSTransitionButtonType:
+                        out << *static_cast<SSTransitionButton*>(item); break;
+                case SSControlButtonType:
+                        out << *static_cast<SSControlButton*>(item); break;
+                case SSAnparItemType:
+                        out << *static_cast<SSAnpar*>(item); break;
+                case SSDynTextItemType:
+                        out << *static_cast<SSDynText*>(item); break;
                 default: Q_ASSERT(false);
             }
         }

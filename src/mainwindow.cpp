@@ -826,7 +826,7 @@ void MainWindow::editAddItem()
     QAction *action = qobject_cast<QAction*>(sender());
     if (!action)
         return;
-    if (action != editAddSSAction) {
+    if (action != editAddSSAction && editAddSSAction->menu()->actions().contains(action)) {
         editAddSSAction->setData(action->data());
         editAddSSAction->setIcon(action->icon());
     }

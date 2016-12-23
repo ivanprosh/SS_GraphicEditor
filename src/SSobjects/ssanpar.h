@@ -110,10 +110,10 @@ private:
     QString m_DigParUnit;
 };
 
-QDataStream &operator<<(QDataStream &out, const SSAnpar &AnparItem);
-QDataStream &operator>>(QDataStream &in, SSAnpar &AnparItem);
+QDataStream &operator<<(QDataStream &out, const SSAnpar &AnparItem){}
+QDataStream &operator>>(QDataStream &in, SSAnpar &AnparItem){}
 
-QSettings &operator<<(QSettings &out, const SSAnpar &AnparItem);
-QSettings &operator>>(QSettings &in, SSAnpar &AnparItem);
+QSettings &operator<<(QSettings &out, const SSAnpar &AnparItem){}
+QSettings &operator>>(QSettings &in, SSAnpar &AnparItem){}
 
 #endif // SSANPAR_H

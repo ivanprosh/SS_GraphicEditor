@@ -39,6 +39,7 @@ public:
 
 
     explicit SSTransitionButton(const QRect &rect);
+    ~SSTransitionButton();
     int type() const { return Type; }
 
     //свойства
@@ -63,7 +64,10 @@ signals:
 public slots:
     //свойства
     void setDisplayOptions(DisplayOption value) {
-        if(value != m_DisplayOptions){m_DisplayOptions=value;emit dirty();}
+        if(value != m_DisplayOptions){
+            m_DisplayOptions=value;
+            update();
+            emit dirty();}
     }
     void setPictureEnabled(const QString& value){
         if(value != m_PictureEnabled){m_PictureEnabled=value;emit dirty();}
@@ -72,10 +76,16 @@ public slots:
         if(value != m_PictureDisabled){m_PictureDisabled=value;emit dirty();}
     }
     void setText(const QString& value){
-        if(value != m_Text){m_Text=value;emit dirty();}
+        if(value != m_Text){
+            m_Text=value;
+            update();
+            emit dirty();}
     }
     void setFont(const QFont& value){
-        if(value != m_Font){m_Font=value;emit dirty();}
+        if(value != m_Font){
+            m_Font=value;
+            update();
+            emit dirty();}
     }
     void setUnitName(const QString& value){
         if(value != m_UnitName){m_UnitName=value;emit dirty();}
