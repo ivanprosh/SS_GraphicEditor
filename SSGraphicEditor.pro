@@ -1,5 +1,7 @@
 #CONFIG += console debug
- TEMPLATE = app
+TEMPLATE = app
+#rus/eng
+TRANSLATIONS = $${PWD}/_ru.ts
 
 # Подключаем заголовочные файлы библиотеки
 INCLUDEPATH += lib/QtPropertyBrowser
@@ -24,7 +26,8 @@ DEFINES += QT_QTPROPERTYBROWSER_IMPORT
 
 RESOURCES += \
     images.qrc \
-    src/aqp/aqp.qrc
+    src/aqp/aqp.qrc \
+    translations/translations.qrc
 
 DISTFILES +=
 

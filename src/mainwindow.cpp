@@ -856,16 +856,16 @@ void MainWindow::editAddItem()
             item = dialog->GraphicDataItem();
         break;
     case SSAnparItemType:
-        item = new SSAnpar(QRect(position(), QSize(45, 18)), scene);
+        item = new SSAnpar(QRect(position(), QSize(45, 18)));
         break;
     case SSControlButtonType:
-        //item = new SSControlButton(QRect(position(), QSize(45, 18)));
+        item = new SSControlButton(QRect(position(), QSize(45, 18)));
         break;
     case SSTransitionButtonType:
         item = new SSTransitionButton(QRect(position(), QSize(45, 18)));
         break;
     case SSDynTextItemType:
-        ;
+        item = new SSDynText(QRect(position(), QSize(45, 18)));
         break;
     default:
         break;

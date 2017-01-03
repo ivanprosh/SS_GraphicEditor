@@ -15,6 +15,7 @@ class StandardTableModel;
 class SSindicator: public QGraphicsObject
 {
     Q_OBJECT
+    Q_CLASSINFO("Name", tr("Pict.object properties"))
 
     Q_PROPERTY(QString TemplateName READ TemplateName WRITE setTemplateName)
     Q_PROPERTY(int statesCount READ statesCount)

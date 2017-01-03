@@ -2,19 +2,20 @@
 #define SSANPAR_H
 
 #include "itemtypes.hpp"
+#include "ssrectitem.h"
+#include <QStyleOptionGraphicsItem>
 #include <QFont>
 #include <QGraphicsRectItem>
+#include <QStaticText>
+#include <QPainter>
 
 class QDataStream;
-class QGraphicsScene;
-class QGraphicsSceneMouseEvent;
-class QKeyEvent;
 class QSettings;
 
-class SSAnpar :public QObject,public QGraphicsRectItem
+class SSAnpar : public SSRectItem
 {
     Q_OBJECT
-
+    Q_CLASSINFO("Name", tr("Anpar properties"))
     //свойства
     Q_PROPERTY(QColor BackColor READ BackColor WRITE setBackColor)
     Q_PROPERTY(QColor ForeColor READ ForeColor WRITE setForeColor)
@@ -32,7 +33,7 @@ public:
 
     Q_ENUM(AnparTypes)
 
-    explicit SSAnpar(const QRect &rect, QGraphicsScene *scene);
+    explicit SSAnpar(const QRect &rect);
     int type() const { return Type; }
 
     //отрисовка
@@ -40,8 +41,8 @@ public:
     //QPixmap SSAnpar::anparTitleimage = QPixmap(":/images/obj_icons/anpar_title.bmp");
     void paint(QPainter *painter,
             const QStyleOptionGraphicsItem *option, QWidget *widget);
-    QRectF boundingRect() const;
-    QPainterPath shape() const;
+    //QRectF boundingRect() const;
+    //QPainterPath shape() const;
 
     //свойства
     QColor BackColor() const { return m_BackColor;}
@@ -59,13 +60,26 @@ signals:
 public slots:
     //свойства
     void setBackColor(const QColor& value) {
-        if(value != m_BackColor){m_BackColor=value;emit dirty();}
+        if(value != m_BackColor){
+            m_BackColor=value;
+            QGraphicsRectItem::setBrush(QBrush(BackColor(),Qt::SolidPattern));
+            update();
+            emit dirty();
+        }
     }
     void setForeColor(const QColor& value) {
-        if(value != m_ForeColor){m_ForeColor=value;emit dirty();}
+        if(value != m_ForeColor){
+            m_ForeColor=value;
+            QGraphicsRectItem::setPen(QPen(ForeColor()));
+            update();
+            emit dirty();
+        }
     }
     void setFont(const QFont& value){
-        if(value != m_Font){m_Font=value;emit dirty();}
+        if(value != m_Font){
+            m_Font=value;
+            update();
+            emit dirty();}
     }
     void setAnparType(AnparTypes value){
         if(value != m_AnparType){m_AnparType=value;emit dirty();}
@@ -86,18 +100,12 @@ public slots:
 
 
 protected:
-    static QPixmap* anparTitleimage;
-/*
-    QVariant itemChange(GraphicsItemChange change,
-                        const QVariant &value);
-    void keyPressEvent(QKeyEvent *event);
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-*/
+    //static QPixmap* anparTitleimage;
+
 private:
     void updateTransform();
-    void paintSelectionOutline(QPainter *painter);
+    //void paintSelectionOutline(QPainter *painter);
+    QStaticText label;
 
     //свойства
     QColor m_BackColor;
@@ -109,11 +117,11 @@ private:
     QString m_DigParTag;
     QString m_DigParUnit;
 };
+/*
+QDataStream &operator<<(QDataStream &out, const SSAnpar &AnparItem);
+QDataStream &operator>>(QDataStream &in, SSAnpar &AnparItem);
 
-QDataStream &operator<<(QDataStream &out, const SSAnpar &AnparItem){}
-QDataStream &operator>>(QDataStream &in, SSAnpar &AnparItem){}
-
-QSettings &operator<<(QSettings &out, const SSAnpar &AnparItem){}
-QSettings &operator>>(QSettings &in, SSAnpar &AnparItem){}
-
+QSettings &operator<<(QSettings &out, const SSAnpar &AnparItem);
+QSettings &operator>>(QSettings &in, SSAnpar &AnparItem);
+*/
 #endif // SSANPAR_H

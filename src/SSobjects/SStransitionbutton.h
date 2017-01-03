@@ -1,24 +1,25 @@
 #ifndef TRANSITIONBUTTON_H
 #define TRANSITIONBUTTON_H
 
+#include "ssrectitem.h"
 #include "itemtypes.hpp"
 #include <QFont>
-#include <QGraphicsRectItem>
+#include <QStaticText>
 
 class QDataStream;
-class QGraphicsScene;
-class QGraphicsSceneMouseEvent;
-class QKeyEvent;
 class QSettings;
+//class QStaticText;
 
-class SSTransitionButton : public QObject,public QGraphicsRectItem
+class SSTransitionButton : public SSRectItem
 {
     Q_OBJECT
-
-    //свойства
+    Q_CLASSINFO("Name", tr("Transition Button properties"))
+    //свойства ключевые
     Q_PROPERTY(DisplayOption DisplayOptions READ DisplayOptions WRITE setDisplayOptions)
     Q_PROPERTY(QString PictureEnabled READ PictureEnabled WRITE setPictureEnabled)
+    Q_PROPERTY(bool PictureEnabledTransparent READ PictureEnabledTransparent WRITE setPictureEnabledTransparent)
     Q_PROPERTY(QString PictureDisabled READ PictureDisabled WRITE setPictureDisabled)
+    Q_PROPERTY(bool PictureDisabledTransparent READ PictureDisabledTransparent WRITE setPictureDisabledTransparent)
     Q_PROPERTY(QString Text READ Text WRITE setText)
     Q_PROPERTY(QFont Font READ Font WRITE setFont)
     Q_PROPERTY(QString UnitName READ UnitName WRITE setUnitName)
@@ -28,8 +29,6 @@ class SSTransitionButton : public QObject,public QGraphicsRectItem
     Q_PROPERTY(QString BtnState_Tag READ BtnState_Tag WRITE setBtnState_Tag)
     Q_PROPERTY(QString BtnState_Unit READ BtnState_Unit WRITE setBtnState_Unit)
     Q_PROPERTY(bool BtnStateInvert READ BtnStateInvert WRITE setBtnStateInvert)
-    Q_PROPERTY(bool PictureEnabledTransparent READ PictureEnabledTransparent WRITE setPictureEnabledTransparent)
-    Q_PROPERTY(bool PictureDisabledTransparent READ PictureDisabledTransparent WRITE setPictureDisabledTransparent)
 
 public:
     enum DisplayOption {Text_Only,Picture_Only};
@@ -57,6 +56,9 @@ public:
     bool BtnStateInvert() const { return m_BtnStateInvert; }
     bool PictureEnabledTransparent() const { return m_PictureEnabledTransparent; }
     bool PictureDisabledTransparent() const { return m_PictureDisabledTransparent; }
+
+    //ввод-вывод в поток
+    QDataStream& print(QDataStream& out) const;
 
 signals:
     void dirty();
@@ -118,23 +120,14 @@ public slots:
 protected:
     //QVariant itemChange(GraphicsItemChange change,
     //                    const QVariant &value);
-    void keyPressEvent(QKeyEvent *event);
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    /*
-    QRectF boundingRect() const;
-    QPainterPath shape() const;
-    */
-    void paintSelectionOutline(QPainter *painter);
-
     void paintButton(QPainter *painter);
+
 private:
     //static QImage* ButtonTitleimage;
     //если используется изображение
     //static QString TransitionButtonKey;
+    QStaticText label;
     QPixmap* PrivateTitleImage;
     void updateTransform();
 
@@ -153,15 +146,8 @@ private:
     bool m_BtnStateInvert;
     bool m_PictureEnabledTransparent;
     bool m_PictureDisabledTransparent;
-    //доп.св-ва
-    bool m_resizing;
+
     //QRect minRect;
 };
-
-QDataStream &operator<<(QDataStream &out, const SSTransitionButton &boxItem);
-QDataStream &operator>>(QDataStream &in, SSTransitionButton &boxItem);
-
-QSettings &operator<<(QSettings &out, const SSTransitionButton &boxItem);
-QSettings &operator>>(QSettings &in, SSTransitionButton &boxItem);
 
 #endif // TRANSITIONBUTTON_H

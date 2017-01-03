@@ -21,6 +21,7 @@ class QSettings;
 class TextItem : public QGraphicsTextItem
 {
     Q_OBJECT
+    Q_CLASSINFO("Name", tr("Text properties"))
 #ifdef ANIMATE_ALIGNMENT
     Q_PROPERTY(QPointF pos READ pos WRITE setPos)
 #endif

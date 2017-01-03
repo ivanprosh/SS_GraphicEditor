@@ -12,21 +12,29 @@
 */
 
 #include "mainwindow.hpp"
+#include <QDebug>
 #include <QApplication>
+#include <QTranslator>
 #include <QIcon>
 #include <ctime>
+#include <QTextCodec>
 
 int main(int argc, char *argv[])
 {
+    QTranslator translator;
+    //qDebug() << QLocale::system().name();
+    translator.load(QString(":/")+QLocale::system().name()+QString(".qm"));
     QApplication app(argc, argv);
     app.setApplicationName(app.translate("main", "Page Designer"));
     app.setOrganizationName("Qtrac Ltd.");
     app.setOrganizationDomain("qtrac.eu");
     app.setWindowIcon(QIcon(":/icon.png"));
+    app.installTranslator(&translator);
 #ifdef Q_WS_MAC
     app.setCursorFlashTime(0);
 #endif
-
+    //QTextCodec* codec = QTextCodec::codecForName("CP1251");
+    //QTextCodec::setCodecForLocale(codec);
     qsrand(static_cast<uint>(time(0)));
     MainWindow window;
     window.show();

@@ -29,6 +29,7 @@ class QSettings;
 class BoxItem : public QObject,public QGraphicsRectItem
 {
     Q_OBJECT
+    Q_CLASSINFO("Name", tr("Box properties"))
 #ifdef ANIMATE_ALIGNMENT
     Q_PROPERTY(QPointF pos READ pos WRITE setPos)
 #endif

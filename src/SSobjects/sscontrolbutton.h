@@ -2,23 +2,24 @@
 #define SSCONTROLBUTTON_H
 
 #include "itemtypes.hpp"
+#include "ssrectitem.h"
 #include <QFont>
-#include <QGraphicsRectItem>
+#include <QStaticText>
 
 class QDataStream;
 class QGraphicsScene;
-class QGraphicsSceneMouseEvent;
-class QKeyEvent;
 class QSettings;
 
-class SSControlButton :public QObject,public QGraphicsRectItem
+class SSControlButton : public SSRectItem
 {
     Q_OBJECT
-
+    Q_CLASSINFO("Name", tr("Control Button properties"))
     //свойства
-    Q_PROPERTY(QString DisplayOptions READ DisplayOptions WRITE setDisplayOptions)
+    Q_PROPERTY(DisplayOption DisplayOptions READ DisplayOptions WRITE setDisplayOptions)
     Q_PROPERTY(QString PictureEnabled READ PictureEnabled WRITE setPictureEnabled)
+    Q_PROPERTY(bool PictureEnabledTransparent READ PictureEnabledTransparent WRITE setPictureEnabledTransparent)
     Q_PROPERTY(QString PictureDisabled READ PictureDisabled WRITE setPictureDisabled)
+    Q_PROPERTY(bool PictureDisabledTransparent READ PictureDisabledTransparent WRITE setPictureDisabledTransparent)
     Q_PROPERTY(QString Text READ Text WRITE setText)
     Q_PROPERTY(QFont Font READ Font WRITE setFont)
     //Q_PROPERTY(QString UnitName READ UnitName WRITE setUnitName)
@@ -29,7 +30,7 @@ class SSControlButton :public QObject,public QGraphicsRectItem
     Q_PROPERTY(bool DigParPermitInvert READ DigParPermitInvert WRITE setDigParPermitInvert)
     Q_PROPERTY(QString TooplTip_EnabledBtn READ TooplTip_EnabledBtn WRITE setTooplTip_EnabledBtn)
     Q_PROPERTY(QString TooplTip_DisabledBtn READ TooplTip_DisabledBtn WRITE setTooplTip_DisabledBtn)
-    Q_PROPERTY(QStringList ConfirmType READ ConfirmType WRITE setConfirmType)
+    Q_PROPERTY(ConfirmTypes ConfirmType READ ConfirmType WRITE setConfirmType)
     Q_PROPERTY(QString ConfirmText READ ConfirmText WRITE setConfirmText)
     Q_PROPERTY(QString BtnCmd_Tag READ BtnCmd_Tag WRITE setBtnCmd_Tag)
     Q_PROPERTY(QString BtnCmd_Unit READ BtnCmd_Unit WRITE setBtnCmd_Unit)
@@ -38,17 +39,22 @@ class SSControlButton :public QObject,public QGraphicsRectItem
     Q_PROPERTY(QString BtnState_Tag READ BtnState_Tag WRITE setBtnState_Tag)
     Q_PROPERTY(QString BtnState_Unit READ BtnState_Unit WRITE setBtnState_Unit)
     Q_PROPERTY(bool BtnStateInvert READ BtnStateInvert WRITE setBtnStateInvert)
-    Q_PROPERTY(bool PictureEnabledTransparent READ PictureEnabledTransparent WRITE setPictureEnabledTransparent)
-    Q_PROPERTY(bool PictureDisabledTransparent READ PictureDisabledTransparent WRITE setPictureDisabledTransparent)
+
 
 public:
+    enum DisplayOption {Text_Only,Picture_Only};
+    enum ConfirmTypes {Disabled,Standart,Other};
     enum {Type = SSControlButtonType};
 
-    explicit SSControlButton(const QRect &rect, QGraphicsScene *scene);
+    Q_ENUM(DisplayOption)
+    Q_ENUM(ConfirmTypes)
+
+    explicit SSControlButton(const QRect &rect);
+    ~SSControlButton();
     int type() const { return Type; }
 
     //свойства
-    QString DisplayOptions() const { return m_DisplayOptions; }
+    DisplayOption DisplayOptions() const { return m_DisplayOptions; }
     QString PictureEnabled() const { return m_PictureEnabled;}
     QString PictureDisabled() const { return m_PictureDisabled;}
     QString Text() const { return m_Text;}
@@ -61,7 +67,7 @@ public:
     bool DigParPermitInvert(){return m_DigParPermitInvert;}
     QString TooplTip_EnabledBtn(){return m_TooplTip_EnabledBtn;}
     QString TooplTip_DisabledBtn(){return m_TooplTip_DisabledBtn;}
-    QStringList ConfirmType(){return m_ConfirmType;}
+    ConfirmTypes ConfirmType(){return m_ConfirmType;}
     QString ConfirmText(){return m_ConfirmText;}
     QString BtnCmd_Tag(){return m_BtnCmd_Tag;}
     QString BtnCmd_Unit(){return m_BtnCmd_Unit;}
@@ -73,13 +79,19 @@ public:
     bool PictureEnabledTransparent() const { return m_PictureEnabledTransparent; }
     bool PictureDisabledTransparent() const { return m_PictureDisabledTransparent; }
 
+    //ввод-вывод в поток
+    QDataStream& print(QDataStream& out) const;
+
 signals:
     void dirty();
 
 public slots:
     //свойства
-    void setDisplayOptions(const QString& value) {
-        if(value != m_DisplayOptions){m_DisplayOptions=value;emit dirty();}
+    void setDisplayOptions(DisplayOption value) {
+        if(value != m_DisplayOptions){
+            m_DisplayOptions=value;
+            update();
+            emit dirty();}
     }
     void setPictureEnabled(const QString& value){
         if(value != m_PictureEnabled){m_PictureEnabled=value;emit dirty();}
@@ -88,10 +100,16 @@ public slots:
         if(value != m_PictureDisabled){m_PictureDisabled=value;emit dirty();}
     }
     void setText(const QString& value){
-        if(value != m_Text){m_Text=value;emit dirty();}
+        if(value != m_Text){
+            m_Text=value;
+            update();
+            emit dirty();}
     }
     void setFont(const QFont& value){
-        if(value != m_Font){m_Font=value;emit dirty();}
+        if(value != m_Font){
+            m_Font=value;
+            update();
+            emit dirty();}
     }
     /*
     void setUnitName(const QString& value){
@@ -119,7 +137,7 @@ public slots:
     void setTooplTip_DisabledBtn(const QString& value) {
         if(value != m_TooplTip_DisabledBtn){m_TooplTip_DisabledBtn=value;emit dirty();}
     }
-    void setConfirmType(const QStringList& value) {
+    void setConfirmType(ConfirmTypes value) {
         if(value != m_ConfirmType){m_ConfirmType=value;emit dirty();}
     }
     void setConfirmText(const QString& value) {
@@ -151,20 +169,18 @@ public slots:
     }
 
 
-/*
+
 protected:
-    QVariant itemChange(GraphicsItemChange change,
-                        const QVariant &value);
-    void keyPressEvent(QKeyEvent *event);
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-*/
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void paintButton(QPainter *painter);
+
 private:
     void updateTransform();
+    QPixmap* PrivateTitleImage;
+    QStaticText label;
 
     //свойства
-    QString m_DisplayOptions;
+    DisplayOption m_DisplayOptions;
     QString m_PictureEnabled;
     QString m_PictureDisabled;
     QFont m_Font;
@@ -177,7 +193,7 @@ private:
     bool m_DigParPermitInvert;
     QString m_TooplTip_EnabledBtn;
     QString m_TooplTip_DisabledBtn;
-    QStringList m_ConfirmType;
+    ConfirmTypes m_ConfirmType;
     QString m_ConfirmText;
     QString m_BtnCmd_Tag;
     QString m_BtnCmd_Unit;
@@ -188,12 +204,5 @@ private:
     bool m_PictureEnabledTransparent;
     bool m_PictureDisabledTransparent;
 };
-
-QDataStream &operator<<(QDataStream &out, const SSControlButton &controlButtonItem);
-QDataStream &operator>>(QDataStream &in, SSControlButton &controlButtonItem);
-
-QSettings &operator<<(QSettings &out, const SSControlButton &controlButtonItem);
-QSettings &operator>>(QSettings &in, SSControlButton &controlButtonItem);
-
 
 #endif // SSCONTROLBUTTON_H

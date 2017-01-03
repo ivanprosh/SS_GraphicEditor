@@ -64,7 +64,8 @@ HEADERS += \
     $$PWD/SSobjects/sstransitionbutton.h \
     $$PWD/SSobjects/sscontrolbutton.h \
     $$PWD/SSobjects/ssanpar.h \
-    $$PWD/SSobjects/ssdyntext.h
+    $$PWD/SSobjects/ssdyntext.h \
+    $$PWD/SSobjects/ssrectitem.h
 
 SOURCES += \
     $$PWD/main.cpp \
@@ -94,7 +95,8 @@ SOURCES += \
     $$PWD/SSobjects/sstransitionbutton.cpp \
     $$PWD/SSobjects/sscontrolbutton.cpp \
     $$PWD/SSobjects/ssanpar.cpp \
-    $$PWD/SSobjects/ssdyntext.cpp
+    $$PWD/SSobjects/ssdyntext.cpp \
+    $$PWD/SSobjects/ssrectitem.cpp
 
 INCLUDEPATH += $$PWD \
     $$PWD/SSobjects \

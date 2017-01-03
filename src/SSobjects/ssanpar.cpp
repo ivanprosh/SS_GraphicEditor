@@ -1,23 +1,20 @@
 #include "ssanpar.h"
-#include "../global.hpp"
-#include <QStyleOptionGraphicsItem>
-#include <QGraphicsPixmapItem>
-#include <QPainter>
+#include "global.hpp"
+//QPixmap* SSAnpar::anparTitleimage = 0;
 
-QPixmap* SSAnpar::anparTitleimage = 0;
-
-SSAnpar::SSAnpar(const QRect &rect, QGraphicsScene *scene) : QObject(), QGraphicsRectItem()
+SSAnpar::SSAnpar(const QRect &_rect) : SSRectItem(_rect),label("0")
 {
-  setFlags(QGraphicsItem::ItemIsSelectable|
-//           QGraphicsItem::ItemSendsGeometryChanges|
-           QGraphicsItem::ItemIsMovable|
-           QGraphicsItem::ItemIsFocusable|
-           QGraphicsItem::ItemIgnoresTransformations);
-  setPos(rect.center());
-
+    //светло-серый цвет фона
+    //отрисовка хранится в кэше
+    QGraphicsItem::setCacheMode(DeviceCoordinateCache);
+    setBackColor(QColor(212,212,212));
+    setForeColor(Qt::darkGreen);
+    QGraphicsRectItem::setBrush(QBrush(BackColor(),Qt::SolidPattern));
+    QGraphicsRectItem::setPen(QPen(ForeColor()));
+  /*
   if(!anparTitleimage)
     anparTitleimage = new QPixmap(":/images/obj_icons/anpar_title.bmp");
-
+    */
   /*
      Добавление на сцену производится через команды QUndoCommand для
      реализации механизма повтора-отмены действий
@@ -26,7 +23,21 @@ SSAnpar::SSAnpar(const QRect &rect, QGraphicsScene *scene) : QObject(), QGraphic
   setSelected(true);
 
 }
+void SSAnpar::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    painter->setPen(QPen(Qt::black));
+    painter->setBrush(QGraphicsRectItem::brush());
+    painter->drawRect(rect());
 
+    if (option->state & QStyle::State_Selected)
+        paintSelectionOutline(painter);
+    //рисуем идентификатор кнопки
+    painter->setPen(QGraphicsRectItem::pen());
+    painter->setFont(Font());
+    //qDebug() << option->rect.center().x() << "_" << option->rect.width() << painter->fontMetrics().width(QString("0")) << " & " << painter->fontMetrics().width(QString("0"))/2;
+    painter->drawStaticText(option->rect.center().x()-painter->fontMetrics().width(QString("0"))/2,option->rect.center().y()-painter->fontMetrics().height()/2,label);
+}
+/*
 void SSAnpar::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     painter->drawPixmap(option->rect.x(),option->rect.y(),anparTitleimage->width(),anparTitleimage->height(),*anparTitleimage);
@@ -57,3 +68,22 @@ void SSAnpar::paintSelectionOutline(QPainter *painter)
     bound.addRect(anparTitleimage->rect());
     painter->drawPath(bound);
 }
+
+QDataStream &operator<<(QDataStream &out, const SSAnpar &anparItem)
+{
+   return out;
+}
+QDataStream &operator>>(QDataStream &in, const SSAnpar &anparItem)
+{
+   return in;
+}
+QSettings &operator<<(QSettings &out, const SSAnpar &anparItem)
+{
+   return out;
+}
+
+QSettings &operator>>(QSettings &in, SSAnpar &anparItem)
+{
+   return in;
+}
+*/

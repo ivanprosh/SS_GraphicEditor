@@ -11,6 +11,7 @@
 TPropManager::TPropManager(QObject *parent, QtAbstractPropertyBrowser *curBrowser):QtVariantPropertyManager(parent),
     browser(curBrowser),prevClassName()
 {
+    initializeContextMap();
     ignoreClassNames << "QWidget" << "QGraphicItem";
     brushesStyles << "No Brush" << "Solid" << "Dense #1" << "Dense #2" << "Dense #3" << "Dense #4" << "Dense #5" << "Dense #6" << "Dense #7"
                   << "Horizontal" << "Vertical" << "Cross";
@@ -19,6 +20,47 @@ TPropManager::TPropManager(QObject *parent, QtAbstractPropertyBrowser *curBrowse
             this, SLOT(slotValueChanged(QtProperty *, const QVariant &)));
     connect(this, SIGNAL(propertyDestroyed(QtProperty *)),
             this, SLOT(slotPropertyDestroyed(QtProperty *)));
+}
+void TPropManager::initializeContextMap(){
+    PropContextHelpMap.reserve(200);
+    //Кнопка "переход"
+    PropContextHelpMap["DisplayOptions"] = QString("Кнопка содержит текст/изображение");
+    PropContextHelpMap["PictureEnabled"] = QString("Картинка для доступной кнопки");
+    PropContextHelpMap["PictureDisabled"] = QString("Картинка для недоступной кнопки");
+    PropContextHelpMap["Text"] = QString("Текст выводимый на кнопку");
+    PropContextHelpMap["Font"] = QString("Параметры шрифта");
+    PropContextHelpMap["UnitName"] = QString("Имя абонента (пустая строка - текущий)");
+    PropContextHelpMap["MnemoNum"] = QString("Номер мнемосхемы (с нуля)");
+    PropContextHelpMap["IsNewWnd"] = QString("В новом окне?");
+    PropContextHelpMap["Help"] = QString("Текст справки");
+    PropContextHelpMap["BtnState_Tag"] = QString("Имя параметра в формате _<Алг. имя типа УСО>_<Наименование группы параметров>_<Алг. имя параметра>."
+                                                 "\nДискретный параметр, управляющий «утапливанием» кнопки");
+    PropContextHelpMap["BtnState_Unit"] = QString("Имя абонента (пустая строка - текущий)");
+    PropContextHelpMap["BtnStateInvert"] = QString("Инвертировать параметр, управляющий утапливанием кнопки?");
+    PropContextHelpMap["PictureEnabledTransparent"] = QString("Наличие маски у изображения");
+    PropContextHelpMap["PictureDisabledTransparent"] = QString("Наличие маски у изображения");
+    //Кнопка "управление"
+    PropContextHelpMap["DigParPermit_Tag"] = QString("Имя параметра в формате _<Алг. имя типа УСО>_<Наименование группы параметров>_<Алг. имя параметра>."
+                                                     "\nДискретный параметр, управляющий разрешением кнопки");
+    PropContextHelpMap["DigParPermit_Unit"] = QString("Имя абонента (пустая строка - текущий)");
+    PropContextHelpMap["DigParPermitInvert"] = QString("Инвертировать параметр, управляющий разрешением кнопки");
+    PropContextHelpMap["TooplTip_EnabledBtn"] = QString("Подсказка при доступной кнопке");
+    PropContextHelpMap["TooplTip_DisabledBtn"] = QString("Подсказка при недоступной кнопке");
+    PropContextHelpMap["ConfirmType"] = QString("Переспрос при управлении (нет, стандартный, пользовательский)");
+    PropContextHelpMap["ConfirmText"] = QString("Текст переспроса");
+    PropContextHelpMap["BtnCmd_Tag"] = QString("Имя параметра в формате _<Алг. имя типа УСО>_<Наименование группы параметров>_<Алг. имя параметра>."
+                                                     "\nДискретный параметр команды");
+    PropContextHelpMap["BtnCmd_Unit"] = QString("Имя абонента (пустая строка - текущий)");
+    //Анпар
+    PropContextHelpMap["BackColor"] = QString("Цвет фона значения");
+    PropContextHelpMap["ForeColor"] = QString("Цвет текста значения.\nВ настоящее время не используется — добавлено на будущее");
+    PropContextHelpMap["Type"] = QString("Тип отображения");
+    PropContextHelpMap["AnParTag"] = QString("Имя параметра в формате _<Алг. имя типа УСО>_<Наименование группы параметров>_<Алг. имя параметра>."
+                                                     "\nАналоговый параметр");
+    PropContextHelpMap["AnParUnit"] = QString("Имя абонента (пустая строка - текущий)");
+    PropContextHelpMap["DigParTag"] = QString("Имя параметра в формате _<Алг. имя типа УСО>_<Наименование группы параметров>_<Алг. имя параметра>."
+                                                     "\nДискретный параметр, разрешающий изменение значения");
+    PropContextHelpMap["DigParUnit"] = QString("Имя абонента (пустая строка - текущий)");
 }
 
 void TPropManager::slotValueChanged(QtProperty *property, const QVariant &changedContent)
@@ -78,9 +120,9 @@ void TPropManager::slotValueChanged(QtProperty *property, const QVariant &change
         int idx = m_propertyToIndex.value(property);
 
         /*
-         * � ������ ������� ������������ ������� (��� ������, ��������),
-         * ������� �� �������� � MetaProperty (�� ������ � m_propertyToIndex ��������� object->metaObject()->propertyCount()),
-         * ��������� ����� ��������
+         * С учетом наличия динамических свойств (для команд, например),
+         * которые не попадают в MetaProperty (их индекс в m_propertyToIndex превышает object->metaObject()->propertyCount()),
+         * обработка будет отличной
         */
         //if(metaProperty.isWritable()){
         if(idx < object->metaObject()->propertyCount()){
@@ -149,7 +191,7 @@ void TPropManager::initializeProperty(QtProperty *property)
 
         prop.name = this->addProperty(QVariant::String);
         prop.name->setPropertyName(tr("Value"));
-        prop.name->setWhatsThis("����� ����� �������");
+        prop.name->setWhatsThis("Здесь будет справка");
         prop.tag = this->addProperty(QVariant::String);
         prop.tag->setPropertyName(tr("Tag"));
 		qDebug() << "New qMetaTypeId<SScommandProperty>()";
@@ -337,7 +379,7 @@ void TPropManager::syncDynPropWithObj(QStringList& list,QtProperty *classPropert
 void TPropManager::editAddDynamicProperties(const QString& propSingleName, int index){
 
     QStringList actualCommandsNameList = AQP::filterString(object->dynamicPropertyNames(),propSingleName);
-    //� ������� ��� ������������ ������� � �������� ������
+    //у объекта нет динамических свойств с заданным именем
     if(actualCommandsNameList.isEmpty()){
         //qDebug() << object->dynamicPropertyNames();
         if(!m_topLevelProperties.isEmpty())
@@ -365,10 +407,15 @@ void TPropManager::editAddDynamicProperties(const QString& propSingleName, int i
     syncDynPropWithObj(actualCommandsNameList,TopLevelProperty,index);
 }
 void TPropManager::setAttributes(QtVariantProperty *prop){
-    if(prop->propertyName() == "commandsCount" || prop->propertyName() == "statesCount"){
+    if(prop->propertyName() == "commandsCount" ||
+       prop->propertyName() == "statesCount" ||
+       prop->propertyName() == "VisibleIndex"){
         prop->setAttribute(QLatin1String("minimum"), 0);
         prop->setAttribute(QLatin1String("maximum"), 32);
         //prop->setAttribute(QLatin1String("readOnly"), true);
+    }
+    if(PropContextHelpMap.contains(prop->propertyName())) {
+        prop->setToolTip(PropContextHelpMap.value(prop->propertyName()));
     }
 }
 
@@ -383,8 +430,11 @@ void TPropManager::addClassProperties(const QMetaObject* metaObject){
 
     QtProperty *TopLevelProperty;// m_classToProperty.value(metaObject).first();
     if (m_classToProperty.value(metaObject).isEmpty()) {
-        QString className = QLatin1String(metaObject->className());
-        //����������� ������ ��� �� ����������
+        //в зависимости от Q_CLASSINFO("Name", tr("[value]")) будут сгенирированы заголовки групп!
+        QString className = metaObject->classInfo(metaObject->indexOfClassInfo("Name")).value();
+        if(metaObject->className() == QLatin1String("QObject")) className = tr("Object properties");
+
+        //Некоторые стандартные классы нас не интересуют
         if(ignoreClassNames.contains(className)) return;
 
         TopLevelProperty = addProperty(QtVariantPropertyManager::groupTypeId(), className);
@@ -465,7 +515,7 @@ void TPropManager::addClassProperties(const QMetaObject* metaObject){
     topLevelPropertySetVisible(TopLevelProperty);
 
     //QtBrowserItem *item = browser->addProperty(classProperty);
-    //��������
+    //проверка
     //if (idToExpanded.contains(id))
     //  dynamic_cast<QtTreePropertyBrowser*>(browser)->setExpanded(item, 0);
 }
@@ -483,7 +533,7 @@ void TPropManager::itemChanged(QObject *curobject)
 {
     ExpandState(&TPropManager::updateExpandState);
 
-    //������ ������� item
+    //меняем текущий item
     object=curobject;
     /*
     QMap<QtProperty *, QString>::ConstIterator itProp = propertyToId.constBegin();
@@ -505,8 +555,8 @@ void TPropManager::itemChanged(QObject *curobject)
     clearData();
 
     if(object){       
-        //���� ������������� �� ������� ���� �� ����, �� ��� ������������� ������� ��� �����������,
-        //���������� ���� �������� ������
+        //Если переключились на элемент того же типа, то нет необходимости удалять все отображение,
+        //достаточно лишь обновить данные
         if(prevClassName == object->metaObject()->className() ||
                 m_classToIndexToProperty.contains(object->metaObject())){
             updateClassProperties(object->metaObject(), true);

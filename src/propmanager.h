@@ -38,7 +38,7 @@ private:
             QtVariantProperty *color;
             QtVariantProperty *style;
     };
-
+    QHash<QString,QString> PropContextHelpMap;
     //для пользовательского свойства brush
     QMap<const QtProperty *, brush> propertyToData;
     QMap<const QtProperty *, QtProperty *> ColorToProperty;
@@ -95,6 +95,7 @@ private:
     void syncDynPropWithObj(QStringList &list, QtProperty *classProperty, int startIndex);
     void topLevelPropertySetVisible(QtProperty *classProperty, bool value = 1);
     void setAttributes(QtVariantProperty *prop);
+    void initializeContextMap();
 private slots:
     void slotValueChanged(QtProperty *property, const QVariant &value);
     void slotPropertyDestroyed(QtProperty *property);
