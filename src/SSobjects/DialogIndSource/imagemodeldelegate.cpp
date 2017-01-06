@@ -21,27 +21,33 @@
 #include <QPainter>
 #include <QStyleOptionViewItemV4>
 #include <QFileDialog>
+#include <QApplication>
 
         // adjusted gives a 3 pixel right margin
 void ImageModelDelegate::paint(QPainter *painter,
         const QStyleOptionViewItem &option,
         const QModelIndex &index) const
 {
-    QString filename = index.data(Qt::EditRole).toString();
-    QPixmap pix;
+    //QString filename = index.data(Qt::EditRole).toString();
+    //QPixmap pix;
 
     //if(filename.isEmpty() || !pix.load("resource/"+filename)){
-    if(filename.isEmpty()){
-        pix.load(":/images/obj_icons/default_obj.png");
-    } else if (pix.load("resource/"+filename)){
+    //if(filename.isEmpty()){
+    //    pix.load(":/images/obj_icons/default_obj.png");
+    //} else if (pix.load("resource/"+filename)){
+
+        /*
         painter->save();
         painter->setRenderHints(QPainter::Antialiasing);
         if(option.state & QStyle::State_Selected)
             painter->fillRect(option.rect,option.palette.highlight());
-        int x = option.rect.center().x()-option.rect.height()/2;
-        painter->drawPixmap(x,option.rect.y(),option.rect.height(),option.rect.height(),pix);
+        float koef = pix.width()/pix.height();
+        int x = option.rect.center().x()-option.rect.height()*koef/2;
+        painter->drawPixmap(x,option.rect.y(),option.rect.height()*koef,option.rect.height(),pix);
+        //
         painter->restore();
-    } else
+        */
+    //} else
         QStyledItemDelegate::paint(painter,option,index);
 }
 
@@ -89,6 +95,8 @@ void ImageModelDelegate::setModelData(QWidget *editor,
 {
     FileEdit* fileEditor = qobject_cast<FileEdit*>(editor);
     model->setData(index,fileEditor->filePath());
-
+    QPixmap pix;
+    if (pix.load("resource/"+fileEditor->filePath()))
+        model->setData(index,pix,Qt::DecorationRole);
     //QStyledItemDelegate::setModelData(editor, model, index);
 }

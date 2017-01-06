@@ -11,8 +11,8 @@
     the GNU General Public License for more details.
 */
 
-#include "../../aqp/aqp.hpp"
-#include "../../global.hpp"
+#include "aqp/aqp.hpp"
+#include "global.hpp"
 #include "standardtablemodel.hpp"
 #include "templmodelinfo.h"
 #include <QDataStream>
@@ -35,20 +35,20 @@ StandardTableModel::StandardTableModel(QObject *parent,const QStringList& initli
 void StandardTableModel::initialize()
 {
     QStringList ColumnNames;
-    ColumnNames             << "Name"
-                            << "StIndex"
-                            << "StFrisCycled"
-                            << "StFrDelay"
-                            << "StFr1"
-                            << "StFr2"
-                            << "StFr3"
-                            << "StFr4"
-                            << "StFr5"
-                            << "StFr6"
-                            << "StFr7"
-                            << "StFr8"
-                            << "StFr9"
-                            << "StFr10"
+    ColumnNames             << tr("Name")
+                            << tr("Ind.")
+                            << tr("FrameisCycled")
+                            << tr("FrameDelay")
+                            << tr("Frame1")
+                            << tr("Frame2")
+                            << tr("Frame3")
+                            << tr("Frame4")
+                            << tr("Frame5")
+                            << tr("Frame6")
+                            << tr("Frame7")
+                            << tr("Frame8")
+                            << tr("Frame9")
+                            << tr("Frame10");/*
                             << "StFrTr1"
                             << "StFrTr2"
                             << "StFrTr3"
@@ -58,7 +58,7 @@ void StandardTableModel::initialize()
                             << "StFrTr7"
                             << "StFrTr8"
                             << "StFrTr9"
-                            << "StFrTr10";
+                            << "StFrTr10";*/
 
     setHorizontalHeaderLabels(ColumnNames);
 
@@ -107,11 +107,10 @@ void StandardTableModel::addTemplate(const QString &TemplateName)
             QStandardItem *iStateInd = new QStandardItem;
             iStateInd->setData(curState,Qt::DisplayRole);
             items << iStateInd;
-            for(int j=StFrisCycled;j<columnCount();j++){
+            for(int j=FrameisCycled;j<columnCount();j++){
                 items << new QStandardItem();
-                items.last()->setData(curState,Qt::DisplayRole);
-                if(j==StFrisCycled || j>StFr10)
-                    items.last()->setCheckable(true);
+                //items.last()->setData(curState,Qt::DisplayRole);
+                items.last()->setCheckable(true);
                 items.last()->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|
                                        Qt::ItemIsEditable|Qt::ItemIsUserCheckable);
             }

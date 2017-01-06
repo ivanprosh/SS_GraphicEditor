@@ -77,13 +77,7 @@ void ProxyModel::clearFilters()
     m_CountState=1;
     invalidateFilter();
 }
-/*
-bool ProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
-{
-    qDebug() << source_row << " filterAcceptsRow";
-    return true;
-}
-*/
+
 bool ProxyModel::filterAcceptsRow(int source_row,
         const QModelIndex &sourceParent) const
 {
@@ -114,24 +108,6 @@ void ProxyModel::setCountState(const int &CountState)
         //qDebug() << "Invalidate!";
     }
 }
-/*
-void ProxyModel::setMinimumZipcode(int minimumZipcode)
-{
-    if (m_minimumZipcode != minimumZipcode) {
-        m_minimumZipcode = minimumZipcode;
-        invalidateFilter();
-    }
-}
-
-
-void ProxyModel::setMaximumZipcode(int maximumZipcode)
-{
-    if (m_maximumZipcode != maximumZipcode) {
-        m_maximumZipcode = maximumZipcode;
-        invalidateFilter();
-    }
-}
-*/
 
 void ProxyModel::setName(const QString &name)
 {

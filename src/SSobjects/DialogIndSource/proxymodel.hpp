@@ -24,7 +24,6 @@ class ProxyModel : public QSortFilterProxyModel
 
 public:
     explicit ProxyModel(QObject *parent=0);
-    //смена ориентации
     /*
     QModelIndex mapToSource(const QModelIndex &proxyIndex) const;
     QModelIndex mapFromSource(const QModelIndex &sourceIndex) const;

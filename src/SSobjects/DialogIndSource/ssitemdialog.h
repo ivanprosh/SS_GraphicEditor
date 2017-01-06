@@ -68,8 +68,11 @@ private:
 
     void createUniqListModel(QListView *curlistview, int column);
     void initializeModel();
+    void deleteTemplate(QString TemplateName);
 signals:
     void updateStatesCount(QString TemplateName,int value);
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
 };
 
 

@@ -61,19 +61,18 @@ SSitemdialog::SSitemdialog(StandardTableModel* newmodel,const QPoint &position_,
 
 void SSitemdialog::createWidgets()
 {
-    //QFont Labels(QApplication::font().family(),11,1);
-
-    //элементы для фильтрации и общих настроек
+    //СЌР»РµРјРµРЅС‚С‹ РґР»СЏ С„РёР»СЊС‚СЂР°С†РёРё Рё РѕР±С‰РёС… РЅР°СЃС‚СЂРѕРµРє
     filterSelectGroupBox = new QGroupBox(tr("Properties"));
     filterSelectGroupBox->setMaximumWidth(150);
-    //изображение
-    //QLabel* LabelImage = new QLabel(trUtf8("Шаблон(изображение)"));
+    //РёР·РѕР±СЂР°Р¶РµРЅРёРµ
+    //QLabel* LabelImage = new QLabel(trUtf8("РЁР°Р±Р»РѕРЅ(РёР·РѕР±СЂР°Р¶РµРЅРёРµ)"));
     image = new TemplateImage(this);
-    image->setFixedSize(100,100);
+    image->setMaximumSize(50,50);
     //image.load(":/images/obj_icons/default_obj.png");
-    image->setPixmap(QPixmap(":/images/obj_icons/default_obj.png"));
+    QPixmap pix = QPixmap(":/images/obj_icons/default_obj.png");
+    image->setPixmap(pix.scaled(this->size(),Qt::KeepAspectRatio,Qt::SmoothTransformation));
 
-//    //индекс состояния
+//    //РёРЅРґРµРєСЃ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 //    stateIndexLbl = new QLabel(tr("Index state:"));
 //    stateIndex = new QSpinBox;
 //    stateIndexLbl->setBuddy(stateIndex);
@@ -81,26 +80,27 @@ void SSitemdialog::createWidgets()
 //    //stateIndex->setValue(1);
 //    stateIndex->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
 
-    //кол-во состояний
-    stateCountLbl = new QLabel(tr("Max state count:"));
+    //РєРѕР»-РІРѕ СЃРѕСЃС‚РѕСЏРЅРёР№
+    stateCountLbl = new QLabel(tr("States\ncount:"));
     stateCount = new QSpinBox;
     stateCountLbl->setBuddy(stateCount);
     stateCount->setRange(1,32);
     stateCount->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+    stateCount->installEventFilter(this);
     //stateCount->setValue(1);
 
-    //Имя шаблона
+    //РРјСЏ С€Р°Р±Р»РѕРЅР°
     /*
     TemplateLabel = new QLabel(tr("&Template(name)"));
     TemplateLabel->setFont(Labels);
     TemplateName = new QComboBox();
     TemplateName->setEditable(true);
     TemplateName->setFont(Labels);
-    TemplateName->setValidator(new QRegExpValidator(QRegExp("[A-Za-zа-яА-я, -]{,50}")));
+    TemplateName->setValidator(new QRegExpValidator(QRegExp("[A-Za-zР°-СЏРђ-СЏ, -]{,50}")));
     TemplateName->setObjectName("Template");
     TemplateLabel->setBuddy(TemplateName);
     */
-    //кнопки ок/отмена
+    //РєРЅРѕРїРєРё РѕРє/РѕС‚РјРµРЅР°
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok|
                                      QDialogButtonBox::Cancel);
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
@@ -120,7 +120,7 @@ void SSitemdialog::createWidgets()
     //DelTemplateBtn->setCheckable(true);
     DelTemplateBtn->setIcon(style()->standardIcon(QStyle::SP_DialogDiscardButton));
     buttonBox->addButton(DelTemplateBtn,QDialogButtonBox::ActionRole);
-    //список существующих шаблонов
+    //СЃРїРёСЃРѕРє СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёС… С€Р°Р±Р»РѕРЅРѕРІ
     listview = new QListView(this);
     listview->setIconSize(QSize(48, 48));
     listview->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -131,16 +131,18 @@ void SSitemdialog::createWidgets()
     //initListTemplates();
     //listview->setCurrentRow(0);
     createUniqListModel(listview,Name);
+    if(listview->model()->rowCount() > 0){
+        listview->setCurrentIndex(listview->model()->index(0,0));
+        templateChanged(listview->model()->index(0,0));
+    }
 
-    //таблица свойств
+    //С‚Р°Р±Р»РёС†Р° СЃРІРѕР№СЃС‚РІ
     tableView = new QTableView;
 
-    for(int i=StFrTr1;i<=StFrTr10;i++)
-        tableView->setItemDelegateForColumn(i,new CheckBoxDelegate(this));
-    for(int i=StFr1;i<=StFr10;i++)
+    for(int i=Frame1;i<=Frame10;i++)
         tableView->setItemDelegateForColumn(i,new ImageModelDelegate(this));
-    for(int i=StFrTr1;i<=StFrTr10;i++)
-        tableView->setItemDelegateForColumn(i,new CheckBoxDelegate(this));
+    //for(int i=StFrTr1;i<=StFrTr10;i++)
+    //    tableView->setItemDelegateForColumn(i,new CheckBoxDelegate(this));
 
     tableView->setModel(proxyModel);
     tableView->verticalHeader()->setDefaultAlignment(
@@ -150,17 +152,19 @@ void SSitemdialog::createWidgets()
     tableView->setSelectionMode(QAbstractItemView::NoSelection);
     tableView->verticalHeader()->setVisible(false);
     //tableView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    tableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    //tableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    //адаптация размеров
-    int width = tableView->verticalHeader()->width()+tableView->columnWidth(0);
-    //int height = tableView->horizontalHeader()->height()+10;
-    const int count = tableView->model()->columnCount();
-    for(int i=0;i<count;i++)
-        width += tableView->columnWidth(i);
+    //Р°РґР°РїС‚Р°С†РёСЏ РІРЅРµС€РЅРµРіРѕ РІРёРґР°
+    tableView->hideColumn(Name);
+    tableView->hideColumn(FrameisCycled);
+    tableView->setColumnWidth(Frame1,100);
+    //int width = tableView->verticalHeader()->width()+tableView->columnWidth(0);
+    //const int count = tableView->model()->columnCount();
+    //for(int i=0;i<count;i++)
+    //    width += tableView->columnWidth(i);
     //tableView->setFixedSize(width,height);
-    tableView->setFixedWidth(width);
-
+    //tableView->setFixedWidth(width);
+    //tableView->set
 
     //tableView->viewport()->update();
     //if (item)
@@ -185,12 +189,12 @@ void SSitemdialog::initializeModel()
 
 void SSitemdialog::createLayout()
 {
-    QGridLayout *keyCells = new QGridLayout;
-    keyCells->addWidget(image,0,0,Qt::AlignLeft);
-    keyCells->addWidget(stateCountLbl,1,0,Qt::AlignLeft);
-    keyCells->setColumnMinimumWidth(1, 10);
+    QVBoxLayout *keyCells = new QVBoxLayout;
+    keyCells->addWidget(image,0,Qt::AlignCenter);
+    keyCells->addWidget(stateCountLbl);
+    //keyCells->setColumnMinimumWidth(1, 10);
     //keyCells->addWidget(stateIndexLbl,0,2,Qt::AlignLeft);
-    keyCells->addWidget(stateCount,2,0,Qt::AlignLeft);
+    keyCells->addWidget(stateCount);
     //keyCells->addWidget(stateIndex,1,2,Qt::AlignLeft);
     filterSelectGroupBox->setLayout(keyCells);
 
@@ -220,6 +224,8 @@ void SSitemdialog::createConnections()
                 this, SLOT(stateCountChanged()));
 
     connect(model, SIGNAL(TemplateNameChanged(QString,QString)),
+                    this, SLOT(updateUi()));
+    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),
                     this, SLOT(updateUi()));
     connect(listview, SIGNAL(pressed(QModelIndex)),
                 this, SLOT(templateChanged(QModelIndex)));
@@ -260,13 +266,32 @@ void SSitemdialog::templateChanged(const QModelIndex& index){
 void SSitemdialog::imageChanged(const QPixmap&pix){
    listview->model()->setData(listview->currentIndex(),pix,Qt::DecorationRole);
 }
+void SSitemdialog::deleteTemplate(QString TemplateName){
+    if(AQP::question(this, tr("Delete Template"),
+                         tr("Delete Template and all Childs Items"),
+                         "", tr("&Yes"), tr("&No")))
+    {
+        QList<QGraphicsItem*> items = scene->items();
+        QListIterator<QGraphicsItem*> i(items);
+        while (i.hasNext()) {
+            if(SSindicator* curItem = dynamic_cast<SSindicator*>(i.next())){
+                if(curItem->TemplateName()==TemplateName){
+                    QScopedPointer<QGraphicsItem> item(curItem);
+                    scene->removeItem(item.data());
+                }
+            }
+        }
+        model->deleteTemplate(TemplateName);
+        updateUi();
+    }
+}
 
 void SSitemdialog::buttonClicked(QAbstractButton *sender)
 {
     if(sender->text().contains("new template",Qt::CaseInsensitive)){
         model->addTemplate(listview->currentIndex().data().toString());
     } else if(sender->text().contains("delete template",Qt::CaseInsensitive)){
-        model->deleteTemplate(listview->currentIndex().data().toString());
+        deleteTemplate(listview->currentIndex().data().toString());
     }
 }
 
@@ -274,6 +299,7 @@ void SSitemdialog::updateUi()
 {
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(
             listview->currentIndex().isValid());
+    //tableView->resizeColumnsToContents();
     restoreFilters();
 }
 
@@ -296,7 +322,7 @@ void SSitemdialog::accept()
     }
 
     item = new SSindicator(position, scene,listview->currentIndex());
-    //связывание свойств в классе главного окна
+    //СЃРІСЏР·С‹РІР°РЅРёРµ СЃРІРѕР№СЃС‚РІ РІ РєР»Р°СЃСЃРµ РіР»Р°РІРЅРѕРіРѕ РѕРєРЅР°
     //connectItem(item);
     item->update();
     QDialog::accept();
@@ -313,5 +339,25 @@ void SSitemdialog::accept()
     QDialog::accept();
     */
 
+}
+/*
+ С„РёР»СЊС‚СЂ РїРѕР·РІРѕР»СЏРµС‚ РёРіРЅРѕСЂРёСЂРѕРІР°С‚СЊ СЃРѕР±С‹С‚РёРµ РЅР°Р¶Р°С‚РёСЏ Enter Рё РїРѕСЃР»РµРґСѓСЋС‰СѓСЋ РїРµСЂРµРґР°С‡Сѓ
+ РµРіРѕ РІ РѕРєРЅРѕ-СЂРѕРґРёС‚РµР»СЊ. РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РїСЂРё РїРѕРґС‚РІРµСЂР¶РґРµРЅРёРё РёР·РјРµРЅРµРЅРёСЏ РєРѕР»РёС‡РµСЃС‚РІР° СЃРѕСЃС‚РѕСЏРЅРёР№
+*/
+bool SSitemdialog::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == stateCount && event->type() == QEvent::KeyPress) {
+        //listview->setFocus();
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+        if(keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return){
+            listview->setFocus();
+            qDebug() << "!Ok";
+            return true;
+        }
+        return false;
+    } else {
+        // pass the event on to the parent class
+        return QDialog::eventFilter(obj, event);
+    }
 }
 
