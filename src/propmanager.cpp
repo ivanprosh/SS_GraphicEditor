@@ -11,17 +11,24 @@
 TPropManager::TPropManager(QObject *parent, QtAbstractPropertyBrowser *curBrowser):QtVariantPropertyManager(parent),
     browser(curBrowser),prevClassName()
 {
-    initializeContextMap();
-    ignoreClassNames << "QWidget" << "QGraphicItem";
-    brushesStyles << "No Brush" << "Solid" << "Dense #1" << "Dense #2" << "Dense #3" << "Dense #4" << "Dense #5" << "Dense #6" << "Dense #7"
-                  << "Horizontal" << "Vertical" << "Cross";
+    initializeListsAndMaps();
 
     connect(this, SIGNAL(valueChanged(QtProperty *, const QVariant &)),
             this, SLOT(slotValueChanged(QtProperty *, const QVariant &)));
     connect(this, SIGNAL(propertyDestroyed(QtProperty *)),
             this, SLOT(slotPropertyDestroyed(QtProperty *)));
 }
-void TPropManager::initializeContextMap(){
+void TPropManager::initializeListsAndMaps(){
+    ignoreClassNames << "QWidget" << "QGraphicItem";
+    brushesStyles << "No Brush" << "Solid" << "Dense #1" << "Dense #2" << "Dense #3" << "Dense #4" << "Dense #5" << "Dense #6" << "Dense #7"
+                  << "Horizontal" << "Vertical" << "Cross";
+    //
+    ClassNamesToTopLevelLabels["QObject"] = tr("Object properties");
+    ClassNamesToTopLevelLabels["QGraphicsObject"] = tr("Geometry properties");
+    //Список игнорируемых свойств
+    ignoreClassPropNames[ClassNamesToTopLevelLabels.value("QGraphicsObject")] << "opacity" << "enabled" << "visible" << "x" << "y" << "rotation"
+                                                                              << "scale" << "transformOriginPoint" << "width" << "height";
+    //
     PropContextHelpMap.reserve(200);
     //Кнопка "переход"
     PropContextHelpMap["DisplayOptions"] = QString("Кнопка содержит текст/изображение");
@@ -418,7 +425,18 @@ void TPropManager::setAttributes(QtVariantProperty *prop){
         prop->setToolTip(PropContextHelpMap.value(prop->propertyName()));
     }
 }
+QString TPropManager::getclassName(const QMetaObject* metaObject)
+{
+    QString result = metaObject->classInfo(metaObject->indexOfClassInfo("Name")).value();
+    if(result.isEmpty())
+        if(ClassNamesToTopLevelLabels.contains(metaObject->className()))
+            return ClassNamesToTopLevelLabels.value(metaObject->className());
+        else
+            return metaObject->className();
+    return result;
 
+    //if(metaObject->className() == QLatin1String("QObject")) className = tr("Object properties");
+}
 void TPropManager::addClassProperties(const QMetaObject* metaObject){
 
     //const QMetaObject* metaObject = object->metaObject();
@@ -431,8 +449,7 @@ void TPropManager::addClassProperties(const QMetaObject* metaObject){
     QtProperty *TopLevelProperty;// m_classToProperty.value(metaObject).first();
     if (m_classToProperty.value(metaObject).isEmpty()) {
         //в зависимости от Q_CLASSINFO("Name", tr("[value]")) будут сгенирированы заголовки групп!
-        QString className = metaObject->classInfo(metaObject->indexOfClassInfo("Name")).value();
-        if(metaObject->className() == QLatin1String("QObject")) className = tr("Object properties");
+        QString className = getclassName(metaObject);
 
         //Некоторые стандартные классы нас не интересуют
         if(ignoreClassNames.contains(className)) return;
@@ -444,9 +461,11 @@ void TPropManager::addClassProperties(const QMetaObject* metaObject){
         m_propertyToClass[TopLevelProperty] = metaObject;
 
         //qDebug() <<  "Property name:" << classProperty->propertyName() << " :m_propertyToClass.size() " << m_propertyToClass.size();
-
+        bool filtredProps = ignoreClassPropNames.contains(className);
         for (int idx = metaObject->propertyOffset(); idx < metaObject->propertyCount(); idx++) {
             QMetaProperty metaProperty = metaObject->property(idx);
+            //Если свойство не нужно выводить - сделано для классов-родителей библиотеки Qt
+            if(filtredProps && ignoreClassPropNames.value(className).contains(QLatin1String(metaProperty.name()))) continue;
             int type = metaProperty.userType();
             QtVariantProperty *subProperty = 0;
             if (!metaProperty.isReadable()) {

@@ -17,6 +17,7 @@ class SSindicator: public QGraphicsObject
     Q_OBJECT
     Q_CLASSINFO("Name", tr("Pict.object properties"))
 
+    //свойства геометрические описаны в QGraphicsObject
     Q_PROPERTY(QString TemplateName READ TemplateName WRITE setTemplateName)
     Q_PROPERTY(int statesCount READ statesCount)
     Q_PROPERTY(int commandsCount READ commandsCount WRITE setCommandsCount)

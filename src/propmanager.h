@@ -22,6 +22,7 @@ private:
 
     QObject *object;
     QStringList ignoreClassNames,brushesStyles;
+    QMap<QString,QStringList> ignoreClassPropNames;
     QtAbstractPropertyBrowser *browser;
     QString prevClassName;
     //const QString commandNamePrefix;
@@ -38,7 +39,8 @@ private:
             QtVariantProperty *color;
             QtVariantProperty *style;
     };
-    QHash<QString,QString> PropContextHelpMap;
+    QHash<QString,QString> PropContextHelpMap,ClassNamesToTopLevelLabels;
+
     //для пользовательского свойства brush
     QMap<const QtProperty *, brush> propertyToData;
     QMap<const QtProperty *, QtProperty *> ColorToProperty;
@@ -95,7 +97,8 @@ private:
     void syncDynPropWithObj(QStringList &list, QtProperty *classProperty, int startIndex);
     void topLevelPropertySetVisible(QtProperty *classProperty, bool value = 1);
     void setAttributes(QtVariantProperty *prop);
-    void initializeContextMap();
+    void initializeListsAndMaps();
+    QString getclassName(const QMetaObject *metaObject);
 private slots:
     void slotValueChanged(QtProperty *property, const QVariant &value);
     void slotPropertyDestroyed(QtProperty *property);
