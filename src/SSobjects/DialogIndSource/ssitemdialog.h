@@ -54,14 +54,14 @@ private:
     //QTableWidget* tableStatewdg;
     //QString originalHtml;
     //QComboBox* TemplateName;
-    //виджеты
+    //РІРёРґР¶РµС‚С‹
     //QLabel* stateIndexLbl;
     //QSpinBox* stateIndex;
     QLabel* stateCountLbl;
     QSpinBox* stateCount;
     QListView* listview;
     QGroupBox* filterSelectGroupBox;
-    //модель/представл. таблицы
+    //РјРѕРґРµР»СЊ/РїСЂРµРґСЃС‚Р°РІР». С‚Р°Р±Р»РёС†С‹
     StandardTableModel *model;
     ProxyModel *proxyModel;
     QTableView *tableView;

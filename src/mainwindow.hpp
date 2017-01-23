@@ -34,6 +34,7 @@ public:
 
 public slots:
     void setDirty(bool on=true);
+    void clearUndoStack();
 
 protected:
     void closeEvent(QCloseEvent *event);    
@@ -182,7 +183,7 @@ private:
 
     StandardTableModel *model;
 
-    //система повтора-отмены действий
+    //СЃРёСЃС‚РµРјР° РїРѕРІС‚РѕСЂР°-РѕС‚РјРµРЅС‹ РґРµР№СЃС‚РІРёР№
     QUndoStack *undoStack;
     QUndoView *undoView;
     void createUndoView();

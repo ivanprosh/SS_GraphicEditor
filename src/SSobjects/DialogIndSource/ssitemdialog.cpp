@@ -268,7 +268,7 @@ void SSitemdialog::imageChanged(const QPixmap&pix){
 }
 void SSitemdialog::deleteTemplate(QString TemplateName){
     if(AQP::question(this, tr("Delete Template"),
-                         tr("Delete Template and all Childs Items"),
+                         tr("Delete Template and all Child Items. Attention! Undo/Redo stack will be clean"),
                          "", tr("&Yes"), tr("&No")))
     {
         QList<QGraphicsItem*> items = scene->items();
@@ -282,6 +282,7 @@ void SSitemdialog::deleteTemplate(QString TemplateName){
             }
         }
         model->deleteTemplate(TemplateName);
+        QMetaObject::invokeMethod(this->parent(),"clearUndoStack",Qt::QueuedConnection);
         updateUi();
     }
 }

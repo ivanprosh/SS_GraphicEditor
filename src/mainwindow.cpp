@@ -205,7 +205,7 @@ void MainWindow::createActions()
     editAddBoxAction = new QAction(QIcon(":images/editaddbox.png"),
             tr("Add Box"), this);
     editAddBoxAction->setData(BoxItemType);
-    //Граф.объекты SS
+    //Р“СЂР°С„.РѕР±СЉРµРєС‚С‹ SS
     editAddSSAction = new QAction(QIcon(":images/ind_default.svg"),
             tr("SS objects"), this);
     editAddSSAction->setData(SSIndItemType);
@@ -456,6 +456,11 @@ void MainWindow::setDirty(bool on)
 {
     setWindowModified(on);
     updateUi();
+}
+
+void MainWindow::clearUndoStack()
+{
+    undoStack->clear();
 }
 
 //
@@ -845,7 +850,7 @@ void MainWindow::editAddItem()
             item = textdialog.textItem();
         break;
     }
-    //элементы SS
+    //СЌР»РµРјРµРЅС‚С‹ SS
     case SSIndItemType:
         if(!dialog){
             dialog = new SSitemdialog(model,position(), scene, this);
@@ -1308,7 +1313,7 @@ void MainWindow::selectionChanged()
 
 
 
-        //общие свойства
+        //РѕР±С‰РёРµ СЃРІРѕР№СЃС‚РІР°
         /*
         property = variantManager->addProperty(QVariant::Double, tr("Position X"));
         property->setAttribute(QLatin1String("minimum"), 0);
@@ -1328,7 +1333,7 @@ void MainWindow::selectionChanged()
         property->setValue(currentItem->zValue());
         addProperty(property, QLatin1String("zpos"));
         */
-        //специализированные свойства
+        //СЃРїРµС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Рµ СЃРІРѕР№СЃС‚РІР°
 
         /*
 #ifdef NO_DYNAMIC_CAST
@@ -1396,7 +1401,7 @@ void MainWindow::valueChanged(QtProperty *property, const QVariant &value)
         currentItem->setZValue(value.toDouble());
     } else if (id == QLatin1String("text")) {
     } else if (id == QLatin1String("color")) {        
-    //свойства, зависящие от типа
+    //СЃРІРѕР№СЃС‚РІР°, Р·Р°РІРёСЃСЏС‰РёРµ РѕС‚ С‚РёРїР°
     } else if(QObject *item = dynamic_cast<QObject*>(currentItem)) {
 
             if (id == QLatin1String("brush")) {

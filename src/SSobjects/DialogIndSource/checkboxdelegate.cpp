@@ -3,10 +3,10 @@
 
 CheckBoxDelegate::CheckBoxDelegate(QObject *parent): QStyledItemDelegate(parent)
 {
-    cheÒkbox = new QCheckBox;
-    cheÒkbox->setFixedSize(
-                qRound(1.3 * cheÒkbox->sizeHint().height()),
-                cheÒkbox->sizeHint().height());
+    che—Åkbox = new QCheckBox;
+    che—Åkbox->setFixedSize(
+                qRound(1.3 * che—Åkbox->sizeHint().height()),
+                che—Åkbox->sizeHint().height());
 }
 
 void CheckBoxDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -17,13 +17,13 @@ void CheckBoxDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
                      selected ? option.palette.highlight().color()
                               : option.palette.base().color());
 
-     int yOffset = cheÒkbox->height() < option.rect.height() ? (option.rect.height() - cheÒkbox->height()) / 2 : 0;
-     QRect checkboxRect(option.rect.x(), option.rect.y() + yOffset, cheÒkbox->width(), cheÒkbox->height());
-     cheÒkbox->setPalette(palette);
+     int yOffset = che—Åkbox->height() < option.rect.height() ? (option.rect.height() - che—Åkbox->height()) / 2 : 0;
+     QRect checkboxRect(option.rect.x(), option.rect.y() + yOffset, che—Åkbox->width(), che—Åkbox->height());
+     che—Åkbox->setPalette(palette);
      bool checked = index.model()->data(index, Qt::CheckStateRole).toInt() == Qt::Checked;
-     cheÒkbox->setChecked(checked);
+     che—Åkbox->setChecked(checked);
      QString checkboxKey = QString("CHECKBOX:%1.%2").arg(selected).arg(checked);
-     paintWidget(painter, checkboxRect, checkboxKey, cheÒkbox);
+     paintWidget(painter, checkboxRect, checkboxKey, che—Åkbox);
 }
 /*
 QWidget *CheckBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const

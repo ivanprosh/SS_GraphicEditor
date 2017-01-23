@@ -17,7 +17,7 @@ class SSindicator: public QGraphicsObject
     Q_OBJECT
     Q_CLASSINFO("Name", tr("Pict.object properties"))
 
-    //свойства геометрические описаны в QGraphicsObject
+    //СЃРІРѕР№СЃС‚РІР° РіРµРѕРјРµС‚СЂРёС‡РµСЃРєРёРµ РѕРїРёСЃР°РЅС‹ РІ QGraphicsObject
     Q_PROPERTY(QString TemplateName READ TemplateName WRITE setTemplateName)
     Q_PROPERTY(int statesCount READ statesCount)
     Q_PROPERTY(int commandsCount READ commandsCount WRITE setCommandsCount)
@@ -30,7 +30,7 @@ class SSindicator: public QGraphicsObject
     Q_PROPERTY(QColor BorderColor READ BorderColor WRITE setBorderColor)
     Q_PROPERTY(int BorderWidth READ BorderWidth WRITE setBorderWidth)
     Q_PROPERTY(int BorderBlinkFreq READ BorderBlinkFreq WRITE setBorderBlinkFreq)
-    //свойства для объекта типа "Переход"
+    //СЃРІРѕР№СЃС‚РІР° РґР»СЏ РѕР±СЉРµРєС‚Р° С‚РёРїР° "РџРµСЂРµС…РѕРґ"
     Q_PROPERTY(QString UnitName READ UnitName WRITE setUnitName)
     Q_PROPERTY(int MnemoNum READ MnemoNum WRITE setMnemoNum)
     Q_PROPERTY(bool IsNewWnd READ IsNewWnd WRITE setNewWnd)
@@ -51,7 +51,7 @@ public:
     friend QSettings &operator<<(QSettings &out, const SSindicator &ind);
     friend QSettings &operator>>(QSettings &in, SSindicator &ind);
 
-    //свойства
+    //СЃРІРѕР№СЃС‚РІР°
     QString TemplateName() const { return m_TemplateName; }
     bool isAutoCloseDUWnd() const {return AutoCloseDUWnd; }
     QString BorderCtrlDigPar_Tag() const {return m_BorderCtrlDigPar_Tag; }
@@ -63,12 +63,12 @@ public:
     int StateDigParCount() const {return m_StateDigParCount; }
     int statesCount() const {return m_statesCount; }
     int commandsCount() const {return m_commandsCount;}
-    //свойства для объекта типа "Переход"
+    //СЃРІРѕР№СЃС‚РІР° РґР»СЏ РѕР±СЉРµРєС‚Р° С‚РёРїР° "РџРµСЂРµС…РѕРґ"
     QString UnitName() const { return m_UnitName; }
     int MnemoNum() const { return m_MnemoNum; }
     bool IsNewWnd() const { return m_IsNewWnd; }
 
-    //карта соответствий программного тега и индекса состояния/команды
+    //РєР°СЂС‚Р° СЃРѕРѕС‚РІРµС‚СЃС‚РІРёР№ РїСЂРѕРіСЂР°РјРјРЅРѕРіРѕ С‚РµРіР° Рё РёРЅРґРµРєСЃР° СЃРѕСЃС‚РѕСЏРЅРёСЏ/РєРѕРјР°РЅРґС‹
     QHash<QString,SScommandProperty> commands,states;
 
 private:
@@ -77,7 +77,7 @@ private:
     //QStringList &dynamicPropertyList;
     void paintSelectionOutline(QPainter *painter);
 
-    //свойства
+    //СЃРІРѕР№СЃС‚РІР°
     bool AutoCloseDUWnd;
     QString m_BorderCtrlDigPar_Tag;
     QString m_BorderCtrlDigPar_Unit;
@@ -103,7 +103,7 @@ public slots:
     void dynPropertyChanged(QByteArray propName);
     //void ModelDataChanged(const QModelIndex& indexStart,const QModelIndex& indexFinish);
 
-    //свойства
+    //СЃРІРѕР№СЃС‚РІР°
     void setTemplateName(const QString& newName);
     void setAutoCloseDUWnd(bool value){
         if(value != AutoCloseDUWnd){AutoCloseDUWnd=value;emit dirty();}

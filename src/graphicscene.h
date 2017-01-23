@@ -6,7 +6,6 @@
 
 class QGraphicsSceneDragDropEvent;
 class QGraphicsViewItem;
-class QUndoStack;
 
 //! [0]
 class GraphicScene : public QGraphicsScene

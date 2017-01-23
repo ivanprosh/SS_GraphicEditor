@@ -11,7 +11,7 @@ class CheckBoxDelegate : public QStyledItemDelegate
 
 public:
     explicit CheckBoxDelegate(QObject *parent = 0);
-    ~CheckBoxDelegate(){delete cheÒkbox;}
+    ~CheckBoxDelegate(){delete che—Åkbox;}
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
                const QModelIndex &index) const;
@@ -25,7 +25,7 @@ public:
                       const QModelIndex &index) const;
     */
 private:
-    QCheckBox* cheÒkbox;
+    QCheckBox* che—Åkbox;
     void paintWidget(QPainter *painter, const QRect &rect, const QString &cacheKey, QWidget *widget) const;
 };
 

@@ -3,16 +3,16 @@ TEMPLATE = app
 #rus/eng
 TRANSLATIONS = $${PWD}/_ru.ts
 
-# Подключаем заголовочные файлы библиотеки
+# РџРѕРґРєР»СЋС‡Р°РµРј Р·Р°РіРѕР»РѕРІРѕС‡РЅС‹Рµ С„Р°Р№Р»С‹ Р±РёР±Р»РёРѕС‚РµРєРё
 INCLUDEPATH += lib/QtPropertyBrowser
 DEPENDPATH += lib/QtPropertyBrowser
 
 CONFIG(debug, debug|release) {
-    # Подключаем debug-версии библиотек для разных платформ
+    # РџРѕРґРєР»СЋС‡Р°РµРј debug-РІРµСЂСЃРёРё Р±РёР±Р»РёРѕС‚РµРє РґР»СЏ СЂР°Р·РЅС‹С… РїР»Р°С‚С„РѕСЂРј
     win32: LIBS += -L$${PWD}/lib/QtPropertyBrowser -lqtpropertybrowserd1
     #LIBS += -L$$QTPROPERTYBROWSER_LIBDIR -l$$QTPROPERTYBROWSER_LIBNAME
 } else {
-    # Подключаем release-версии библиотек для разных платформ
+    # РџРѕРґРєР»СЋС‡Р°РµРј release-РІРµСЂСЃРёРё Р±РёР±Р»РёРѕС‚РµРє РґР»СЏ СЂР°Р·РЅС‹С… РїР»Р°С‚С„РѕСЂРј
     win32: LIBS += -L$${PWD}/lib/QtPropertyBrowser -lqtpropertybrowser1
 }
 

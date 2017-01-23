@@ -56,8 +56,8 @@ MoveCommand::MoveCommand(QHash<QGraphicsItem*, QPointF>& m_sceneBefore,
 
 }
 
-//позволяет сделать вывод о том, можно ли объединить текущую команду с прошлой
-//возвращает истину, если список итемов совпадает
+//РїРѕР·РІРѕР»СЏРµС‚ СЃРґРµР»Р°С‚СЊ РІС‹РІРѕРґ Рѕ С‚РѕРј, РјРѕР¶РЅРѕ Р»Рё РѕР±СЉРµРґРёРЅРёС‚СЊ С‚РµРєСѓС‰СѓСЋ РєРѕРјР°РЅРґСѓ СЃ РїСЂРѕС€Р»РѕР№
+//РІРѕР·РІСЂР°С‰Р°РµС‚ РёСЃС‚РёРЅСѓ, РµСЃР»Рё СЃРїРёСЃРѕРє РёС‚РµРјРѕРІ СЃРѕРІРїР°РґР°РµС‚
 bool MoveCommand::mergeWith(const QUndoCommand *command)
 {
     const MoveCommand *moveCommand = static_cast<const MoveCommand *>(command);
@@ -88,14 +88,14 @@ void MoveCommand::undo()
     foreach (QGraphicsItem* item, itemsCoordinates.keys()) {
         item->setPos(itemsCoordinates.value(item).first);
     }
-    itemsCoordinates.keys().first()->scene()->update();
+    //itemsCoordinates.keys().first()->scene()->update();
 
     setText(QObject::tr("Move %1")
         .arg(createCommandString(itemsCoordinates.keys().first(), itemsCoordinates.first().second)));
 }
 
 /*
-    метод вызывается автоматически после конструктора, а также по команде пользователя
+    РјРµС‚РѕРґ РІС‹Р·С‹РІР°РµС‚СЃСЏ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё РїРѕСЃР»Рµ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР°, Р° С‚Р°РєР¶Рµ РїРѕ РєРѕРјР°РЅРґРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 */
 void MoveCommand::redo()
 {
@@ -152,7 +152,8 @@ AddCommand::AddCommand(QGraphicsItem *item,
 
 AddCommand::~AddCommand()
 {
-    if (!curGraphicsItem->scene())
+    //if (!curGraphicsItem->scene())
+    if (curGraphicsScene->items().contains(curGraphicsItem))
         delete curGraphicsItem;
 }
 
