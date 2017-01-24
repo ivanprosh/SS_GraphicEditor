@@ -34,7 +34,7 @@ public:
 
 public slots:
     void setDirty(bool on=true);
-    void clearUndoStack();
+    void clearInstances(const QString &templateName);
 
 protected:
     void closeEvent(QCloseEvent *event);    

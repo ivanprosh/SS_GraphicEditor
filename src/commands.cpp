@@ -153,8 +153,8 @@ AddCommand::AddCommand(QGraphicsItem *item,
 AddCommand::~AddCommand()
 {
     //if (!curGraphicsItem->scene())
-    if (curGraphicsScene->items().contains(curGraphicsItem))
-        delete curGraphicsItem;
+    if (!curGraphicsScene->items().contains(curGraphicsItem))
+       delete curGraphicsItem;
 }
 
 void AddCommand::undo()
@@ -167,7 +167,7 @@ void AddCommand::redo()
 {
     curGraphicsScene->clearSelection();
     curGraphicsScene->addItem(curGraphicsItem);
-    curGraphicsItem->setFocus();
+    //curGraphicsItem->setFocus();
 
     curGraphicsScene->update();
 }

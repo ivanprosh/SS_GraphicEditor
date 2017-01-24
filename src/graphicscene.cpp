@@ -18,26 +18,26 @@ void GraphicScene::removeItem(QGraphicsItem *item)
 */
 void GraphicScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    /*
-    QPointF mousePos(event->buttonDownScenePos(Qt::LeftButton).x(),
-                     event->buttonDownScenePos(Qt::LeftButton).y());
-                     */
-    const QList<QGraphicsItem *> itemList = selectedItems();
+
+    //const QList<QGraphicsItem *> itemList = selectedItems();
     //movingItem = itemList.isEmpty() ? 0 : itemList.first();
 
-    if (!itemList.isEmpty() && event->button() == Qt::LeftButton) {
-        sceneBeforeMove.clear();
-        foreach (QGraphicsItem *item, itemList) {
+    //Кэш нужен для запоминания координат объектов (QUndoFramework)
+    //очищать кэш нужно постоянно, так как могут возникнуть недействительные ключи,
+    //например, если удалены Instance's шаблона
+    sceneBeforeMove.clear();
+    if (!selectedItems().isEmpty() && event->button() == Qt::LeftButton) {
+        foreach (QGraphicsItem *item, selectedItems()) {
             sceneBeforeMove[item] = item->pos();
         }
     }
 
-    //clearSelection();
     QGraphicsScene::mousePressEvent(event);
 }
 
 void GraphicScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+
     if (!sceneBeforeMove.empty() && event->button() == Qt::LeftButton) {
         bool dirty;
         foreach (QGraphicsItem *item, sceneBeforeMove.keys()) {
@@ -46,5 +46,6 @@ void GraphicScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         }
         if(dirty) emit itemMoved(sceneBeforeMove);
     }
+
     QGraphicsScene::mouseReleaseEvent(event);
 }

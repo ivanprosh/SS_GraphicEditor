@@ -271,18 +271,8 @@ void SSitemdialog::deleteTemplate(QString TemplateName){
                          tr("Delete Template and all Child Items. Attention! Undo/Redo stack will be clean"),
                          "", tr("&Yes"), tr("&No")))
     {
-        QList<QGraphicsItem*> items = scene->items();
-        QListIterator<QGraphicsItem*> i(items);
-        while (i.hasNext()) {
-            if(SSindicator* curItem = dynamic_cast<SSindicator*>(i.next())){
-                if(curItem->TemplateName()==TemplateName){
-                    QScopedPointer<QGraphicsItem> item(curItem);
-                    scene->removeItem(item.data());
-                }
-            }
-        }
         model->deleteTemplate(TemplateName);
-        QMetaObject::invokeMethod(this->parent(),"clearUndoStack",Qt::QueuedConnection);
+        QMetaObject::invokeMethod(this->parent(),"clearInstances",Qt::QueuedConnection,Q_ARG(QString,TemplateName));
         updateUi();
     }
 }
@@ -300,7 +290,6 @@ void SSitemdialog::updateUi()
 {
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(
             listview->currentIndex().isValid());
-    //tableView->resizeColumnsToContents();
     restoreFilters();
 }
 

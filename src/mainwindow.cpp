@@ -143,6 +143,7 @@ void MainWindow::createUndoView()
     undoView->setWindowTitle(tr("Command List"));
     undoView->show();
     undoView->setAttribute(Qt::WA_QuitOnClose, false);
+    undoView->setSelectionMode(QAbstractItemView::SingleSelection);
 }
 /*
 QSize MainWindow::sizeHint() const
@@ -458,9 +459,30 @@ void MainWindow::setDirty(bool on)
     updateUi();
 }
 
-void MainWindow::clearUndoStack()
+void MainWindow::clearInstances(const QString& templateName)
 {
+    scene->clearSelection();
+    QList<QGraphicsItem*> items = scene->items();
+    QListIterator<QGraphicsItem*> i(items);
+    while (i.hasNext()) {
+        if(SSindicator* curItem = dynamic_cast<SSindicator*>(i.next())){
+            if(curItem->TemplateName()==templateName){
+                //выделяем удовлетворяющие условию итемы, позже в editCut() будут удалены только выделенные
+                curItem->setSelected(true);
+                /*
+                  убрано, так как в противном случае деструктор команды AddCommand
+                  пытается обратиться к уже несуществующей памяти
+                */
+                //QScopedPointer<QGraphicsItem> item(curItem);
+                //scene->removeItem(item.data());
+            }
+        }
+    }
+    editCut();
     undoStack->clear();
+    //очищаем буфер, так как удаленные итемы попали туда
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->clear();
 }
 
 //
