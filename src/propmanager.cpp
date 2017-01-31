@@ -19,7 +19,7 @@ TPropManager::TPropManager(QObject *parent, QtAbstractPropertyBrowser *curBrowse
             this, SLOT(slotPropertyDestroyed(QtProperty *)));
 }
 void TPropManager::initializeListsAndMaps(){
-    ignoreClassNames << "QWidget" << "QGraphicItem";
+    ignoreClassNames << "QWidget" << "QGraphicItem" << "QGraphicsScene";
     brushesStyles << "No Brush" << "Solid" << "Dense #1" << "Dense #2" << "Dense #3" << "Dense #4" << "Dense #5" << "Dense #6" << "Dense #7"
                   << "Horizontal" << "Vertical" << "Cross";
     //
@@ -30,6 +30,20 @@ void TPropManager::initializeListsAndMaps(){
                                                                               << "scale" << "transformOriginPoint" << "width" << "height";
     //
     PropContextHelpMap.reserve(200);
+    //Индикатор
+    PropContextHelpMap["TemplateName"] = QString("Имя шаблона");
+    PropContextHelpMap["statesCount"] = QString("Количество графических состояний");
+    PropContextHelpMap["commandsCount"] = QString("Количество команд управления");
+    PropContextHelpMap["AutoCloseDUWnd"] = QString("Управление «потенциальное»/«импульсное»");
+    PropContextHelpMap["BorderCtrlDigPar_Tag"] = QString("Дискретный параметр, привязанный к рамке");
+    PropContextHelpMap["BorderCtrlDigPar_Unit"] = QString("Имя абонента (пустая строка - текущий)");
+    PropContextHelpMap["BorderCtrlDigParInvert"] = QString("Инвертировать параметр, привязанный к рамке");
+    PropContextHelpMap["BorderColor"] = QString("Цвет рамки");
+    PropContextHelpMap["BorderWidth"] = QString("Толщина рамки");
+    PropContextHelpMap["BorderBlinkFreq"] = QString("Частота рамки");
+    //PropContextHelpMap["State1"] = QString("Наименование/значение. Для команды - обязательно");
+    //PropContextHelpMap["Tag"] = QString("Имя параметра в формате [<Алг. имя абонента>%]_<Алг. имя типа УСО>_<Наименование группы параметров>_<Алг. имя параметра>."
+    //                                    "\nУправляющий сигнал состоянием пиктограммного объекта");
     //Кнопка "переход"
     PropContextHelpMap["DisplayOptions"] = QString("Кнопка содержит текст/изображение");
     PropContextHelpMap["PictureEnabled"] = QString("Картинка для доступной кнопки");
@@ -37,8 +51,8 @@ void TPropManager::initializeListsAndMaps(){
     PropContextHelpMap["Text"] = QString("Текст выводимый на кнопку");
     PropContextHelpMap["Font"] = QString("Параметры шрифта");
     PropContextHelpMap["UnitName"] = QString("Имя абонента (пустая строка - текущий)");
-    PropContextHelpMap["MnemoNum"] = QString("Номер мнемосхемы (с нуля)");
-    PropContextHelpMap["IsNewWnd"] = QString("В новом окне?");
+    PropContextHelpMap["MnemoNum"] = QString("Для объектов типа переход: Номер мнемосхемы (с нуля)");
+    PropContextHelpMap["IsNewWnd"] = QString("Для объектов типа переход: Открывать в новом окне?");
     PropContextHelpMap["Help"] = QString("Текст справки");
     PropContextHelpMap["BtnState_Tag"] = QString("Имя параметра в формате _<Алг. имя типа УСО>_<Наименование группы параметров>_<Алг. имя параметра>."
                                                  "\nДискретный параметр, управляющий «утапливанием» кнопки");
@@ -370,7 +384,7 @@ void TPropManager::syncDynPropWithObj(QStringList& list,QtProperty *classPropert
             int idx = startIndex+rgxPattern.cap(1).toInt();
             if(!m_classToIndexToProperty[object->metaObject()][idx]){
                 subProperty = addProperty(qMetaTypeId<SScommandProperty>(), name);
-                qDebug() << "New : " << "syncDynPropWithObj(), idx " << idx;
+                //qDebug() << "New : " << "syncDynPropWithObj(), idx " << idx;
                 m_propertyToIndex[subProperty] = idx;
                 m_classToIndexToProperty[object->metaObject()][idx] = subProperty;
             } else {
@@ -378,6 +392,9 @@ void TPropManager::syncDynPropWithObj(QStringList& list,QtProperty *classPropert
             }
             classProperty->addSubProperty(subProperty);
             subProperty->setValue(QVariant::fromValue(object->property(name.toUtf8())));
+            subProperty->setToolTip(QString("Value = Наименование. "
+                                            "\nTag = Имя параметра в формате [<Алг. имя абонента>%]_<Алг. имя типа УСО>_<Наименование группы параметров>_<Алг. имя параметра>."
+                                            "\nУправляющий сигнал состоянием пиктограммного объекта"));
         }
         //idx++;
     }

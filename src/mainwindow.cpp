@@ -111,7 +111,7 @@ QObject *qObjectFrom(QGraphicsItem *item)
 
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), gridGroup(0), addOffset(OffsetIncrement),
+    : QMainWindow(parent), addOffset(OffsetIncrement),
       pasteOffset(OffsetIncrement), currentItem(0),dialog(nullptr)
 {
     printer = new QPrinter(QPrinter::HighResolution);
@@ -158,6 +158,7 @@ QSize MainWindow::sizeHint() const
 void MainWindow::createSceneAndView()
 {
     view = new GraphicsView;
+    view->setCacheMode(QGraphicsView::CacheBackground);
     scene = new GraphicScene(this);
     QSize pageSize = printer->paperSize(QPrinter::Point).toSize();
     scene->setSceneRect(0, 0, pageSize.width(), pageSize.height());
@@ -433,8 +434,10 @@ void MainWindow::createConnections()
             this, SLOT(editClearTransforms()));
     connect(scene, SIGNAL(selectionChanged()),
             this, SLOT(selectionChanged()));
+    connect(scene, SIGNAL(gridSizeChanged(int)),
+            view, SLOT(setGridSize(int)));
     connect(viewShowGridAction, SIGNAL(toggled(bool)),
-            this, SLOT(viewShowGrid(bool)));
+            view, SLOT(setGrid(bool)));
     connect(viewZoomInAction, SIGNAL(triggered()),
             view, SLOT(zoomIn()));
     connect(viewZoomOutAction, SIGNAL(triggered()),
@@ -509,10 +512,10 @@ void MainWindow::updateUi()
 
 bool MainWindow::sceneHasItems() const
 {
-    foreach (QGraphicsItem *item, scene->items())
-        if (item != gridGroup && item->group() != gridGroup)
-            return true;
-    return false;
+    //foreach (QGraphicsItem *item, scene->items())
+        //if (item != gridGroup && item->group() != gridGroup)
+            //return true;
+    return !scene->items().isEmpty();
 }
 
 /*
@@ -638,8 +641,8 @@ bool MainWindow::openPageDesignerFile(QFile *file, QDataStream &in)
 void MainWindow::clear()
 {
     scene->clear();
-    gridGroup = 0;
-    viewShowGrid(viewShowGridAction->isChecked());
+    //gridGroup = 0;
+    view->setGrid(viewShowGridAction->isChecked());
 }
 
 
@@ -785,14 +788,14 @@ void MainWindow::paintScene(QPainter *painter)
 {
     bool showGrid = viewShowGridAction->isChecked();
     if (showGrid)
-        viewShowGrid(false);
+        view->setGrid(false);
     QList<QGraphicsItem*> items = scene->selectedItems();
     scene->clearSelection();
 
     scene->render(painter);
 
     if (showGrid)
-        viewShowGrid(true);
+        view->setGrid(true);
     foreach (QGraphicsItem *item, items)
         item->setSelected(true);
     selectionChanged();
@@ -897,24 +900,6 @@ void MainWindow::editAddItem()
     default:
         break;
     }
-    /*
-    if (type == BoxItemType)
-        item = new BoxItem(QRect(position(), QSize(90, 30)), scene);
-    else if (type == SSIndItemType){
-        if(!dialog){
-            dialog = new SSitemdialog(model,position(), scene, this);
-        } else {
-            dialog->show();
-        }
-        if (dialog->exec())
-            item = dialog->GraphicDataItem();
-    }
-    else if (type == TextItemType) {
-        TextItemDialog dialog(0, position(), scene, this);
-        if (dialog.exec())
-            item = dialog.textItem();
-    }
-    */
     if (item) {
         QUndoCommand *addCommand = new AddCommand(dynamic_cast<QGraphicsItem*>(item), scene);
         undoStack->push(addCommand);
@@ -922,7 +907,14 @@ void MainWindow::editAddItem()
         setDirty(true);
     }
 }
-
+int MainWindow::generateItemId(QString className){
+    QVector<int>& set = itemClassNameToNumber[className];
+    if(set.isEmpty())
+        set.push_back(1);
+    else
+        set.push_back(set.last()+1);
+    return set.last();
+}
 
 void MainWindow::connectItem(QObject *item)
 {
@@ -950,6 +942,8 @@ void MainWindow::connectItem(QObject *item)
         connect(item,SIGNAL(dynamicPropCountChanged(QString,int)),
                 variantManager,SLOT(editAddDynamicProperties(QString,int)));
     }
+    //формируем object ID
+    item->setObjectName(QString(item->metaObject()->className())+"_"+QString::number(generateItemId(item->metaObject()->className())));
     /*
     const QMetaObject *metaObject = item->metaObject();
     if (metaObject->indexOfProperty("brush") > -1)
@@ -967,9 +961,16 @@ void MainWindow::connectItem(QObject *item)
     */
 }
 
-
+/*
 void MainWindow::viewShowGrid(bool on)
 {
+    //QColor curColor = GraphicsView.backgroundBrush().color();
+    //if(on)
+        view->setGrid(on);//const int GridSize = 40;
+        ;//view->setForegroundBrush(QBrush(Qt::CrossPattern));
+    //else
+        ;//view->setForegroundBrush(QBrush(Qt::NoBrush));
+
     if (!gridGroup) {
         const int GridSize = 40;
         QPen pen(QColor(175, 175, 175, 127));
@@ -995,8 +996,9 @@ void MainWindow::viewShowGrid(bool on)
         scene->addItem(gridGroup);
     }
     gridGroup->setVisible(on);
-}
 
+}
+*/
 
 void MainWindow::editCopy()
 {
@@ -1380,7 +1382,7 @@ void MainWindow::selectionChanged()
         }
         */
     } else {
-        emit itemChanged(0);
+        emit itemChanged(dynamic_cast<QObject*>(scene));
     }
     updateUi();
 }

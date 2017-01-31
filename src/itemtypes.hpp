@@ -26,7 +26,6 @@ const int SSIndItemType = QGraphicsItem::UserType + 6;
 const int SSTransitionButtonType = QGraphicsItem::UserType + 7;
 const int SSControlButtonType = QGraphicsItem::UserType + 8;
 
-//для идентификации свойства в браузере свойств
 typedef QPair<QString, QString> SScommandProperty;
 Q_DECLARE_METATYPE(SScommandProperty)
 

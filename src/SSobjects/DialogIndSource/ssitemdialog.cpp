@@ -31,6 +31,7 @@
 #include <QStringList>
 #include <QTableView>
 #include <QHeaderView>
+#include <QtCore/qmath.h>
 
 #include "imagemodeldelegate.hpp"
 #include "standardtablemodel.hpp"
@@ -81,10 +82,10 @@ void SSitemdialog::createWidgets()
 //    stateIndex->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
 
     //кол-во состояний
-    stateCountLbl = new QLabel(tr("States\ncount:"));
+    stateCountLbl = new QLabel(tr("Control par\ncount:"));
     stateCount = new QSpinBox;
     stateCountLbl->setBuddy(stateCount);
-    stateCount->setRange(1,32);
+    stateCount->setRange(1,5);
     stateCount->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
     stateCount->installEventFilter(this);
     //stateCount->setValue(1);
@@ -297,7 +298,7 @@ void SSitemdialog::restoreFilters()
 {
     proxyModel->setName(listview->currentIndex().isValid() ?
                             listview->currentIndex().data(Qt::DisplayRole).toString() : QString());
-    proxyModel->setCountState(stateCount->value());
+    proxyModel->setCountState(qPow(2.0,stateCount->value()));
 
     qDebug() << "Listview counts " << listview->model()->rowCount();
     //reportFilterEffect();

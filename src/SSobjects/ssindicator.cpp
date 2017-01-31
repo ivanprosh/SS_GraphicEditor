@@ -37,7 +37,7 @@ void SSindicator::initializeProperties(){
     setBorderColor(Qt::yellow);
     setBorderWidth(1);
     setBorderBlinkFreq(1000);
-
+    setMnemoNum(0);
     //setProperty("test", QVariant::fromValue(qMakePair(QString(),QString())));
     //QTimer::singleShot(0,this,SLOT(debinfo()));
     //commands.push_back(qMakePair(QString("First name"),QString("First Tag")));
@@ -227,7 +227,7 @@ QDataStream &operator>>(QDataStream &in, SSindicator &indicator)
     QString TemplName;
     QPixmap pix;
 
-    //карта состояний и команд
+    //РєР°СЂС‚Р° СЃРѕСЃС‚РѕСЏРЅРёР№ Рё РєРѕРјР°РЅРґ
     QHash<QString,SScommandProperty> commands,states;
     int statesCount,commandsCount;
 

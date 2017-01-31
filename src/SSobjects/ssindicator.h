@@ -23,7 +23,7 @@ class SSindicator: public QGraphicsObject
     Q_PROPERTY(int commandsCount READ commandsCount WRITE setCommandsCount)
 
     Q_PROPERTY(bool AutoCloseDUWnd READ isAutoCloseDUWnd WRITE setAutoCloseDUWnd)
-    Q_PROPERTY(int StateDigParCount READ StateDigParCount)
+    //Q_PROPERTY(int StateDigParCount READ StateDigParCount)
     Q_PROPERTY(QString BorderCtrlDigPar_Tag READ BorderCtrlDigPar_Tag WRITE setBorderCtrlDigPar_Tag)
     Q_PROPERTY(QString BorderCtrlDigPar_Unit READ BorderCtrlDigPar_Unit WRITE setBorderCtrlDigPar_Unit)
     Q_PROPERTY(bool BorderCtrlDigParInvert READ isBorderCtrlDigParInvert WRITE setBorderCtrlDigParInvert)
@@ -150,6 +150,12 @@ public slots:
     }
     void setNewWnd(const bool& value){
         if(value != m_IsNewWnd){m_IsNewWnd=value;emit dirty();}
+    }
+    void setStateDigParCount(const int& value){
+        if(value != m_StateDigParCount){
+            m_StateDigParCount=value;
+            emit dirty();
+        }
     }
     //void updateStatesView();
     //void updateCommandsView();

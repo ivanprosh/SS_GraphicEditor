@@ -1,5 +1,5 @@
 #CONFIG += console debug
-TEMPLATE = app
+ TEMPLATE = app
 #rus/eng
 TRANSLATIONS = $${PWD}/_ru.ts
 

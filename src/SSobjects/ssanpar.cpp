@@ -4,8 +4,8 @@
 
 SSAnpar::SSAnpar(const QRect &_rect) : SSRectItem(_rect),label("0")
 {
-    //ñâåòëî-ñåðûé öâåò ôîíà
-    //îòðèñîâêà õðàíèòñÿ â êýøå
+    //ÑÐ²ÐµÑ‚Ð»Ð¾-ÑÐµÑ€Ñ‹Ð¹ Ñ†Ð²ÐµÑ‚ Ñ„Ð¾Ð½Ð°
+    //Ð¾Ñ‚Ñ€Ð¸ÑÐ¾Ð²ÐºÐ° Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑÑ Ð² ÐºÑÑˆÐµ
     QGraphicsItem::setCacheMode(DeviceCoordinateCache);
     setBackColor(QColor(212,212,212));
     setForeColor(Qt::darkGreen);
@@ -16,8 +16,8 @@ SSAnpar::SSAnpar(const QRect &_rect) : SSRectItem(_rect),label("0")
     anparTitleimage = new QPixmap(":/images/obj_icons/anpar_title.bmp");
     */
   /*
-     Äîáàâëåíèå íà ñöåíó ïðîèçâîäèòñÿ ÷åðåç êîìàíäû QUndoCommand äëÿ
-     ðåàëèçàöèè ìåõàíèçìà ïîâòîðà-îòìåíû äåéñòâèé
+     Ð”Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð½Ð° ÑÑ†ÐµÐ½Ñƒ Ð¿Ñ€Ð¾Ð¸Ð·Ð²Ð¾Ð´Ð¸Ñ‚ÑÑ Ñ‡ÐµÑ€ÐµÐ· ÐºÐ¾Ð¼Ð°Ð½Ð´Ñ‹ QUndoCommand Ð´Ð»Ñ
+     Ñ€ÐµÐ°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ð¸ Ð¼ÐµÑ…Ð°Ð½Ð¸Ð·Ð¼Ð° Ð¿Ð¾Ð²Ñ‚Ð¾Ñ€Ð°-Ð¾Ñ‚Ð¼ÐµÐ½Ñ‹ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ð¹
   */
 
   setSelected(true);
@@ -31,7 +31,7 @@ void SSAnpar::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 
     if (option->state & QStyle::State_Selected)
         paintSelectionOutline(painter);
-    //ðèñóåì èäåíòèôèêàòîð êíîïêè
+    //Ñ€Ð¸ÑÑƒÐµÐ¼ Ð¸Ð´ÐµÐ½Ñ‚Ð¸Ñ„Ð¸ÐºÐ°Ñ‚Ð¾Ñ€ ÐºÐ½Ð¾Ð¿ÐºÐ¸
     painter->setPen(QGraphicsRectItem::pen());
     painter->setFont(Font());
     //qDebug() << option->rect.center().x() << "_" << option->rect.width() << painter->fontMetrics().width(QString("0")) << " & " << painter->fontMetrics().width(QString("0"))/2;

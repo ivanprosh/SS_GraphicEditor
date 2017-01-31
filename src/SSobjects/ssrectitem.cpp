@@ -122,7 +122,7 @@ void SSRectItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     else
         QGraphicsRectItem::mouseReleaseEvent(event);
 }
-//общие свойства для объектов типа SSRectItem
+//РѕР±С‰РёРµ СЃРІРѕР№СЃС‚РІР° РґР»СЏ РѕР±СЉРµРєС‚РѕРІ С‚РёРїР° SSRectItem
 QDataStream &SSRectItem::print(QDataStream &out) const
 {
     qDebug() << "In base class";

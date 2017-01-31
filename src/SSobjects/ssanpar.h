@@ -16,7 +16,7 @@ class SSAnpar : public SSRectItem
 {
     Q_OBJECT
     Q_CLASSINFO("Name", tr("Anpar properties"))
-    //свойства
+    //СЃРІРѕР№СЃС‚РІР°
     Q_PROPERTY(QColor BackColor READ BackColor WRITE setBackColor)
     Q_PROPERTY(QColor ForeColor READ ForeColor WRITE setForeColor)
     Q_PROPERTY(QFont Font READ Font WRITE setFont)
@@ -36,7 +36,7 @@ public:
     explicit SSAnpar(const QRect &rect);
     int type() const { return Type; }
 
-    //отрисовка
+    //РѕС‚СЂРёСЃРѕРІРєР°
     //static void initImage(const QPixmap& img){anparTitleimage = img;}
     //QPixmap SSAnpar::anparTitleimage = QPixmap(":/images/obj_icons/anpar_title.bmp");
     void paint(QPainter *painter,
@@ -44,7 +44,7 @@ public:
     //QRectF boundingRect() const;
     //QPainterPath shape() const;
 
-    //свойства
+    //СЃРІРѕР№СЃС‚РІР°
     QColor BackColor() const { return m_BackColor;}
     QColor ForeColor() const { return m_ForeColor;}
     QFont Font() const { return m_Font;}
@@ -58,7 +58,7 @@ signals:
     void dirty();
 
 public slots:
-    //свойства
+    //СЃРІРѕР№СЃС‚РІР°
     void setBackColor(const QColor& value) {
         if(value != m_BackColor){
             m_BackColor=value;
@@ -107,7 +107,7 @@ private:
     //void paintSelectionOutline(QPainter *painter);
     QStaticText label;
 
-    //свойства
+    //СЃРІРѕР№СЃС‚РІР°
     QColor m_BackColor;
     QColor m_ForeColor;
     QFont m_Font;

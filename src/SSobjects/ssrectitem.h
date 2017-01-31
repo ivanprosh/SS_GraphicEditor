@@ -14,7 +14,7 @@ class SSRectItem : public QObject,public QGraphicsRectItem
 {
     Q_OBJECT
     Q_CLASSINFO("Name", tr("Geometry properties"))
-    //свойства геометрические
+    //СЃРІРѕР№СЃС‚РІР° РіРµРѕРјРµС‚СЂРёС‡РµСЃРєРёРµ
     Q_PROPERTY(QPointF pos READ pos WRITE setPos)
     Q_PROPERTY(QRectF rect READ rect WRITE setRect)
 /*
@@ -33,7 +33,7 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     void paintSelectionOutline(QPainter *painter);
 
-    //доп.св-ва
+    //РґРѕРї.СЃРІ-РІР°
     bool m_resizing;
 signals:
     void dirty();

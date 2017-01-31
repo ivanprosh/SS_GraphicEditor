@@ -4,7 +4,7 @@
 #include "commands.h"
 
 GraphicScene::GraphicScene(QObject *parent)
-    : QGraphicsScene(parent)
+    : QGraphicsScene(parent),m_gridSize(40)
 {
     ;//itemList = 0;
 }

@@ -54,7 +54,7 @@ private slots:
     void editAlign();
     void editClearTransforms();
     void updateUi();
-    void viewShowGrid(bool on);
+    //void viewShowGrid(bool on);
     void selectionChanged();
     void loadFile();
     void editSSobj();
@@ -86,8 +86,8 @@ private:
                     const QList<QGraphicsItem*> &items){
 
         foreach (QGraphicsItem *item, items) {
-            if (item == gridGroup || item->group() == gridGroup)
-                continue;
+            //if (item == gridGroup || item->group() == gridGroup)
+            //    continue;
             qint32 type = static_cast<qint32>(item->type());
             out << type;
             switch (type) {
@@ -128,7 +128,9 @@ private:
     void animateAlignment(const QList<QGraphicsItem*> &items,
                           const QList<QPointF> &positions);
 #endif
-    bool sceneHasItems() const;
+    int addOffset;
+    int pasteOffset;
+
     //void updateExpandState();
     //void getSelectionProperties(bool *hasBrushProperty,
     //                            bool *hasPenProperty) const;
@@ -167,10 +169,12 @@ private:
     QAction *viewZoomOutAction;
     QAction *viewShowGridAction;
 
+    //карта соответсвия имени класса итема его идентификатору
+    QMap<QString,QVector<int>> itemClassNameToNumber;
     QPrinter *printer;
     GraphicScene *scene;
     GraphicsView *view;
-    QGraphicsItemGroup *gridGroup;
+    //QGraphicsItemGroup *gridGroup;
     QPoint previousPoint;
     QGraphicsItem *currentItem;
     SSitemdialog *dialog;
@@ -186,11 +190,10 @@ private:
     //система повтора-отмены действий
     QUndoStack *undoStack;
     QUndoView *undoView;
-    void createUndoView();
 
-    int addOffset;
-    int pasteOffset;
-
+    bool sceneHasItems() const;
+    void createUndoView();   
+    int generateItemId(QString className);
 signals:
     void itemChanged(QObject* object);
 #ifdef SCREENSHOTS
